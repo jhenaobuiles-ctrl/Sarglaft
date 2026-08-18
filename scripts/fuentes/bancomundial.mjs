@@ -20,7 +20,8 @@ export const meta = {
   id: 'bancomundial',
   nombre: 'Banco Mundial — Firmas e individuos inhabilitados',
   fuente: `${PORTAL}/browse?q=debarred`,
-  catalogo: `${PORTAL}/api/catalog/v1?only=dataset&limit=25&q=debarred%20firms`,
+  catalogo:
+    'https://api.us.socrata.com/api/catalog/v1?domains=finances.worldbank.org&only=dataset&limit=25&q=debarred',
   autoridad: 'Grupo Banco Mundial',
   vinculante: false,
   formato: 'json',

@@ -43,6 +43,11 @@ jobs:
       # Se publica lo que sí se pudo descargar aunque alguna fuente haya
       # fallado: las que fallan conservan su última versión buena y quedan
       # marcadas como obsoletas en el manifiesto.
+      # TEMPORAL: inspecciona la estructura real del CSV del Reino Unido.
+      - name: Diagnóstico Reino Unido
+        continue-on-error: true
+        run: node scripts/diagnostico-uk.mjs
+
       - name: Publicar cambios
         run: |
           git config user.name  'github-actions[bot]'
