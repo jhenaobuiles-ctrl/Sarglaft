@@ -1,7 +1,7 @@
 // Resumen: indicadores, últimas consultas y estado de las obligaciones.
 
-import { estado, alCambiarRegistro, mostrarSeccion } from './app.js';
-import { todos, ALMACENES, guardar } from '../registro/db.js';
+import { alCambiarRegistro } from './app.js';
+import { todos, ALMACENES } from '../registro/db.js';
 import { listar, estadoDe, claseEstado, ESTADOS, marcarCumplida } from './obligaciones.js';
 import { esc, fechaHora, ROTULOS } from './formato.js';
 

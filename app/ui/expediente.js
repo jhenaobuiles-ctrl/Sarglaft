@@ -3,7 +3,7 @@
 // Todo esto vive únicamente en este navegador. Exportar no es una comodidad:
 // es la única copia de seguridad que existe.
 
-import { estado, alCambiarRegistro } from './app.js';
+import { estado, alCambiarRegistro, registroCambio } from './app.js';
 import { todos, obtener, guardarVarios, ALMACENES } from '../registro/db.js';
 import { escribirCSV } from '../lib/csv.js';
 import { abrirCertificado } from './certificado.js';
@@ -214,8 +214,11 @@ function importarJSON() {
       await guardarVarios(ALMACENES.consultas, respaldo.consultas || []);
       await guardarVarios(ALMACENES.cruces, respaldo.cruces || []);
       await guardarVarios(ALMACENES.obligaciones, respaldo.obligaciones || []);
-      await recargar();
-      alert('Copia restaurada.');
+      // Avisar a las demás vistas: sin esto el expediente se actualiza pero
+      // los indicadores del resumen se quedan en cero y parece que la
+      // restauración no funcionó.
+      registroCambio();
+      alert(`Copia restaurada: ${cuantas} consulta(s).`);
     } catch (error) {
       alert(`No se pudo restaurar: ${error.message}`);
     }

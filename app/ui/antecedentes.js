@@ -8,7 +8,7 @@
 import { estado, registroCambio } from './app.js';
 import { guardar, guardarVarios, ALMACENES, nuevoId } from '../registro/db.js';
 import { normalizarNombre, normalizarDocumento } from '../motor/normalizar.js';
-import { esc, fechaHora } from './formato.js';
+import { esc } from './formato.js';
 
 export const FUENTES_MANUALES = [
   {
