@@ -96,6 +96,26 @@ Dos reglas gobiernan esa actualización:
 
 Cuando algo falla, el trabajo abre un issue con la lista afectada y el motivo.
 
+## Publicación
+
+El panel se sirve desde GitHub Pages en:
+
+**https://jhenaobuiles-ctrl.github.io/Sarglaft/**
+
+Activar Pages es un paso manual que solo se hace una vez y que requiere
+permisos de administrador del repositorio. Ni el `GITHUB_TOKEN` de Actions
+puede crear el sitio (`Resource not accessible by integration`), ni se puede
+hacer desde una sesión de Claude Code, cuyo proxy veta la ruta `/pages` de la
+API.
+
+1. Abrir <https://github.com/jhenaobuiles-ctrl/Sarglaft/settings/pages>
+2. En **Source**, elegir **GitHub Actions**.
+
+Con eso, `.github/workflows/publicar-pages.yml` publica el panel en cada
+cambio de código y cada vez que se actualizan las listas. Si en su lugar se
+elige *Deploy from a branch*, Pages también funciona —hay un `.nojekyll` en la
+raíz para ello— y el flujo se aparta solo sin marcar error.
+
 ## Límites
 
 - Esto documenta y sistematiza la debida diligencia; **no sustituye el criterio

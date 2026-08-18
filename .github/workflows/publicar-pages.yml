@@ -50,6 +50,7 @@ jobs:
       # Se comprueba primero para que, si falta el interruptor, el fallo diga
       # qué hacer en vez de un "Resource not accessible by integration".
       - name: Comprobar que Pages está activado
+        id: pages
         uses: actions/github-script@v7
         with:
           script: |
@@ -59,6 +60,25 @@ jobs:
                 repo: context.repo.repo,
               });
               core.info(`Pages activo. Origen: ${data.build_type}. URL: ${data.html_url}`);
+              // Si eligieron servir desde una rama, Pages publica solo y este
+              // flujo sobra. Se sale sin desplegar y sin marcar el trabajo en
+              // rojo: la elección es válida, simplemente no nos necesita.
+              if (data.build_type !== 'workflow') {
+                core.setOutput('desplegar', 'no');
+                await core.summary
+                  .addRaw([
+                    '## El sitio se publica desde la rama',
+                    '',
+                    `Pages está activo y sirviendo desde \`${data.build_type}\`, no por Actions.`,
+                    `El panel está en ${data.html_url}`,
+                    '',
+                    'Este flujo no despliega nada en ese modo. Para que despliegue,',
+                    'cambiar **Source** a **GitHub Actions**; si no, se puede borrar.',
+                  ].join('\n'))
+                  .write();
+                return;
+              }
+              core.setOutput('desplegar', 'si');
               return;
             } catch (error) {
               if (error.status !== 404) throw error;
@@ -78,15 +98,19 @@ jobs:
             core.setFailed('GitHub Pages no está activado en este repositorio. Ver el resumen del trabajo para los dos pasos.');
 
       - uses: actions/configure-pages@v5
+        if: steps.pages.outputs.desplegar == 'si'
 
       - uses: actions/upload-pages-artifact@v3
+        if: steps.pages.outputs.desplegar == 'si'
         with:
           path: sitio
 
       - id: despliegue
         uses: actions/deploy-pages@v4
+        if: steps.pages.outputs.desplegar == 'si'
 
       - name: Enlace del panel
+        if: steps.pages.outputs.desplegar == 'si'
         run: |
           echo "### Panel publicado" >> "$GITHUB_STEP_SUMMARY"
           echo "${{ steps.despliegue.outputs.page_url }}" >> "$GITHUB_STEP_SUMMARY"
