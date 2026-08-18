@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel SARLAFT — Escuela AC de Conducción SAS</title>
+<meta name="description" content="Consulta de contrapartes en listas restrictivas y registro de cumplimiento SARLAFT.">
+<link rel="stylesheet" href="app/estilos.css">
+</head>
+<body>
+<div class="disposicion">
+
+  <nav class="lateral">
+    <div class="marca">
+      <strong>SARLAFT</strong>
+      <span id="marca-empresa">Escuela AC de Conducción SAS</span>
+    </div>
+    <div class="navegacion" id="navegacion">
+      <span class="grupo">Cumplimiento</span>
+      <button type="button" data-seccion="panel" aria-current="page">Resumen</button>
+      <button type="button" data-seccion="consulta">Consulta puntual</button>
+      <button type="button" data-seccion="cruce">Cruce masivo</button>
+      <button type="button" data-seccion="antecedentes">Antecedentes Colombia</button>
+      <span class="grupo">Registro</span>
+      <button type="button" data-seccion="expediente">Expediente de consultas</button>
+      <button type="button" data-seccion="listas">Estado de las listas</button>
+      <button type="button" data-seccion="ajustes">Ajustes</button>
+    </div>
+  </nav>
+
+  <main class="contenido">
+    <div id="aviso-carga" class="aviso info">Cargando listas restrictivas…</div>
+
+    <!-- ---------------- Resumen ---------------- -->
+    <section class="seccion" id="seccion-panel" hidden>
+      <div class="encabezado-seccion">
+        <h1>Panel de Cumplimiento SARLAFT</h1>
+        <p>Estado de verificación de contrapartes y obligaciones del Régimen de Medidas Simplificadas.</p>
+      </div>
+
+      <div class="indicadores" id="indicadores"></div>
+
+      <div class="tarjeta">
+        <h2>Últimas consultas registradas</h2>
+        <div id="ultimas-consultas"></div>
+      </div>
+
+      <div class="tarjeta">
+        <h2>Próximas obligaciones</h2>
+        <div class="envoltura-tabla"><table>
+          <thead><tr><th>Obligación</th><th>Frecuencia</th><th>Último cumplimiento</th><th>Estado</th></tr></thead>
+          <tbody id="obligaciones"></tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <!-- ---------------- Consulta puntual ---------------- -->
+    <section class="seccion" id="seccion-consulta" hidden>
+      <div class="encabezado-seccion">
+        <h1>Consulta puntual</h1>
+        <p>Verifica una persona o empresa contra las listas restrictivas y deja constancia de la consulta.</p>
+      </div>
+
+      <form class="tarjeta" id="formulario-consulta">
+        <div class="campos">
+          <div style="grid-column: 1 / -1">
+            <label for="c-nombre">Nombre completo o razón social</label>
+            <input type="text" id="c-nombre" autocomplete="off" placeholder="Ej.: María Fernanda Gómez Restrepo">
+          </div>
+          <div>
+            <label for="c-tipo-doc">Tipo de documento</label>
+            <select id="c-tipo-doc">
+              <option value="">Sin documento</option>
+              <option value="Cédula de ciudadanía">Cédula de ciudadanía</option>
+              <option value="Cédula de extranjería">Cédula de extranjería</option>
+              <option value="Pasaporte">Pasaporte</option>
+              <option value="NIT">NIT</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+          <div>
+            <label for="c-doc">Número de documento</label>
+            <input type="text" id="c-doc" autocomplete="off" inputmode="text" placeholder="Ej.: 79.123.456">
+          </div>
+          <div>
+            <label for="c-vinculo">Tipo de contraparte</label>
+            <select id="c-vinculo">
+              <option>Aspirante / alumno</option>
+              <option>Empleado</option>
+              <option>Proveedor</option>
+              <option>Socio o accionista</option>
+              <option>Cliente empresarial</option>
+              <option>Otro</option>
+            </select>
+          </div>
+        </div>
+        <div class="acciones">
+          <button type="submit" class="accion" id="boton-consultar">Consultar</button>
+          <button type="button" class="accion secundaria" id="boton-limpiar">Limpiar</button>
+        </div>
+      </form>
+
+      <div id="resultado-consulta"></div>
+    </section>
+
+    <!-- ---------------- Cruce masivo ---------------- -->
+    <section class="seccion" id="seccion-cruce" hidden>
+      <div class="encabezado-seccion">
+        <h1>Cruce masivo</h1>
+        <p>Verifica de una sola vez todas las contrapartes. Cubre la obligación mensual de cruce contra listas.</p>
+      </div>
+
+      <div class="tarjeta">
+        <h2>1. Cargar el archivo</h2>
+        <p class="tenue">
+          Un archivo CSV con una fila por contraparte. Desde Excel: <em>Archivo → Guardar como → CSV UTF-8</em>.
+          La primera fila debe tener los nombres de las columnas.
+        </p>
+        <input type="file" id="archivo-cruce" accept=".csv,.txt">
+        <div id="mapeo-cruce"></div>
+      </div>
+
+      <div id="progreso-cruce"></div>
+      <div id="resultado-cruce"></div>
+    </section>
+
+    <!-- ---------------- Antecedentes Colombia ---------------- -->
+    <section class="seccion" id="seccion-antecedentes" hidden>
+      <div class="encabezado-seccion">
+        <h1>Antecedentes en Colombia</h1>
+        <p>Consultas que exigen intervención humana. El panel guarda la evidencia con fecha y hora.</p>
+      </div>
+      <div class="aviso atencion">
+        <strong>Estas consultas no se automatizan.</strong>
+        Procuraduría, Contraloría, Policía y Rama Judicial usan CAPTCHA y sus términos de uso prohíben el
+        acceso automatizado. Lo que hace el panel es abrir cada consulta, recordar cuáles faltan y archivar
+        el certificado que descargues, con constancia de cuándo se hizo.
+      </div>
+      <div id="antecedentes"></div>
+    </section>
+
+    <!-- ---------------- Expediente ---------------- -->
+    <section class="seccion" id="seccion-expediente" hidden>
+      <div class="encabezado-seccion">
+        <h1>Expediente de consultas</h1>
+        <p>Historial completo. Vive solo en este navegador: exporta con regularidad.</p>
+      </div>
+      <div class="tarjeta no-imprimir">
+        <div class="campos">
+          <div>
+            <label for="f-texto">Buscar por nombre o documento</label>
+            <input type="search" id="f-texto" autocomplete="off">
+          </div>
+          <div>
+            <label for="f-resultado">Resultado</label>
+            <select id="f-resultado">
+              <option value="">Todos</option>
+              <option value="ALERTA">Con alerta</option>
+              <option value="EN_REVISION">En revisión</option>
+              <option value="SIN_HALLAZGOS">Sin hallazgos</option>
+            </select>
+          </div>
+          <div>
+            <label for="f-desde">Desde</label>
+            <input type="date" id="f-desde">
+          </div>
+          <div>
+            <label for="f-hasta">Hasta</label>
+            <input type="date" id="f-hasta">
+          </div>
+        </div>
+        <div class="acciones">
+          <button type="button" class="accion secundaria" id="exportar-csv">Exportar a CSV</button>
+          <button type="button" class="accion secundaria" id="exportar-json">Copia de seguridad (JSON)</button>
+          <button type="button" class="accion secundaria" id="importar-json">Restaurar copia</button>
+        </div>
+      </div>
+      <div class="tarjeta" id="tabla-expediente"></div>
+    </section>
+
+    <!-- ---------------- Estado de listas ---------------- -->
+    <section class="seccion" id="seccion-listas" hidden>
+      <div class="encabezado-seccion">
+        <h1>Estado de las listas</h1>
+        <p>Versión exacta contra la que se está consultando. Es lo que se cita en cada certificado.</p>
+      </div>
+      <div class="tarjeta" id="estado-listas"></div>
+    </section>
+
+    <!-- ---------------- Ajustes ---------------- -->
+    <section class="seccion" id="seccion-ajustes" hidden>
+      <div class="encabezado-seccion">
+        <h1>Ajustes</h1>
+        <p>Datos que aparecen en los certificados de consulta.</p>
+      </div>
+      <form class="tarjeta" id="formulario-ajustes">
+        <div class="campos">
+          <div>
+            <label for="a-empresa">Razón social</label>
+            <input type="text" id="a-empresa">
+          </div>
+          <div>
+            <label for="a-nit">NIT</label>
+            <input type="text" id="a-nit">
+          </div>
+          <div>
+            <label for="a-responsable">Responsable de cumplimiento</label>
+            <input type="text" id="a-responsable">
+          </div>
+          <div>
+            <label for="a-cargo">Cargo</label>
+            <input type="text" id="a-cargo">
+          </div>
+        </div>
+        <div class="acciones">
+          <button type="submit" class="accion">Guardar</button>
+        </div>
+      </form>
+
+      <div class="tarjeta">
+        <h2>Borrar el registro local</h2>
+        <p class="tenue">
+          Elimina todas las consultas, evidencias y cruces guardados en este navegador.
+          No se puede deshacer: exporta una copia antes.
+        </p>
+        <div class="acciones">
+          <button type="button" class="accion peligro" id="borrar-todo">Borrar todo el expediente</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script type="module" src="app/ui/app.js"></script>
+</body>
+</html>

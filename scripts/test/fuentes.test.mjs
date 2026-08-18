@@ -95,29 +95,38 @@ test('UE: la clasificación E sale como entidad', () => {
   assert.equal(registros.find((r) => r.i === 'UE-EU.99.1').t, 'E');
 });
 
-test('Reino Unido: agrupa las filas de alias bajo un solo sancionado', () => {
+test('Reino Unido: agrupa por Unique ID aunque OFSI Group ID venga vacío', () => {
   const { fechaPublicacion, registros } = uk.parsear(fixture('uk.csv'));
-  assert.equal(fechaPublicacion, '2026-08-17');
-  // Cuatro filas de nombre, dos sancionados.
-  assert.equal(registros.length, 2);
+  // "Report Date: 18-Aug-2026", la única línea sobre el encabezado.
+  assert.equal(fechaPublicacion, '2026-08-18');
+  // Cinco filas de nombre, tres designaciones.
+  assert.equal(registros.length, 3);
 
-  const persona = registros.find((r) => r.i === 'UK-13245');
-  assert.equal(persona.t, 'P');
+  const persona = registros.find((r) => r.i === 'UK-COL0001');
   assert.equal(persona.n, 'Jose Alfonso MORENO GARCIA');
   assert.deepEqual(persona.a, ['Pepe MORENO', 'EL FLACO']);
+});
+
+test('Reino Unido: lee los documentos de las columnas reales del archivo', () => {
+  const { registros } = uk.parsear(fixture('uk.csv'));
+  const persona = registros.find((r) => r.i === 'UK-COL0001');
   assert.deepEqual(persona.d, [
     { n: 'AB123456', t: 'Pasaporte' },
     { n: '16257988', t: 'Documento nacional' },
   ]);
+  // "D.O.B" normaliza a tres palabras, y el Reino Unido escribe día/mes/año.
   assert.deepEqual(persona.fn, ['1965-11-12']);
+  assert.deepEqual(persona.nc, ['Colombia']);
   assert.equal(persona.fl, '2019-10-21');
 });
 
-test('Reino Unido: la entidad se distingue de la persona', () => {
+test('Reino Unido: deduce el tipo de sujeto cuando la columna no lo declara', () => {
   const { registros } = uk.parsear(fixture('uk.csv'));
-  const empresa = registros.find((r) => r.i === 'UK-13300');
-  assert.equal(empresa.t, 'E');
-  assert.equal(empresa.n, 'INVERSIONES LOPEZ Y CIA LTDA');
+  // "Designation Type" dice "Asset Freeze": describe la sanción, no al sujeto.
+  // El tipo tiene que salir de qué datos existen.
+  assert.equal(registros.find((r) => r.i === 'UK-COL0001').t, 'P', 'tiene fecha de nacimiento y pasaporte');
+  assert.equal(registros.find((r) => r.i === 'UK-COL0002').t, 'E', 'no tiene datos de persona ni de buque');
+  assert.equal(registros.find((r) => r.i === 'UK-RUS9500').t, 'B', 'tiene número IMO');
 });
 
 test('Reino Unido: localiza el CSV vigente en la API de contenidos', () => {

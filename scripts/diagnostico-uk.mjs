@@ -7,6 +7,7 @@
 
 import { writeFileSync } from 'node:fs';
 import { resolver } from './fuentes/uk.mjs';
+import { meta as metaBM } from './fuentes/bancomundial.mjs';
 import { leerCSV, detectarSeparador } from '../app/lib/csv.js';
 
 // La salida va a un archivo además de a la consola: los logs de Actions se
@@ -64,4 +65,31 @@ const cuerpoFilas = filas.slice(iEncabezado + 1).filter((f) => f.length > 1);
 for (const [c, i] of columnasClave) {
   const vacias = cuerpoFilas.filter((f) => !(f[i] || '').trim()).length;
   console.log(`  ${c}: ${vacias} vacías de ${cuerpoFilas.length}`);
+}
+
+// --- ¿Existe un conjunto abierto de firmas inhabilitadas del Banco Mundial? ---
+console.log('\n=== catálogo Socrata del Banco Mundial ===');
+try {
+  const { cuerpo } = await descargar(metaBM.catalogo);
+  const catalogo = JSON.parse(cuerpo);
+  console.log('resultados:', (catalogo.results || []).length);
+  for (const r of (catalogo.results || []).slice(0, 25)) {
+    const rec = r.resource || {};
+    console.log(`  ${rec.id}  ${rec.name}`);
+  }
+} catch (error) {
+  console.log('  falló:', error.message);
+}
+
+// Sin filtro de término, para ver qué publica el dominio.
+console.log('\n=== todo el dominio finances.worldbank.org (primeros 30) ===');
+try {
+  const { cuerpo } = await descargar(
+    'https://api.us.socrata.com/api/catalog/v1?domains=finances.worldbank.org&only=dataset&limit=30',
+  );
+  const catalogo = JSON.parse(cuerpo);
+  console.log('total en el dominio:', catalogo.resultSetSize);
+  for (const r of catalogo.results || []) console.log(`  ${(r.resource || {}).name}`);
+} catch (error) {
+  console.log('  falló:', error.message);
 }

@@ -93,8 +93,12 @@ export function parsear(contenido) {
 
   const grupos = new Map();
   for (const fila of objetos) {
+    // "Unique ID" (p. ej. RUS3355) es el identificador por designación y viene
+    // en todas las filas. "OFSI Group ID" existe pero está vacío en buena
+    // parte del archivo: usarlo como clave principal dejaba una de cada tres
+    // filas sin agrupar, y la misma entidad salía repetida hasta 36 veces.
     const clave =
-      campo(fila, 'group id', 'ofsi group id', 'unique id', 'uk sanctions list ref') ||
+      campo(fila, 'unique id', 'ofsi group id', 'uk sanctions list ref') ||
       `sin-grupo-${grupos.size}`;
     if (!grupos.has(clave)) grupos.set(clave, []);
     grupos.get(clave).push(fila);
@@ -113,19 +117,47 @@ function esEncabezado(fila) {
   return celdas.includes('NAME 6') || (celdas.includes('NAME 1') && celdas.includes('NAME TYPE'));
 }
 
+// Sobre el encabezado va una sola línea: "Report Date: 18-Aug-2026".
 function fechaGenerada(filasPrevias) {
   for (const fila of filasPrevias) {
     for (const celda of fila) {
-      const m = celda.match(/(\d{2})\/(\d{2})\/(\d{4})/);
-      if (m) return `${m[3]}-${m[2]}-${m[1]}`; // el Reino Unido escribe DD/MM/AAAA
-      const iso = celda.match(/(\d{4})-(\d{2})-(\d{2})/);
+      const m = celda.match(/(\d{1,2}[-\s][A-Za-z]{3}[a-z]*[-\s]\d{4})/);
+      if (m) return fechaISO(m[1]);
+      const iso = celda.match(/\d{4}-\d{2}-\d{2}/);
       if (iso) return iso[0];
+      const barras = celda.match(/\d{1,2}\/\d{1,2}\/\d{4}/);
+      if (barras) return fechaISO(barras[0], 'DMA');
     }
   }
   return '';
 }
 
-const TIPOS = { INDIVIDUAL: 'P', ENTITY: 'E', SHIP: 'B' };
+const TIPOS = { INDIVIDUAL: 'P', ENTITY: 'E', SHIP: 'B', VESSEL: 'B', AIRCRAFT: 'B' };
+
+/**
+ * Determina si la designación es persona, entidad o buque.
+ *
+ * El archivo no trae una columna dedicada al tipo de sujeto, así que primero
+ * se prueba el vocabulario de las columnas que podrían traerlo y, si no dicen
+ * nada reconocible, se deduce de qué datos existen: una fecha de nacimiento o
+ * un pasaporte solo los tiene una persona; un número IMO, solo un buque.
+ */
+function deducirTipo(filas) {
+  for (const fila of filas) {
+    const declarado = TIPOS[normalizarNombre(campo(fila, 'designation type', 'type of entity'))];
+    if (declarado) return declarado;
+  }
+  const algunaTiene = (...columnas) =>
+    filas.some((f) => columnas.some((c) => campo(f, c)));
+
+  if (algunaTiene('imo number', 'type of ship', 'tonnage of ship', 'current believed flag of ship')) {
+    return 'B';
+  }
+  if (algunaTiene('d o b', 'dob', 'passport number', 'gender', 'town of birth', 'position')) {
+    return 'P';
+  }
+  return 'E';
+}
 
 function grupo(clave, filas) {
   const nombres = filas.map((f) => ({ fila: f, nombre: nombreCompleto(f) }));
@@ -142,24 +174,29 @@ function grupo(clave, filas) {
 
   const fila = primario.fila;
   const documentos = [];
-  for (const [etiqueta, columna] of [
+  for (const [etiqueta, ...columnas] of [
     ['Pasaporte', 'passport number'],
-    ['Documento nacional', 'national identification number'],
+    ['Documento nacional', 'national identifier number', 'national identification number'],
+    ['Registro mercantil', 'business registration number s', 'business registration number'],
+    ['IMO', 'imo number'],
   ]) {
     for (const f of filas) {
-      const numero = campo(f, columna);
+      const numero = campo(f, ...columnas);
       if (numero) documentos.push({ tipo: etiqueta, numero });
     }
   }
 
-  const nacionalidades = unicos(filas.map((f) => campo(f, 'nationality')).filter(Boolean));
+  const nacionalidades = unicos(
+    filas.map((f) => campo(f, 'nationality ies', 'nationality')).filter(Boolean),
+  );
+  // La columna se llama "D.O.B", que al normalizar queda como tres palabras.
   const nacimientos = unicos(
-    filas.map((f) => fechaISO(campo(f, 'dob', 'date of birth'), 'DMA')).filter(Boolean),
+    filas.map((f) => fechaISO(campo(f, 'd o b', 'dob', 'date of birth'), 'DMA')).filter(Boolean),
   );
 
   return registro({
     id: `UK-${clave}`,
-    tipo: TIPOS[normalizarNombre(campo(fila, 'individual entity ship', 'type'))] || 'E',
+    tipo: deducirTipo(filas),
     nombre: primario.nombre,
     alias,
     documentos,
@@ -168,6 +205,8 @@ function grupo(clave, filas) {
     programa: campo(fila, 'regime name', 'regime'),
     fechaListado: fechaISO(campo(fila, 'designation date', 'date designated'), 'DMA'),
     observaciones: campo(fila, 'uk statement of reasons', 'other information'),
+    // Nota: `fila` es la primaria; el resto de columnas se leen de todo el grupo
+    // porque el archivo reparte los datos entre las filas de cada designación.
   });
 }
 
@@ -181,19 +220,27 @@ function nombreCompleto(fila) {
   return unido || campo(fila, 'name', 'full name');
 }
 
-/** Busca una columna por nombre normalizado, tolerando variaciones. */
+/**
+ * Busca una columna por nombre normalizado, tolerando variaciones.
+ *
+ * Salta las columnas que existen pero vienen vacías y sigue con el siguiente
+ * candidato. Sin eso, "OFSI Group ID" —presente pero en blanco en un tercio
+ * del archivo— ganaba sobre "Unique ID" y devolvía cadena vacía como si la
+ * columna no existiera.
+ */
 function campo(fila, ...candidatos) {
-  for (const candidato of candidatos) {
-    const buscado = normalizarNombre(candidato);
-    for (const clave of Object.keys(fila)) {
-      if (normalizarNombre(clave) === buscado) return String(fila[clave] || '').trim();
-    }
-  }
-  // Segunda pasada más laxa: encabezados con paréntesis o notas al final.
-  for (const candidato of candidatos) {
-    const buscado = normalizarNombre(candidato);
-    for (const clave of Object.keys(fila)) {
-      if (normalizarNombre(clave).startsWith(buscado)) return String(fila[clave] || '').trim();
+  const claves = Object.keys(fila);
+  const exacto = (buscado) =>
+    claves.find((clave) => normalizarNombre(clave) === buscado);
+  const laxo = (buscado) =>
+    claves.find((clave) => normalizarNombre(clave).startsWith(buscado));
+
+  for (const buscar of [exacto, laxo]) {
+    for (const candidato of candidatos) {
+      const clave = buscar(normalizarNombre(candidato));
+      if (clave === undefined) continue;
+      const valor = String(fila[clave] ?? '').trim();
+      if (valor) return valor;
     }
   }
   return '';

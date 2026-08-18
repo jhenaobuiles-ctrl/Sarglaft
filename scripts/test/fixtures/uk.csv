@@ -1,8 +1,7 @@
-UK Sanctions List,,,,,,,,,,,,,
-Date Generated: 17/08/2026,,,,,,,,,,,,,
-,,,,,,,,,,,,,
-Name 6,Name 1,Name 2,Name 3,Name 4,Name 5,Name Type,"Individual, Entity, Ship",Regime Name,Designation Date,DOB,Nationality,Passport Number,National Identification Number,Group ID,UK Statement of Reasons
-MORENO GARCIA,Jose,Alfonso,,,,Primary name,Individual,Counter-terrorism,21/10/2019,12/11/1965,Colombia,AB123456,16257988,13245,Implicado en financiación.
-MORENO,Pepe,,,,,AKA,Individual,Counter-terrorism,21/10/2019,,,,,13245,
-EL FLACO,,,,,,AKA,Individual,Counter-terrorism,21/10/2019,,,,,13245,
-INVERSIONES LOPEZ Y CIA LTDA,,,,,,Primary name,Entity,Counter-terrorism,05/03/2020,,,,,13300,Empresa vinculada.
+Report Date: 18-Aug-2026
+Last Updated,Unique ID,OFSI Group ID,Name 6,Name 1,Name 2,Name type,Alias strength,Regime Name,Designation Type,Date Designated,D.O.B,Nationality(/ies),National Identifier number,Passport number,UK Statement of Reasons,IMO number,Type of ship
+21/10/2019,COL0001,,MORENO GARCIA,Jose,Alfonso,Primary Name,,Counter-terrorism,Asset Freeze,21/10/2019,12/11/1965,Colombia,16257988,AB123456,Implicado en financiación.,,
+21/10/2019,COL0001,,MORENO,Pepe,,Alias,Good,Counter-terrorism,Asset Freeze,21/10/2019,,,,,,,
+21/10/2019,COL0001,,EL FLACO,,,Alias,Weak,Counter-terrorism,Asset Freeze,21/10/2019,,,,,,,
+05/03/2020,COL0002,13300,INVERSIONES LOPEZ Y CIA LTDA,,,Primary Name,,Counter-terrorism,Asset Freeze,05/03/2020,,,,,Empresa vinculada.,,
+11/07/2022,RUS9500,,MOTONAVE ESPERANZA,,,Primary Name,,Russia,Shipping Sanctions,11/07/2022,,,,,,9876543,Cargo
