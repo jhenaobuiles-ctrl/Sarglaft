@@ -1,0 +1,90 @@
+{
+  "generado": "2026-08-18T14:57:48.479Z",
+  "listas": [
+    {
+      "id": "onu",
+      "nombre": "Consejo de Seguridad ONU — Lista Consolidada",
+      "fuente": "https://scsanctions.un.org/resources/xml/en/consolidated.xml",
+      "autoridad": "Organización de las Naciones Unidas",
+      "vinculante": true,
+      "archivo": "onu.json",
+      "fechaPublicacion": "2026-08-17",
+      "registros": 1011,
+      "bytes": 479501,
+      "sha256": "0e4f8b31cc57c58fd96e8207e0341182cff3b4959a942d20cea67e3291a4328b",
+      "actualizado": "2026-08-18T14:56:58.476Z",
+      "estado": "ok"
+    },
+    {
+      "id": "ofac_sdn",
+      "nombre": "OFAC — Specially Designated Nationals (lista Clinton)",
+      "fuente": "https://sanctionslistservice.ofac.treas.gov/api/PublicationPreview/exports/SDN.XML",
+      "autoridad": "OFAC — Departamento del Tesoro de Estados Unidos",
+      "vinculante": false,
+      "archivo": "ofac_sdn.json",
+      "fechaPublicacion": "2026-08-07",
+      "registros": 19199,
+      "bytes": 6577754,
+      "sha256": "49b68d55c4197cc9c4a5ab185fc7417552c5d38f1f56ffddeb8291c3ddcde75e",
+      "actualizado": "2026-08-18T14:57:03.500Z",
+      "estado": "ok"
+    },
+    {
+      "id": "ofac_nosdn",
+      "nombre": "OFAC — Consolidated Sanctions List (no SDN)",
+      "fuente": "https://sanctionslistservice.ofac.treas.gov/api/PublicationPreview/exports/CONSOLIDATED.XML",
+      "autoridad": "OFAC — Departamento del Tesoro de Estados Unidos",
+      "vinculante": false,
+      "archivo": "ofac_nosdn.json",
+      "fechaPublicacion": "2026-07-27",
+      "registros": 481,
+      "bytes": 340562,
+      "sha256": "5f62fb7afc6bbfa8c22d60015430779c43e8e3e5306798fc2660b2d0dc6d7bce",
+      "actualizado": "2026-08-18T14:57:03.747Z",
+      "estado": "ok"
+    },
+    {
+      "id": "ue",
+      "nombre": "Unión Europea — Lista Consolidada de Sanciones Financieras",
+      "fuente": "https://webgate.ec.europa.eu/fsd/fsf/public/files/xmlFullSanctionsList_1_1/content?token=dG9rZW4tMjAxNw",
+      "autoridad": "Comisión Europea",
+      "vinculante": false,
+      "archivo": "ue.json",
+      "fechaPublicacion": "2026-08-05",
+      "registros": 6234,
+      "bytes": 1958227,
+      "sha256": "937ed29b441886509575e81d01c7c7b28b4ebe1ca96b63253d569931320f7f6b",
+      "actualizado": "2026-08-18T14:57:07.646Z",
+      "estado": "ok"
+    },
+    {
+      "id": "uk",
+      "nombre": "Reino Unido — UK Sanctions List (OFSI)",
+      "fuente": "https://sanctionslist.fcdo.gov.uk/docs/UK-Sanctions-List.csv",
+      "autoridad": "Office of Financial Sanctions Implementation, HM Treasury",
+      "vinculante": false,
+      "archivo": "uk.json",
+      "fechaPublicacion": "2026-08-17",
+      "registros": 8578,
+      "bytes": 4983569,
+      "sha256": "55167640c0ae5a84bb1f63604575f7aad7cf7f3ee15c328f7c97245332986551",
+      "actualizado": "2026-08-18T14:57:33.846Z",
+      "estado": "ok"
+    },
+    {
+      "id": "bancomundial",
+      "nombre": "Banco Mundial — Firmas e individuos inhabilitados",
+      "fuente": "https://finances.worldbank.org/browse?q=debarred",
+      "autoridad": "Grupo Banco Mundial",
+      "vinculante": false,
+      "archivo": "bancomundial.json",
+      "fechaPublicacion": "",
+      "registros": 0,
+      "bytes": 0,
+      "sha256": "",
+      "estado": "sin_datos",
+      "error": "no se pudo descargar https://finances.worldbank.org/api/catalog/v1?only=dataset&limit=25&q=debarred%20firms: HTTP 404 Not Found",
+      "ultimoIntento": "2026-08-18T14:57:48.479Z"
+    }
+  ]
+}
