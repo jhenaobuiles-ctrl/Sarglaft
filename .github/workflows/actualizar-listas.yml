@@ -1,6 +1,12 @@
 name: Actualizar listas restrictivas
 
 on:
+  # Un cambio en los parsers tiene que revalidarse contra los datos reales:
+  # las fixtures prueban la forma del formato, no que la fuente siga viva.
+  push:
+    paths:
+      - 'scripts/**'
+      - '.github/workflows/actualizar-listas.yml'
   schedule:
     # 06:00 en Bogotá (UTC-5). GitHub interpreta el cron en UTC.
     - cron: '0 11 * * *'
