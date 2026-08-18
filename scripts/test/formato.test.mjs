@@ -32,3 +32,27 @@ test('fechaCorta no convierte texto ambiguo en una fecha concreta', () => {
 test('fechaCorta sí formatea las marcas de tiempo completas', () => {
   assert.match(fechaCorta('2026-08-18T15:07:36.791Z'), /2026/);
 });
+
+import { explicacionDe, TITULOS_CERTIFICADO, etiquetaPEP } from '../../app/ui/formato.js';
+
+test('el veredicto se explica según lo que se consultó de verdad', () => {
+  // Una constancia de antecedentes no cruza listas: hablar de "coincidencia
+  // fuerte" ahí describe algo que no ocurrió.
+  const listas = explicacionDe({ tipo: 'puntual', resultado: 'ALERTA' });
+  const antecedentes = explicacionDe({ tipo: 'antecedentes', resultado: 'ALERTA' });
+  assert.match(listas, /coincidencia/i);
+  assert.match(antecedentes, /entidades consultadas/i);
+  assert.doesNotMatch(antecedentes, /coincidencia/i);
+});
+
+test('el certificado no se titula como consulta de listas si no las consultó', () => {
+  assert.match(TITULOS_CERTIFICADO.puntual, /listas restrictivas/i);
+  assert.doesNotMatch(TITULOS_CERTIFICADO.antecedentes, /listas restrictivas/i);
+});
+
+test('etiquetaPEP distingue al PEP de su entorno y deja vacío lo no declarado', () => {
+  assert.match(etiquetaPEP('pep'), /Persona expuesta/);
+  assert.match(etiquetaPEP('vinculado'), /Familiar o asociado/);
+  assert.equal(etiquetaPEP(''), '');
+  assert.equal(etiquetaPEP('cualquier-cosa'), '');
+});

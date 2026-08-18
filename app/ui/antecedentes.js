@@ -8,7 +8,7 @@
 import { estado, registroCambio } from './app.js';
 import { guardar, guardarVarios, ALMACENES, nuevoId } from '../registro/db.js';
 import { normalizarNombre, normalizarDocumento } from '../motor/normalizar.js';
-import { esc } from './formato.js';
+import { esc, etiquetaPEP, CONDICIONES_PEP } from './formato.js';
 
 export const FUENTES_MANUALES = [
   {
@@ -98,6 +98,13 @@ export function montarAntecedentes() {
           <label for="an-doc">Documento</label>
           <input type="text" id="an-doc" autocomplete="off">
         </div>
+        <div>
+          <label for="an-pep">Condición PEP <span class="tenue" style="font-weight:400">(según su declaración)</span></label>
+          <select id="an-pep">
+            <option value="">No declara ser PEP</option>
+            ${Object.entries(CONDICIONES_PEP).map(([v, t]) => `<option value="${v}">${t}</option>`).join('')}
+          </select>
+        </div>
       </div>
     </form>
     <div id="fuentes-manuales"></div>
@@ -127,6 +134,7 @@ export function montarAntecedentes() {
 
 function pintarFuentes() {
   const tipo = document.getElementById('an-tipo').value;
+  const condicionPep = document.getElementById('an-pep').value;
   const aplicables = FUENTES_MANUALES.filter((f) => f.aplica === 'ambos' || f.aplica === tipo);
 
   document.getElementById('fuentes-manuales').innerHTML = aplicables
@@ -209,6 +217,7 @@ async function guardarConstancia() {
   const nombre = document.getElementById('an-nombre').value.trim();
   const documento = document.getElementById('an-doc').value.trim();
   const tipo = document.getElementById('an-tipo').value;
+  const condicionPep = document.getElementById('an-pep').value;
 
   if (!nombre && !documento) {
     alert('Escribe al menos un nombre o un número de documento.');
@@ -272,6 +281,8 @@ async function guardarConstancia() {
     documentoNormalizado: normalizarDocumento(documento),
     resultado,
     revisiones,
+    pep: Boolean(condicionPep),
+    pepDetalle: etiquetaPEP(condicionPep),
     coincidencias: [],
     listas: [],
     responsable: estado.config.responsable || '',

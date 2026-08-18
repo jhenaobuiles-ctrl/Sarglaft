@@ -131,7 +131,7 @@ function resumenCoincidencias(c) {
 function exportarCSV() {
   const lista = filtradas();
   const filas = [
-    ['Fecha', 'Contraparte', 'Tipo documento', 'Documento', 'Tipo contraparte', 'Origen', 'Resultado', 'Coincidencias', 'Mejor coincidencia', 'Lista', 'Similitud', 'Responsable', 'Observaciones', 'Identificador'],
+    ['Fecha', 'Contraparte', 'Tipo documento', 'Documento', 'Tipo contraparte', 'Condición PEP', 'Origen', 'Resultado', 'Coincidencias', 'Mejor coincidencia', 'Lista', 'Similitud', 'Responsable', 'Observaciones', 'Identificador'],
     ...lista.map((c) => {
       const m = c.coincidencias?.[0];
       return [
@@ -140,6 +140,7 @@ function exportarCSV() {
         c.consulta?.tipoDocumento || '',
         c.consulta?.documento || '',
         c.vinculo || '',
+        c.pepDetalle || '',
         origen(c),
         ROTULOS[c.resultado] || c.resultado,
         c.coincidencias?.length || 0,

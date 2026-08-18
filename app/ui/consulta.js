@@ -5,7 +5,7 @@ import { guardar, ALMACENES, nuevoId } from '../registro/db.js';
 import { normalizarNombre, normalizarDocumento } from '../motor/normalizar.js';
 import { abrirCertificado } from './certificado.js';
 import {
-  esc, fechaHora, fechaCorta, ROTULOS, EXPLICACIONES, TIPOS_REGISTRO, porcentaje,
+  esc, fechaHora, fechaCorta, ROTULOS, TIPOS_REGISTRO, porcentaje, etiquetaPEP, explicacionDe,
 } from './formato.js';
 
 export function montarConsulta() {
@@ -18,6 +18,7 @@ export function montarConsulta() {
     const documento = document.getElementById('c-doc').value.trim();
     const tipoDocumento = document.getElementById('c-tipo-doc').value;
     const vinculo = document.getElementById('c-vinculo').value;
+    const condicionPep = document.getElementById('c-pep').value;
 
     if (!nombre && !documento) {
       salida.innerHTML =
@@ -34,6 +35,8 @@ export function montarConsulta() {
       id: nuevoId('c'),
       tipo: 'puntual',
       vinculo,
+      pep: Boolean(condicionPep),
+      pepDetalle: etiquetaPEP(condicionPep),
       nombreNormalizado: normalizarNombre(nombre),
       documentoNormalizado: normalizarDocumento(documento),
       responsable: estado.config.responsable || '',
@@ -60,7 +63,7 @@ export function vistaResultado(consulta) {
   return `
     <div class="veredicto ${resultado}">
       <h2>${esc(ROTULOS[resultado] || resultado)}</h2>
-      <p>${esc(EXPLICACIONES[resultado] || '')}</p>
+      <p>${esc(explicacionDe(consulta))}</p>
     </div>
 
     <div class="tarjeta no-imprimir">

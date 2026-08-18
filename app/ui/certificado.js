@@ -9,7 +9,10 @@
 // —fecha de publicación y sha256 del archivo—, de modo que cualquiera pueda
 // verificar ese mismo archivo en el repositorio público.
 
-import { esc, fechaHora, fechaCorta, ROTULOS, EXPLICACIONES, TIPOS_REGISTRO, porcentaje } from './formato.js';
+import {
+  esc, fechaHora, fechaCorta, ROTULOS, TIPOS_REGISTRO, porcentaje,
+  TITULOS_CERTIFICADO, explicacionDe,
+} from './formato.js';
 
 export function abrirCertificado(consulta, perfil) {
   const contenedor = document.createElement('div');
@@ -40,7 +43,7 @@ export function certificadoHTML(consulta, perfil = {}) {
   return `
     <header class="cert-encabezado">
       <div>
-        <h1>Certificado de consulta en listas restrictivas</h1>
+        <h1>${esc(TITULOS_CERTIFICADO[consulta.tipo] || TITULOS_CERTIFICADO.puntual)}</h1>
         <p class="tenue">${esc(perfil.empresa || '')}${perfil.nit ? ` · NIT ${esc(perfil.nit)}` : ''}</p>
       </div>
       <div class="cert-sello etiqueta ${resultado}">${esc(ROTULOS[resultado] || resultado)}</div>
@@ -52,6 +55,7 @@ export function certificadoHTML(consulta, perfil = {}) {
         <dt>Nombre o razón social</dt><dd>${esc(c.nombre) || '—'}</dd>
         <dt>Documento</dt><dd>${c.documento ? `${esc(c.tipoDocumento || 'Documento')} ${esc(c.documento)}` : '—'}</dd>
         ${consulta.vinculo ? `<dt>Tipo de contraparte</dt><dd>${esc(consulta.vinculo)}</dd>` : ''}
+        ${consulta.pepDetalle ? `<dt>Condición PEP</dt><dd>${esc(consulta.pepDetalle)}</dd>` : ''}
         <dt>Fecha y hora de la consulta</dt><dd>${esc(fechaHora(fecha))} (hora de Colombia)</dd>
         <dt>Realizada por</dt><dd>${esc(perfil.responsable || '—')}${perfil.cargo ? ` · ${esc(perfil.cargo)}` : ''}</dd>
         <dt>Identificador de la consulta</dt><dd class="mono">${esc(consulta.id || '—')}</dd>
@@ -60,54 +64,139 @@ export function certificadoHTML(consulta, perfil = {}) {
 
     <section>
       <h2>Resultado</h2>
-      <p><strong>${esc(ROTULOS[resultado] || resultado)}.</strong> ${esc(EXPLICACIONES[resultado] || '')}</p>
-      ${coincidenciasHTML(consulta.coincidencias || [])}
+      <p><strong>${esc(ROTULOS[resultado] || resultado)}.</strong> ${esc(explicacionDe(consulta))}</p>
+      ${consulta.tipo === 'antecedentes' ? '' : coincidenciasHTML(consulta.coincidencias || [])}
     </section>
 
-    <section>
-      <h2>Listas consultadas y su versión</h2>
-      <p class="tenue">
-        El sha256 identifica el archivo exacto contra el que se hizo el cruce. Permite verificar
-        esta consulta contra el repositorio público sin depender de este panel.
-      </p>
-      <table>
-        <thead><tr><th>Lista</th><th>Autoridad</th><th>Publicada</th><th>Registros</th><th>sha256</th></tr></thead>
-        <tbody>
-          ${(consulta.listas || [])
-            .map(
-              (l) => `<tr>
-                <td>${esc(l.nombre)}</td>
-                <td>${esc(l.autoridad || '—')}</td>
-                <td>${esc(fechaCorta(l.fechaPublicacion))}</td>
-                <td class="numero">${(l.registros || 0).toLocaleString('es-CO')}</td>
-                <td class="mono">${esc((l.sha256 || '').slice(0, 16))}…</td>
-              </tr>`,
-            )
-            .join('')}
-        </tbody>
-      </table>
-    </section>
+    ${fuentesHTML(consulta)}
 
     ${consulta.observaciones ? `<section><h2>Observaciones del responsable</h2><p>${esc(consulta.observaciones)}</p></section>` : ''}
 
     <section class="cert-nota">
       <h2>Alcance</h2>
-      <p>
-        Esta consulta se realizó contra las listas relacionadas arriba, en la versión vigente en la
-        fecha indicada. La Lista Consolidada del Consejo de Seguridad de las Naciones Unidas es de
-        aplicación obligatoria; las demás se consultan como práctica de debida diligencia.
-      </p>
+      ${alcanceHTML(consulta)}
       <p>
         Este documento deja constancia de que la verificación se hizo y de contra qué se hizo. No
-        sustituye el análisis ni la decisión del responsable de cumplimiento, y no cubre los
-        antecedentes de Procuraduría, Contraloría, Policía ni Rama Judicial, que se consultan por
-        separado y se archivan como evidencia aparte.
+        sustituye el análisis ni la decisión del responsable de cumplimiento.
       </p>
       <div class="cert-firma">
         <div><span></span><p>${esc(perfil.responsable || '')}<br>${esc(perfil.cargo || 'Responsable de cumplimiento')}</p></div>
       </div>
     </section>
   `;
+}
+
+/**
+ * Qué se consultó realmente.
+ *
+ * Una consulta en listas y una constancia de antecedentes no se sustentan en
+ * lo mismo: la primera con la versión de cada archivo de sanciones, la
+ * segunda con las entidades donde una persona fue a mirar. Imprimir la tabla
+ * de listas vacía en una constancia de antecedentes no solo no informaba:
+ * dejaba un certificado que decía haber cruzado listas sin haberlo hecho.
+ */
+function fuentesHTML(consulta) {
+  const partes = [];
+  if ((consulta.listas || []).length) partes.push(listasHTML(consulta.listas));
+  if ((consulta.revisiones || []).length) partes.push(revisionesHTML(consulta.revisiones));
+
+  if (!partes.length) {
+    return `<section>
+      <h2>Fuentes consultadas</h2>
+      <p class="tenue">Esta consulta no dejó registro de las fuentes verificadas.</p>
+    </section>`;
+  }
+  return partes.join('\n');
+}
+
+function listasHTML(listas) {
+  return `<section>
+    <h2>Listas consultadas y su versión</h2>
+    <p class="tenue">
+      El sha256 identifica el archivo exacto contra el que se hizo el cruce. Permite verificar
+      esta consulta contra el repositorio público sin depender de este panel.
+    </p>
+    <table>
+      <thead><tr><th>Lista</th><th>Autoridad</th><th>Publicada</th><th>Registros</th><th>sha256</th></tr></thead>
+      <tbody>
+        ${listas
+          .map(
+            (l) => `<tr>
+              <td>${esc(l.nombre)}${l.vinculante ? ' <strong>(vinculante)</strong>' : ''}</td>
+              <td>${esc(l.autoridad || '—')}</td>
+              <td>${esc(fechaCorta(l.fechaPublicacion))}</td>
+              <td class="numero">${(l.registros || 0).toLocaleString('es-CO')}</td>
+              <td class="mono">${esc((l.sha256 || '').slice(0, 16))}…</td>
+            </tr>`,
+          )
+          .join('')}
+      </tbody>
+    </table>
+  </section>`;
+}
+
+function revisionesHTML(revisiones) {
+  return `<section>
+    <h2>Entidades consultadas</h2>
+    <p class="tenue">
+      Consultas hechas por una persona en el sitio de cada entidad. La evidencia adjunta queda
+      archivada en el expediente con la fecha y hora de esta constancia.
+    </p>
+    <table>
+      <thead><tr><th>Consulta</th><th>Entidad</th><th>Resultado</th><th>Evidencia</th></tr></thead>
+      <tbody>
+        ${revisiones
+          .map(
+            (r) => `<tr>
+              <td>${esc(r.nombre)}</td>
+              <td>${esc(r.entidad)}</td>
+              <td>${esc(ROTULOS[r.resultado] || RESULTADOS_MANUALES[r.resultado] || r.resultado)}</td>
+              <td>${r.conEvidencia ? 'Adjunta' : '—'}</td>
+            </tr>`,
+          )
+          .join('')}
+      </tbody>
+    </table>
+  </section>`;
+}
+
+const RESULTADOS_MANUALES = {
+  NO_APLICA: 'No aplica',
+  SIN_REGISTRAR: 'Sin registrar',
+};
+
+function alcanceHTML(consulta) {
+  const hayListas = (consulta.listas || []).length > 0;
+  const hayRevisiones = (consulta.revisiones || []).length > 0;
+
+  const parrafos = [];
+  if (hayListas) {
+    parrafos.push(
+      'Esta consulta se realizó contra las listas relacionadas arriba, en la versión vigente en ' +
+        'la fecha indicada. La Lista Consolidada del Consejo de Seguridad de las Naciones Unidas ' +
+        'es de aplicación obligatoria; las demás se consultan como práctica de debida diligencia.',
+    );
+  }
+  if (hayRevisiones) {
+    parrafos.push(
+      'Las entidades relacionadas arriba se consultaron de forma manual en sus sitios oficiales: ' +
+        'usan CAPTCHA y sus términos de uso prohíben el acceso automatizado, así que la ' +
+        'verificación la hizo una persona y lo que aquí consta es su resultado.',
+    );
+  }
+  if (!hayListas) {
+    parrafos.push(
+      'Esta constancia no cubre el cruce contra listas restrictivas, que se realiza y se ' +
+        'certifica por separado.',
+    );
+  }
+  if (!hayRevisiones) {
+    parrafos.push(
+      'Esta consulta no cubre los antecedentes de Procuraduría, Contraloría, Policía ni Rama ' +
+        'Judicial, que se consultan por separado y se archivan como evidencia aparte.',
+    );
+  }
+  return parrafos.map((t) => `<p>${t}</p>`).join('\n      ');
 }
 
 function coincidenciasHTML(coincidencias) {
