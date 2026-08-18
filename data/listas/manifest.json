@@ -70,21 +70,6 @@
       "sha256": "96e0e06a4f9cb84f840bc59711507447f7374d1848b3aa663d5c19fd723820dc",
       "actualizado": "2026-08-18T15:07:36.334Z",
       "estado": "ok"
-    },
-    {
-      "id": "bancomundial",
-      "nombre": "Banco Mundial — Firmas e individuos inhabilitados",
-      "fuente": "https://finances.worldbank.org/browse?q=debarred",
-      "autoridad": "Grupo Banco Mundial",
-      "vinculante": false,
-      "archivo": "bancomundial.json",
-      "fechaPublicacion": "",
-      "registros": 0,
-      "bytes": 0,
-      "sha256": "",
-      "estado": "sin_datos",
-      "error": "el catálogo no expone un conjunto de firmas inhabilitadas",
-      "ultimoIntento": "2026-08-18T15:07:36.791Z"
     }
   ]
 }

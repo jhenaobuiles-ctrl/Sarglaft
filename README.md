@@ -25,9 +25,14 @@ app/motor/       Normalización, índice invertido y puntuación
 app/             Interfaz, registro de consultas y exportaciones
 ```
 
-Ninguna dependencia de terceros: ni en el navegador ni en los scripts. Nada de
-CDN, para que el panel funcione también abriéndolo con doble clic y sin
-conexión.
+Ninguna dependencia de terceros: ni en el navegador ni en los scripts, y nada
+de CDN.
+
+**Sobre el uso sin conexión:** el panel se sirve desde una dirección web y un
+service worker guarda una copia, así que después de abrirlo una vez con
+conexión sigue funcionando sin ella. Lo que *no* funciona es abrir el
+`index.html` con doble clic: en el protocolo `file://` el navegador bloquea
+los módulos ES y `fetch`, así que no hay forma de que cargue las listas.
 
 ## Listas cubiertas
 
@@ -38,8 +43,9 @@ conexión.
 | Consolidated Sanctions List (no SDN) | OFAC, EE. UU. | sí |
 | Lista Consolidada de Sanciones Financieras | Comisión Europea | sí |
 | UK Sanctions List | OFSI, Reino Unido | sí |
-| Firmas inhabilitadas | Banco Mundial | sí |
 | Procuraduría, Contraloría, Policía, Rama Judicial | Colombia | **no** |
+| Firmas inhabilitadas | Banco Mundial | **no** |
+| Notificaciones rojas | INTERPOL | **no** |
 
 **La única lista estrictamente vinculante en Colombia es la de la ONU.** Las
 demás se consultan como buena práctica de debida diligencia.
@@ -48,6 +54,14 @@ Los antecedentes colombianos **no se automatizan**: tienen CAPTCHA y sus
 términos de uso prohíben el acceso automatizado. El panel genera el enlace a
 cada consulta y archiva el PDF del resultado con sello de tiempo; el clic lo da
 una persona.
+
+Al **Banco Mundial** le pasa algo parecido por otro motivo: estaba prevista
+como consulta automática, pero el endpoint que usa su propio sitio dejó de
+aceptar peticiones anónimas (responde 401) y su listado no aparece en ningún
+portal abierto —el dominio de datos financieros no expone ni un conjunto de
+datos—. Queda como consulta manual. **INTERPOL** no permite descargar el
+listado; el panel intenta su API pública desde el navegador y, si la política
+de origen cruzado la bloquea, lo dice y ofrece el enlace.
 
 ## Privacidad
 
@@ -62,8 +76,9 @@ importación manual. Es lo que exige la Ley 1581 de 2012.
 ## Operación
 
 ```bash
-node --test                      # pruebas
-node scripts/construir-listas.mjs   # descarga y normaliza (necesita salida a internet)
+node --test                          # pruebas
+node scripts/construir-listas.mjs    # descarga y normaliza (necesita salida a internet)
+python3 -m http.server 8000          # ver el panel en http://localhost:8000
 ```
 
 La actualización real corre sola todos los días a las 06:00 de Bogotá
@@ -88,4 +103,10 @@ Cuando algo falla, el trabajo abre un issue con la lista afectada y el motivo.
   sustento son de la persona responsable.
 - Ante duda, prima la consulta en el sitio oficial de la lista. Lo que hay aquí
   es una copia fechada, no la fuente de verdad.
-- Las listas se actualizan una vez al día.
+- Las listas se actualizan una vez al día. Si se necesita certeza al minuto
+  para una operación crítica, hay que ir a la fuente.
+- El puntaje de nombres compara conjuntos de palabras: reconoce el cambio de
+  orden entre nombres y apellidos, pero por lo mismo no distingue "María de
+  los Ángeles Cruz" de "María de la Cruz Ángeles". En cruce de listas eso se
+  prefiere así —mejor una revisión de más que un hallazgo perdido—, pero
+  conviene saberlo al leer la banda de revisión.

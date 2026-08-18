@@ -128,6 +128,8 @@ function resumenLista(lista) {
     id: lista.id,
     nombre: lista.nombre,
     fuente: lista.fuente,
+    autoridad: lista.autoridad,
+    vinculante: Boolean(lista.vinculante),
     fechaPublicacion: lista.fechaPublicacion,
     sha256: lista.sha256,
     registros: lista.registros ? lista.registros.length : lista.total,

@@ -71,7 +71,6 @@ test('OFAC: distingue entidad y buque', () => {
 
 import * as ue from '../fuentes/ue.mjs';
 import * as uk from '../fuentes/uk.mjs';
-import * as bancomundial from '../fuentes/bancomundial.mjs';
 
 test('UE: lee los datos que viajan en atributos', () => {
   const { fechaPublicacion, registros } = ue.parsear(fixture('ue.xml'));
@@ -146,36 +145,4 @@ test('Reino Unido: localiza el CSV vigente en la API de contenidos', () => {
 
 test('Reino Unido: sin adjunto CSV devuelve null en vez de inventar una URL', () => {
   assert.equal(uk.localizarCSV({ details: { attachments: [{ url: 'x.pdf' }] } }), null);
-});
-
-test('Banco Mundial: descarta el conjunto histórico y toma el vigente', () => {
-  const catalogo = {
-    results: [
-      { resource: { id: 'aaaa-1111', name: 'Contract Awards' } },
-      { resource: { id: 'bbbb-2222', name: 'Debarred Firms and Individuals (histórico)' } },
-      { resource: { id: 'cccc-3333', name: 'Debarred Firms' } },
-    ],
-  };
-  assert.equal(bancomundial.elegirConjunto(catalogo), 'cccc-3333');
-});
-
-test('Banco Mundial: sin conjunto aplicable devuelve null en vez de adivinar', () => {
-  assert.equal(bancomundial.elegirConjunto({ results: [{ resource: { id: 'x', name: 'Loans' } }] }), null);
-});
-
-test('Banco Mundial: lee tanto las claves de Socrata como las de la API anterior', () => {
-  const socrata = [{ supp_id: '9', firm_name: 'Acme Ltda', country: 'Colombia', from_date: '2024-05-07' }];
-  const { registros } = bancomundial.parsear(JSON.stringify(socrata));
-  assert.equal(registros.length, 1);
-  assert.equal(registros[0].n, 'Acme Ltda');
-  assert.equal(registros[0].fl, '2024-05-07');
-});
-
-test('Banco Mundial: encuentra el arreglo bajo cualquier envoltorio', () => {
-  const { registros } = bancomundial.parsear(fixture('bancomundial.json'));
-  // La fila sin nombre se descarta.
-  assert.equal(registros.length, 1);
-  assert.equal(registros[0].n, 'Constructora del Valle S.A.S.');
-  assert.equal(registros[0].fl, '2024-05-07');
-  assert.match(registros[0].ob, /Inhabilitado hasta 2027-05-07/);
 });

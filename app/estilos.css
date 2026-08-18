@@ -227,3 +227,27 @@ progress { width: 100%; height: 8px; }
   .lateral { width: 100%; flex: none; }
   .contenido { padding: 20px 16px 48px; }
 }
+
+/* ---------- certificado imprimible ---------- */
+
+#hoja-certificado { display: none; }
+
+.cert-encabezado { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; border-bottom: 2px solid var(--tinta); padding-bottom: 10px; margin-bottom: 18px; }
+.cert-encabezado h1 { font-size: 1.3rem; margin: 0; }
+#hoja-certificado section { margin-bottom: 18px; break-inside: avoid; }
+#hoja-certificado h2 { font-size: .95rem; text-transform: uppercase; letter-spacing: .06em; color: var(--tinta-suave); border-bottom: 1px solid var(--borde); padding-bottom: 4px; }
+.cert-datos { display: grid; grid-template-columns: max-content 1fr; gap: 4px 18px; margin: 0; }
+.cert-datos dt { font-weight: 600; color: var(--tinta-suave); }
+.cert-datos dd { margin: 0; }
+.cert-nota { font-size: .85rem; color: var(--tinta-suave); }
+.cert-firma { margin-top: 34px; }
+.cert-firma span { display: block; width: 260px; border-top: 1px solid var(--tinta); margin-bottom: 5px; }
+.cert-firma p { margin: 0; font-size: .85rem; }
+
+body.imprimiendo > .disposicion { display: none; }
+body.imprimiendo #hoja-certificado { display: block; padding: 0; }
+
+@media print {
+  body.imprimiendo > .disposicion { display: none !important; }
+  body.imprimiendo #hoja-certificado { display: block !important; }
+}

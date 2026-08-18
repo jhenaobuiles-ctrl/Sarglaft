@@ -22,7 +22,6 @@ import * as onu from './fuentes/onu.mjs';
 import { sdn, noSdn } from './fuentes/ofac.mjs';
 import * as ue from './fuentes/ue.mjs';
 import * as uk from './fuentes/uk.mjs';
-import * as bancomundial from './fuentes/bancomundial.mjs';
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DESTINO = join(RAIZ, 'data', 'listas');
@@ -40,7 +39,6 @@ const FUENTES = [
   { ...noSdn.meta, parsear: noSdn.parsear },
   { ...ue.meta, parsear: ue.parsear },
   { ...uk.meta, parsear: uk.parsear, resolver: uk.resolver },
-  { ...bancomundial.meta, parsear: bancomundial.parsear, resolver: bancomundial.resolver },
 ];
 
 const forzar = process.argv.includes('--forzar');

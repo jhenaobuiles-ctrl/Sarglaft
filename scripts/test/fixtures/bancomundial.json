@@ -1,4 +1,0 @@
-{"response":{"ZPROCSUPP":[
- {"SUPP_ID":123456,"SUPP_NAME":"Constructora del Valle S.A.S.","COUNTRY_NAME":"Colombia","DEBAR_FROM_DATE":"07-MAY-2024","DEBAR_TO_DATE":"07-MAY-2027","DEBAR_REASON":"Fraudulent practice"},
- {"SUPP_ID":123457,"SUPP_NAME":"","COUNTRY_NAME":"Perú","DEBAR_FROM_DATE":"01-JAN-2020"}
-]}}

@@ -7,7 +7,12 @@ const FECHA_HORA = new Intl.DateTimeFormat('es-CO', {
   timeStyle: 'short',
   timeZone: ZONA,
 });
-const FECHA = new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium', timeZone: ZONA });
+// Las fechas de publicación de las listas son días calendario, sin hora ni
+// zona. Se formatean en UTC a propósito: convertirlas a hora de Bogotá las
+// corre un día hacia atrás y el certificado acabaría citando una versión de
+// la lista que no es la que se consultó.
+const FECHA = new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium', timeZone: 'UTC' });
+const FECHA_LOCAL = new Intl.DateTimeFormat('es-CO', { dateStyle: 'medium', timeZone: ZONA });
 
 export function fechaHora(iso) {
   if (!iso) return '—';
@@ -17,12 +22,19 @@ export function fechaHora(iso) {
 
 export function fechaCorta(iso) {
   if (!iso) return '—';
-  // Las fechas de publicación llegan como AAAA-MM-DD sin hora. Interpretarlas
-  // como UTC y mostrarlas en Bogotá las correría un día hacia atrás.
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
-  if (m) return FECHA.format(new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])));
-  const d = new Date(iso);
-  return Number.isNaN(d.getTime()) ? iso : FECHA.format(d);
+  if (m) {
+    return FECHA.format(new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]))));
+  }
+  // Marca de tiempo completa: ahí sí corresponde la hora de Colombia.
+  if (/^\d{4}-\d{2}-\d{2}T/.test(iso)) {
+    const d = new Date(iso);
+    if (!Number.isNaN(d.getTime())) return FECHA_LOCAL.format(d);
+  }
+  // Todo lo demás se muestra literal. `new Date` acepta cosas como
+  // "circa 1980" y devuelve una fecha concreta e incorrecta; un certificado
+  // no puede afirmar más de lo que dice la fuente.
+  return iso;
 }
 
 export const ROTULOS = {
