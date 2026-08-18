@@ -45,10 +45,39 @@ jobs:
           find sitio -type f | wc -l | xargs echo "  archivos:"
           du -sh sitio/data | xargs echo "  listas:"
 
-      # Activa Pages en el repositorio si todavía no lo está.
-      - uses: actions/configure-pages@v5
+      # El GITHUB_TOKEN de Actions puede desplegar en Pages, pero no puede
+      # crear el sitio: eso exige permisos de administrador del repositorio.
+      # Se comprueba primero para que, si falta el interruptor, el fallo diga
+      # qué hacer en vez de un "Resource not accessible by integration".
+      - name: Comprobar que Pages está activado
+        uses: actions/github-script@v7
         with:
-          enablement: true
+          script: |
+            try {
+              const { data } = await github.rest.repos.getPages({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+              });
+              core.info(`Pages activo. Origen: ${data.build_type}. URL: ${data.html_url}`);
+              return;
+            } catch (error) {
+              if (error.status !== 404) throw error;
+            }
+            const pasos = [
+              '## Falta activar GitHub Pages',
+              '',
+              'Una persona con permisos de administrador tiene que hacerlo una sola vez:',
+              '',
+              `1. Abrir ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/settings/pages`,
+              '2. En **Source**, elegir **GitHub Actions**.',
+              '',
+              'Nada más. Al guardar, este mismo flujo publica el panel y deja el enlace aquí.',
+              'No hace falta elegir rama ni carpeta: de eso se encarga este archivo.',
+            ].join('\n');
+            await core.summary.addRaw(pasos).write();
+            core.setFailed('GitHub Pages no está activado en este repositorio. Ver el resumen del trabajo para los dos pasos.');
+
+      - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3
         with:
