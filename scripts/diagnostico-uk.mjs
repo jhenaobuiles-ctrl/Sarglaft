@@ -5,8 +5,21 @@
 // del archivo desde un entorno con salida a internet cuando el parser
 // discrepa de lo que esperábamos.
 
+import { writeFileSync } from 'node:fs';
 import { resolver } from './fuentes/uk.mjs';
 import { leerCSV, detectarSeparador } from '../app/lib/csv.js';
+
+// La salida va a un archivo además de a la consola: los logs de Actions se
+// consultan por la cola y el diagnóstico queda sepultado en medio.
+const lineas = [];
+const console_log = console.log.bind(console);
+console.log = (...args) => {
+  lineas.push(args.map(String).join(' '));
+  console_log(...args);
+};
+process.on('exit', () =>
+  writeFileSync('data/listas/_diagnostico-uk.txt', lineas.join('\n') + '\n'),
+);
 
 const descargar = async (url) => {
   const r = await fetch(url, { headers: { 'User-Agent': 'sarglaft-listas/1.0' } });
