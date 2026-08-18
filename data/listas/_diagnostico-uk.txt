@@ -83,3 +83,9 @@ columnas candidatas a clave: 1:Unique ID | 2:OFSI Group ID | 10:Name type | 11:A
   National Identifier additional information: 51358 vacías de 58123
   Subsidiaries: 52500 vacías de 58123
   Hull identification number (HIN): 58123 vacías de 58123
+
+=== catálogo Socrata del Banco Mundial ===
+resultados: 0
+
+=== todo el dominio finances.worldbank.org (primeros 30) ===
+total en el dominio: 0

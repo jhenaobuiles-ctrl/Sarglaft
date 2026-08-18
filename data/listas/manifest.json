@@ -1,5 +1,5 @@
 {
-  "generado": "2026-08-18T15:03:20.017Z",
+  "generado": "2026-08-18T15:07:36.791Z",
   "listas": [
     {
       "id": "onu",
@@ -11,8 +11,8 @@
       "fechaPublicacion": "2026-08-17",
       "registros": 1011,
       "bytes": 479501,
-      "sha256": "d80219359efb9ab60b3f088381ba393d59e3541a9c692dd3b8a72191f7388a73",
-      "actualizado": "2026-08-18T15:02:54.514Z",
+      "sha256": "4d6f7ca7369775a62294fc487b5fcf7d68295bda63fcd320739ebed742296d2e",
+      "actualizado": "2026-08-18T15:06:58.334Z",
       "estado": "ok"
     },
     {
@@ -25,8 +25,8 @@
       "fechaPublicacion": "2026-08-07",
       "registros": 19199,
       "bytes": 6577754,
-      "sha256": "b106d68e01b96ff0f76d5f5dca62dc780cd2dc9e5ef9e9108cc60ff272a1b6b6",
-      "actualizado": "2026-08-18T15:02:57.116Z",
+      "sha256": "329dbf46e93165500d505c10d571cde30dc2f73da8cf2da0f79cca5c3316b0ad",
+      "actualizado": "2026-08-18T15:07:01.456Z",
       "estado": "ok"
     },
     {
@@ -39,8 +39,8 @@
       "fechaPublicacion": "2026-07-27",
       "registros": 481,
       "bytes": 340562,
-      "sha256": "6b388e3587c8e4774b161cbcc5878cfaac98ea9691af992580df3fc3164aa983",
-      "actualizado": "2026-08-18T15:02:57.406Z",
+      "sha256": "016760c30c21c3ca59e49e688737ece0be647cab60b76f73bc489fc5b23e5ba3",
+      "actualizado": "2026-08-18T15:07:01.840Z",
       "estado": "ok"
     },
     {
@@ -53,8 +53,8 @@
       "fechaPublicacion": "2026-08-05",
       "registros": 6234,
       "bytes": 1958227,
-      "sha256": "0a32c8f019eaf31422da11e0349f160fc204ab4f5ecc79719ec79de8081d3da4",
-      "actualizado": "2026-08-18T15:03:01.768Z",
+      "sha256": "ad16c52ba47d91b34b1532cb53c4e277073a03387d57206133f0dfcd353ea245",
+      "actualizado": "2026-08-18T15:07:06.492Z",
       "estado": "ok"
     },
     {
@@ -64,11 +64,11 @@
       "autoridad": "Office of Financial Sanctions Implementation, HM Treasury",
       "vinculante": false,
       "archivo": "uk.json",
-      "fechaPublicacion": "2026-08-17",
-      "registros": 8578,
-      "bytes": 4983569,
-      "sha256": "a2563934f5bf38b9fa6aaca8e4cf21000ca88ca6a98b1f32044272964b32d141",
-      "actualizado": "2026-08-18T15:03:19.695Z",
+      "fechaPublicacion": "2026-08-18",
+      "registros": 6334,
+      "bytes": 4186816,
+      "sha256": "96e0e06a4f9cb84f840bc59711507447f7374d1848b3aa663d5c19fd723820dc",
+      "actualizado": "2026-08-18T15:07:36.334Z",
       "estado": "ok"
     },
     {
@@ -84,7 +84,7 @@
       "sha256": "",
       "estado": "sin_datos",
       "error": "el catálogo no expone un conjunto de firmas inhabilitadas",
-      "ultimoIntento": "2026-08-18T15:03:20.017Z"
+      "ultimoIntento": "2026-08-18T15:07:36.791Z"
     }
   ]
 }
