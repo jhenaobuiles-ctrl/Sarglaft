@@ -25,24 +25,40 @@ export const meta = {
 };
 
 /**
- * Localiza el CSV vigente dentro de la respuesta de la API de contenidos.
- * Devuelve la URL o null si la publicación no trae adjunto CSV.
+ * Localiza el CSV vigente y su fecha de publicación.
+ *
+ * La fecha sale de aquí y no del CSV a propósito: el archivo que publica el
+ * FCDO no trae encabezado con fecha, y la fecha de publicación es lo que se
+ * cita en el certificado de consulta.
+ *
+ * @param {(url:string)=>Promise<{cuerpo:string}>} descargar
+ * @returns {Promise<{url:string, fechaPublicacion:string}>}
  */
-export function resolverURL(contenidoApi) {
+export async function resolver(descargar) {
+  const { cuerpo } = await descargar(meta.apiContenidos);
+  const datos = JSON.parse(cuerpo);
+  const url = localizarCSV(datos);
+  if (!url) throw new Error('la publicación no expone un adjunto CSV');
+  return { url, fechaPublicacion: fechaISO(fechaDePublicacion(datos)) };
+}
+
+/** Busca el adjunto CSV dentro de la respuesta de la API de contenidos. */
+export function localizarCSV(contenidoApi) {
   const datos =
     typeof contenidoApi === 'string' ? JSON.parse(contenidoApi) : contenidoApi;
   const adjuntos = [];
   const pila = [datos];
+  const vistos = new Set();
   while (pila.length) {
     const actual = pila.shift();
+    if (!actual || typeof actual !== 'object' || vistos.has(actual)) continue;
+    vistos.add(actual);
     if (Array.isArray(actual)) {
       for (const v of actual) pila.push(v);
-    } else if (actual && typeof actual === 'object') {
-      if (typeof actual.url === 'string') adjuntos.push(actual);
-      for (const v of Object.values(actual)) {
-        if (v && typeof v === 'object') pila.push(v);
-      }
+      continue;
     }
+    if (typeof actual.url === 'string') adjuntos.push(actual);
+    for (const v of Object.values(actual)) pila.push(v);
   }
   const csv = adjuntos.filter((a) => /\.csv(\?|$)/i.test(a.url));
   if (!csv.length) return null;
@@ -51,6 +67,15 @@ export function resolverURL(contenidoApi) {
     csv.find((a) => /uk[\s_-]*sanctions[\s_-]*list/i.test(`${a.title || ''} ${a.url}`)) ||
     csv[0];
   return preferido.url;
+}
+
+function fechaDePublicacion(datos) {
+  return (
+    datos.public_updated_at ||
+    datos.updated_at ||
+    datos.first_published_at ||
+    ''
+  );
 }
 
 export function parsear(contenido) {

@@ -39,8 +39,8 @@ const FUENTES = [
   { ...sdn.meta, parsear: sdn.parsear },
   { ...noSdn.meta, parsear: noSdn.parsear },
   { ...ue.meta, parsear: ue.parsear },
-  { ...uk.meta, parsear: uk.parsear, resolverURL: uk.resolverURL, apiContenidos: uk.meta.apiContenidos },
-  { ...bancomundial.meta, parsear: bancomundial.parsear },
+  { ...uk.meta, parsear: uk.parsear, resolver: uk.resolver },
+  { ...bancomundial.meta, parsear: bancomundial.parsear, resolver: bancomundial.resolver },
 ];
 
 const forzar = process.argv.includes('--forzar');
@@ -79,18 +79,25 @@ async function principal() {
 }
 
 async function procesar(fuente, previa) {
+  // Algunas fuentes no tienen URL fija: el Reino Unido cambia el identificador
+  // del adjunto en cada publicación y el Banco Mundial el del conjunto de
+  // datos. Esas resuelven su origen vigente antes de descargar, y de paso
+  // aportan la fecha de publicación cuando el archivo no la trae.
   let url = fuente.fuente;
-  if (fuente.resolverURL) {
-    const api = await descargar(fuente.apiContenidos, 'texto');
-    url = fuente.resolverURL(api.cuerpo);
-    if (!url) throw new Error('la publicación no expone un adjunto CSV');
-    console.log(`    adjunto vigente: ${url}`);
+  let fechaResuelta = '';
+  if (fuente.resolver) {
+    const resuelto = await fuente.resolver((destino) => descargar(destino));
+    url = resuelto.url;
+    fechaResuelta = resuelto.fechaPublicacion || '';
+    console.log(`    origen vigente: ${url}`);
   }
 
   const { cuerpo } = await descargar(url, 'texto');
   console.log(`    descargados ${(cuerpo.length / 1048576).toFixed(2)} MB`);
 
-  const { fechaPublicacion, registros } = fuente.parsear(cuerpo);
+  const parseado = fuente.parsear(cuerpo);
+  const registros = parseado.registros;
+  const fechaPublicacion = parseado.fechaPublicacion || fechaResuelta;
   if (!registros.length) throw new Error('el parser no devolvió ningún registro');
 
   if (previa && previa.registros && !forzar) {
