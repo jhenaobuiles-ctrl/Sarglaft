@@ -1,5 +1,5 @@
 {
-  "generado": "2026-08-18T14:57:48.479Z",
+  "generado": "2026-08-18T15:01:12.053Z",
   "listas": [
     {
       "id": "onu",
@@ -11,8 +11,8 @@
       "fechaPublicacion": "2026-08-17",
       "registros": 1011,
       "bytes": 479501,
-      "sha256": "0e4f8b31cc57c58fd96e8207e0341182cff3b4959a942d20cea67e3291a4328b",
-      "actualizado": "2026-08-18T14:56:58.476Z",
+      "sha256": "a57d37395402cce087fd6b2dcd6ee1840fbaa85a81348dd37fa4672ca5cbf8de",
+      "actualizado": "2026-08-18T15:00:40.428Z",
       "estado": "ok"
     },
     {
@@ -25,8 +25,8 @@
       "fechaPublicacion": "2026-08-07",
       "registros": 19199,
       "bytes": 6577754,
-      "sha256": "49b68d55c4197cc9c4a5ab185fc7417552c5d38f1f56ffddeb8291c3ddcde75e",
-      "actualizado": "2026-08-18T14:57:03.500Z",
+      "sha256": "b9892871110e5d85b188775fb123ac64487a6d0e91562129a9039c12ec6998ca",
+      "actualizado": "2026-08-18T15:00:42.851Z",
       "estado": "ok"
     },
     {
@@ -39,8 +39,8 @@
       "fechaPublicacion": "2026-07-27",
       "registros": 481,
       "bytes": 340562,
-      "sha256": "5f62fb7afc6bbfa8c22d60015430779c43e8e3e5306798fc2660b2d0dc6d7bce",
-      "actualizado": "2026-08-18T14:57:03.747Z",
+      "sha256": "17390f9f5ea4f2b9eb01b73298448f3b179ca329b9396b560960587db4f70934",
+      "actualizado": "2026-08-18T15:00:43.111Z",
       "estado": "ok"
     },
     {
@@ -53,8 +53,8 @@
       "fechaPublicacion": "2026-08-05",
       "registros": 6234,
       "bytes": 1958227,
-      "sha256": "937ed29b441886509575e81d01c7c7b28b4ebe1ca96b63253d569931320f7f6b",
-      "actualizado": "2026-08-18T14:57:07.646Z",
+      "sha256": "c84fd31b44b52d81dab4b5c9999f5a12effbac516579d2c4d6fc09e808f2d427",
+      "actualizado": "2026-08-18T15:00:47.683Z",
       "estado": "ok"
     },
     {
@@ -67,8 +67,8 @@
       "fechaPublicacion": "2026-08-17",
       "registros": 8578,
       "bytes": 4983569,
-      "sha256": "55167640c0ae5a84bb1f63604575f7aad7cf7f3ee15c328f7c97245332986551",
-      "actualizado": "2026-08-18T14:57:33.846Z",
+      "sha256": "3fa1547735cda133f7bb55ef66054472ce02ea077805c5359f9c35175d8acb15",
+      "actualizado": "2026-08-18T15:01:11.698Z",
       "estado": "ok"
     },
     {
@@ -83,8 +83,8 @@
       "bytes": 0,
       "sha256": "",
       "estado": "sin_datos",
-      "error": "no se pudo descargar https://finances.worldbank.org/api/catalog/v1?only=dataset&limit=25&q=debarred%20firms: HTTP 404 Not Found",
-      "ultimoIntento": "2026-08-18T14:57:48.479Z"
+      "error": "el catálogo no expone un conjunto de firmas inhabilitadas",
+      "ultimoIntento": "2026-08-18T15:01:12.053Z"
     }
   ]
 }
