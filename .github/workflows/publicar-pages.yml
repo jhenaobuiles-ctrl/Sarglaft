@@ -1,0 +1,63 @@
+name: Publicar el panel
+
+on:
+  push:
+    branches: [claude/sarglaft-consultas-listas-vfjvmu]
+  # El bot que actualiza las listas empuja con GITHUB_TOKEN, y esos commits no
+  # disparan `push`. Sin este gancho el sitio seguiría sirviendo las listas del
+  # día que se publicó por última vez un cambio de código.
+  workflow_run:
+    workflows: ['Actualizar listas restrictivas']
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Nunca dos despliegues a la vez, pero sin cancelar el que ya va en curso:
+# a medio publicar el sitio quedaría con archivos de dos versiones.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.despliegue.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Se publica solo lo que el sitio necesita. Los scripts de descarga y la
+      # configuración de Actions no son parte del panel.
+      - name: Preparar el sitio
+        run: |
+          mkdir -p sitio
+          cp index.html sw.js sitio/
+          cp -r app data sitio/
+          # Con despliegue por Actions no corre Jekyll, pero el archivo no
+          # cuesta nada y evita sorpresas si algún día se sirve desde la rama.
+          touch sitio/.nojekyll
+          echo "Publicando $(du -sh sitio | cut -f1):"
+          find sitio -type f | wc -l | xargs echo "  archivos:"
+          du -sh sitio/data | xargs echo "  listas:"
+
+      # Activa Pages en el repositorio si todavía no lo está.
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: sitio
+
+      - id: despliegue
+        uses: actions/deploy-pages@v4
+
+      - name: Enlace del panel
+        run: |
+          echo "### Panel publicado" >> "$GITHUB_STEP_SUMMARY"
+          echo "${{ steps.despliegue.outputs.page_url }}" >> "$GITHUB_STEP_SUMMARY"
