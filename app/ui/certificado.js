@@ -151,7 +151,7 @@ function revisionesHTML(revisiones) {
               <td>${esc(r.nombre)}</td>
               <td>${esc(r.entidad)}</td>
               <td>${esc(ROTULOS[r.resultado] || RESULTADOS_MANUALES[r.resultado] || r.resultado)}</td>
-              <td>${r.conEvidencia ? 'Adjunta' : '—'}</td>
+              <td>${r.conEvidencia ? esc(r.archivo || 'Adjunta') : '—'}</td>
             </tr>`,
           )
           .join('')}

@@ -4,12 +4,14 @@
 // es la única copia de seguridad que existe.
 
 import { estado, alCambiarRegistro, registroCambio } from './app.js';
-import { todos, obtener, guardarVarios, ALMACENES } from '../registro/db.js';
+import { todos, obtener, guardarVarios, porIndice, ALMACENES } from '../registro/db.js';
 import { escribirCSV } from '../lib/csv.js';
 import { abrirCertificado } from './certificado.js';
 import { esc, fechaHora, ROTULOS, porcentaje, descargar, marcaArchivo } from './formato.js';
 
 let consultas = [];
+// Cuántos adjuntos tiene cada consulta, para no ir a la base por cada fila.
+let evidenciasPorConsulta = new Map();
 
 export function montarExpediente() {
   const contenedor = document.getElementById('tabla-expediente');
@@ -25,6 +27,11 @@ export function montarExpediente() {
   document.getElementById('importar-json').addEventListener('click', importarJSON);
 
   contenedor.addEventListener('click', async (evento) => {
+    const verEvidencias = evento.target.closest('button[data-evidencias]');
+    if (verEvidencias) {
+      await mostrarEvidencias(verEvidencias);
+      return;
+    }
     const boton = evento.target.closest('button[data-certificado]');
     if (!boton) return;
     const consulta = await obtener(ALMACENES.consultas, boton.dataset.certificado);
@@ -44,7 +51,57 @@ export function montarExpediente() {
 async function recargar() {
   consultas = await todos(ALMACENES.consultas);
   consultas.sort((a, b) => b.fecha.localeCompare(a.fecha));
+
+  evidenciasPorConsulta = new Map();
+  for (const evidencia of await todos(ALMACENES.evidencias)) {
+    const previas = evidenciasPorConsulta.get(evidencia.consultaId) || 0;
+    evidenciasPorConsulta.set(evidencia.consultaId, previas + 1);
+  }
   pintar();
+}
+
+/**
+ * Despliega los archivos adjuntos de una consulta con enlace de descarga.
+ *
+ * Sin esto la evidencia era de solo escritura: se adjuntaba el certificado de
+ * la Procuraduría y no había forma de volver a sacarlo, que es justamente
+ * para lo que se adjunta.
+ */
+async function mostrarEvidencias(boton) {
+  const idConsulta = boton.dataset.evidencias;
+  const contenedor = boton.closest('td');
+  const abierto = contenedor.querySelector('.lista-evidencias');
+  if (abierto) {
+    abierto.remove();
+    boton.textContent = boton.dataset.rotulo;
+    return;
+  }
+
+  const evidencias = await porIndice(ALMACENES.evidencias, 'consultaId', idConsulta);
+  const caja = document.createElement('div');
+  caja.className = 'lista-evidencias';
+  caja.innerHTML = evidencias.length
+    ? evidencias
+        .map(
+          (e) => `<div class="evidencia-fila">
+            <button type="button" class="enlace-evidencia" data-descargar="${esc(e.id)}">${esc(e.nombreArchivo)}</button>
+            <span class="tenue">${(e.bytes / 1024).toFixed(0)} KB · ${esc(fechaHora(e.fecha))}</span>
+          </div>`,
+        )
+        .join('')
+    : '<p class="tenue">Sin archivos adjuntos.</p>';
+
+  caja.addEventListener('click', async (evento) => {
+    const enlace = evento.target.closest('button[data-descargar]');
+    if (!enlace) return;
+    const evidencia = evidencias.find((e) => e.id === enlace.dataset.descargar);
+    if (!evidencia) return;
+    // El archivo se guardó como Blob; se devuelve tal cual quedó.
+    descargar(evidencia.nombreArchivo, evidencia.archivo, evidencia.tipoArchivo);
+  });
+
+  contenedor.appendChild(caja);
+  boton.textContent = 'Ocultar';
 }
 
 function filtradas() {
@@ -98,12 +155,22 @@ function pintar() {
             <td>${origen(c)}</td>
             <td><span class="etiqueta ${c.resultado}">${esc(ROTULOS[c.resultado] || c.resultado)}</span></td>
             <td>${resumenCoincidencias(c)}</td>
-            <td><button type="button" class="accion secundaria no-imprimir" style="font-size:.75rem;padding:4px 10px" data-certificado="${esc(c.id)}">Certificado</button></td>
+            <td class="acciones-fila">
+              <button type="button" class="accion secundaria no-imprimir" data-certificado="${esc(c.id)}">Certificado</button>
+              ${adjuntosHTML(c)}
+            </td>
           </tr>`,
         )
         .join('')}</tbody>
     </table></div>
   `;
+}
+
+function adjuntosHTML(c) {
+  const cuantas = evidenciasPorConsulta.get(c.id) || 0;
+  if (!cuantas) return '';
+  const rotulo = `Evidencias (${cuantas})`;
+  return `<button type="button" class="accion secundaria no-imprimir" data-evidencias="${esc(c.id)}" data-rotulo="${esc(rotulo)}">${esc(rotulo)}</button>`;
 }
 
 function origen(c) {
@@ -184,8 +251,9 @@ async function exportarJSON() {
   if (evidencias.length) {
     alert(
       `La copia incluye ${listaConsultas.length} consultas.\n\n` +
-        `Los ${evidencias.length} archivo(s) de evidencia adjuntos NO se incluyen: son archivos ` +
-        'binarios. Guárdalos aparte desde la carpeta donde los descargaste.',
+        `Los ${evidencias.length} archivo(s) de evidencia adjuntos NO van dentro del JSON: son ` +
+        'archivos binarios.\n\nPara guardarlos, ábrelos desde el botón "Evidencias" de cada ' +
+        'consulta en esta misma tabla y descárgalos a una carpeta junto a la copia.',
     );
   }
 }

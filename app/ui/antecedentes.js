@@ -242,6 +242,9 @@ async function guardarConstancia() {
       url: fuente.url,
       resultado: resultado || 'SIN_REGISTRAR',
       conEvidencia: Boolean(archivo),
+      // El nombre del archivo va en la constancia: un auditor tiene que poder
+      // pedir un documento concreto, no "el adjunto".
+      archivo: archivo ? archivo.name : '',
     });
 
     if (archivo) {

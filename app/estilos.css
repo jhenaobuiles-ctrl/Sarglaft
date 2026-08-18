@@ -251,3 +251,18 @@ body.imprimiendo #hoja-certificado { display: block; padding: 0; }
   body.imprimiendo > .disposicion { display: none !important; }
   body.imprimiendo #hoja-certificado { display: block !important; }
 }
+
+/* Adjuntos del expediente */
+.acciones-fila { display: flex; flex-direction: column; gap: 5px; align-items: flex-start; }
+.acciones-fila .accion { font-size: .75rem; padding: 4px 10px; }
+.lista-evidencias { margin-top: 8px; display: flex; flex-direction: column; gap: 4px; }
+.evidencia-fila { display: flex; flex-direction: column; gap: 1px; }
+.enlace-evidencia {
+  all: unset;
+  cursor: pointer;
+  color: #1d4ed8;
+  text-decoration: underline;
+  font-size: .82rem;
+  word-break: break-all;
+}
+.enlace-evidencia:hover { color: #1e3a8a; }
