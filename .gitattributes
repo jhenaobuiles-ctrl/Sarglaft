@@ -1,0 +1,3 @@
+# Las listas normalizadas son artefactos generados: ni se revisan a mano ni
+# deben contar como código en las estadísticas del repositorio.
+data/listas/*.json linguist-generated=true -diff

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<export xmlns="http://eu.europa.ec/fpi/fsd/export" generationDate="2026-08-16T09:00:00" globalFileId="99">
+  <sanctionEntity designationDetails="Ex primer ministro" euReferenceNumber="EU.27.28" logicalId="13" remark="">
+    <regulation regulationType="amendment" organisationType="council" publicationDate="2011-03-11" programme="TUN" numberTitle="101/2011"/>
+    <regulation regulationType="amendment" organisationType="council" publicationDate="2009-01-05" programme="TUN" numberTitle="99/2009"/>
+    <subjectType classificationCode="P" code="person"/>
+    <nameAlias firstName="Zine" lastName="BEN ALI" wholeName="Zine El Abidine BEN ALI" function="Presidente" logicalId="1"/>
+    <nameAlias firstName="Zine" lastName="BEN ALI" wholeName="Zine Al Abidine BEN ALI" logicalId="2"/>
+    <identification identificationTypeCode="passport" identificationTypeDescription="Passport" number="Z000000" countryIso2Code="TN" latinNumber=""/>
+    <identification identificationTypeCode="id" identificationTypeDescription="Identification number" number="" latinNumber=""/>
+    <birthdate birthdate="1936-09-03" year="1936" city="Hamman-Sousse" countryIso2Code="TN"/>
+    <citizenship countryIso2Code="TN" countryDescription="Túnez"/>
+  </sanctionEntity>
+  <sanctionEntity euReferenceNumber="EU.99.1" logicalId="77" remark="Empresa de fachada">
+    <regulation regulationType="amendment" organisationType="council" publicationDate="2014-07-31" programme="UKR"/>
+    <subjectType classificationCode="E" code="enterprise"/>
+    <nameAlias wholeName="COMERCIALIZADORA ANDINA S.A.S." logicalId="9"/>
+  </sanctionEntity>
+</export>

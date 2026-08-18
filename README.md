@@ -1,0 +1,91 @@
+# SARLAFT — Escuela AC de Conducción SAS
+
+Panel de cumplimiento SARLAFT con motor de consulta en listas restrictivas.
+Sin dependencias, sin servidor y sin costo de operación.
+
+## Qué resuelve
+
+Permite consultar un nombre o un número de documento contra las listas de
+sanciones oficiales, dejar constancia auditable de esa consulta, y correr el
+cruce masivo mensual de todas las contrapartes.
+
+Los servicios comerciales de *screening* cobran por la comodidad de una API,
+no por el dato: las listas vinculantes son información pública y se descargan
+gratis de la fuente original. Aquí se descargan una vez al día con GitHub
+Actions, se normalizan a un índice consultable y el navegador hace el cruce en
+local.
+
+## Cómo está montado
+
+```
+data/listas/     Listas normalizadas + manifest.json (generado, no editar a mano)
+scripts/         Descarga y normalización — corre en GitHub Actions
+  fuentes/       Un parser por lista
+app/motor/       Normalización, índice invertido y puntuación
+app/             Interfaz, registro de consultas y exportaciones
+```
+
+Ninguna dependencia de terceros: ni en el navegador ni en los scripts. Nada de
+CDN, para que el panel funcione también abriéndolo con doble clic y sin
+conexión.
+
+## Listas cubiertas
+
+| Lista | Autoridad | Automática |
+| --- | --- | --- |
+| Lista Consolidada del Consejo de Seguridad | ONU | sí |
+| Specially Designated Nationals (lista Clinton) | OFAC, EE. UU. | sí |
+| Consolidated Sanctions List (no SDN) | OFAC, EE. UU. | sí |
+| Lista Consolidada de Sanciones Financieras | Comisión Europea | sí |
+| UK Sanctions List | OFSI, Reino Unido | sí |
+| Firmas inhabilitadas | Banco Mundial | sí |
+| Procuraduría, Contraloría, Policía, Rama Judicial | Colombia | **no** |
+
+**La única lista estrictamente vinculante en Colombia es la de la ONU.** Las
+demás se consultan como buena práctica de debida diligencia.
+
+Los antecedentes colombianos **no se automatizan**: tienen CAPTCHA y sus
+términos de uso prohíben el acceso automatizado. El panel genera el enlace a
+cada consulta y archiva el PDF del resultado con sello de tiempo; el clic lo da
+una persona.
+
+## Privacidad
+
+Este repositorio es público y **no contiene ni puede contener datos
+personales**. Solo sube código y listas de sanciones, que ya son información
+pública oficial.
+
+Los nombres consultados, los documentos, los resultados y las evidencias viven
+únicamente en el navegador de quien usa el panel (IndexedDB), con exportación e
+importación manual. Es lo que exige la Ley 1581 de 2012.
+
+## Operación
+
+```bash
+node --test                      # pruebas
+node scripts/construir-listas.mjs   # descarga y normaliza (necesita salida a internet)
+```
+
+La actualización real corre sola todos los días a las 06:00 de Bogotá
+(`.github/workflows/actualizar-listas.yml`). También se puede lanzar a mano
+desde la pestaña Actions.
+
+Dos reglas gobiernan esa actualización:
+
+- **Aislamiento por fuente.** Si una lista cambia de formato, las demás se
+  actualizan igual; la afectada conserva su última versión buena y queda
+  marcada como obsoleta en el manifiesto y en el panel.
+- **Nunca publicar una lista encogida.** Si una lista pierde más del 40% de sus
+  registros se asume descarga incompleta y no se publica. Una lista truncada
+  produciría un "sin hallazgos" falso, que es el peor resultado posible aquí.
+
+Cuando algo falla, el trabajo abre un issue con la lista afectada y el motivo.
+
+## Límites
+
+- Esto documenta y sistematiza la debida diligencia; **no sustituye el criterio
+  del oficial de cumplimiento**. Ante una coincidencia, la decisión y su
+  sustento son de la persona responsable.
+- Ante duda, prima la consulta en el sitio oficial de la lista. Lo que hay aquí
+  es una copia fechada, no la fuente de verdad.
+- Las listas se actualizan una vez al día.

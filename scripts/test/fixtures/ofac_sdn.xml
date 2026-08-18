@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sdnList xmlns="http://tempuri.org/sdnList.xsd">
+  <publshInformation>
+    <Publish_Date>08/14/2026</Publish_Date>
+    <Record_Count>3</Record_Count>
+  </publshInformation>
+  <sdnEntry>
+    <uid>7078</uid>
+    <firstName>Jose Alfonso</firstName>
+    <lastName>MORENO GARCIA</lastName>
+    <sdnType>Individual</sdnType>
+    <remarks>DOB 12 Nov 1965; POB Cali, Colombia; Cedula No. 16.257.988 (Colombia).</remarks>
+    <programList><program>SDNT</program><program>SDNTK</program></programList>
+    <akaList>
+      <aka><uid>1</uid><type>a.k.a.</type><category>strong</category><lastName>MORENO</lastName><firstName>Pepe</firstName></aka>
+      <aka><uid>2</uid><type>a.k.a.</type><category>weak</category><lastName>EL FLACO</lastName></aka>
+    </akaList>
+    <nationalityList><nationality><uid>1</uid><country>Colombia</country><mainEntry>true</mainEntry></nationality></nationalityList>
+    <dateOfBirthList><dateOfBirthItem><uid>1</uid><dateOfBirth>12 Nov 1965</dateOfBirth><mainEntry>true</mainEntry></dateOfBirthItem></dateOfBirthList>
+    <idList>
+      <id><uid>1</uid><idType>Cedula No.</idType><idNumber>16257988</idNumber><idCountry>Colombia</idCountry></id>
+      <id><uid>2</uid><idType>Passport</idType><idNumber>AB123456</idNumber><idCountry>Colombia</idCountry></id>
+    </idList>
+  </sdnEntry>
+  <sdnEntry>
+    <uid>9001</uid>
+    <lastName>INVERSIONES LOPEZ Y CIA LTDA</lastName>
+    <sdnType>Entity</sdnType>
+    <remarks>NIT # 900123456-7.</remarks>
+    <programList><program>SDNTK</program></programList>
+    <idList>
+      <id><uid>3</uid><idType>NIT #</idType><idNumber>900123456-7</idNumber><idCountry>Colombia</idCountry></id>
+    </idList>
+  </sdnEntry>
+  <sdnEntry>
+    <uid>9500</uid>
+    <lastName>MOTONAVE ESPERANZA</lastName>
+    <sdnType>Vessel</sdnType>
+    <programList><program>CUBA</program></programList>
+  </sdnEntry>
+</sdnList>

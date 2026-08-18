@@ -1,0 +1,14 @@
+{
+  "name": "sarglaft",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Panel SARLAFT con motor de consulta en listas restrictivas. Sin dependencias.",
+  "scripts": {
+    "listas": "node scripts/construir-listas.mjs",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

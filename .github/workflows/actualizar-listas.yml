@@ -1,0 +1,106 @@
+name: Actualizar listas restrictivas
+
+on:
+  schedule:
+    # 06:00 en Bogotá (UTC-5). GitHub interpreta el cron en UTC.
+    - cron: '0 11 * * *'
+  workflow_dispatch:
+    inputs:
+      forzar:
+        description: 'Publicar aunque una lista encoja bruscamente (usar solo si la reducción está verificada)'
+        type: boolean
+        default: false
+
+concurrency:
+  group: listas
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Descargar y normalizar listas
+        id: listas
+        continue-on-error: true
+        run: node scripts/construir-listas.mjs ${{ inputs.forzar && '--forzar' || '' }}
+
+      # Se publica lo que sí se pudo descargar aunque alguna fuente haya
+      # fallado: las que fallan conservan su última versión buena y quedan
+      # marcadas como obsoletas en el manifiesto.
+      - name: Publicar cambios
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          if git diff --quiet -- data/listas; then
+            echo 'Sin cambios en las listas.'
+            exit 0
+          fi
+          git add data/listas
+          git commit -m "listas: actualización automática $(date -u +%Y-%m-%d)"
+          for intento in 1 2 3 4; do
+            git push && exit 0
+            echo "push falló, reintento $intento"
+            git pull --rebase origin "${GITHUB_REF_NAME}" || true
+            sleep $((2 ** intento))
+          done
+          exit 1
+
+      - name: Avisar si alguna fuente falló
+        if: steps.listas.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const manifiesto = JSON.parse(fs.readFileSync('data/listas/manifest.json', 'utf8'));
+            const rotas = manifiesto.listas.filter((l) => l.estado !== 'ok');
+            const cuerpo = [
+              'La actualización automática de listas no pudo completar todas las fuentes.',
+              '',
+              '| Lista | Estado | Registros vigentes | Detalle |',
+              '| --- | --- | --- | --- |',
+              ...rotas.map((l) => `| ${l.id} | ${l.estado} | ${l.registros} | ${(l.error || '').replace(/\|/g, '/')} |`),
+              '',
+              `Corrida: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              '',
+              'Las listas afectadas conservan su última versión buena y aparecen marcadas',
+              'como obsoletas en el panel. El resto se actualizó con normalidad.',
+            ].join('\n');
+
+            const titulo = 'Fallo en la actualización de listas restrictivas';
+            const abiertas = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'listas',
+            });
+            const existente = abiertas.data.find((i) => i.title === titulo);
+            if (existente) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existente.number,
+                body: cuerpo,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: titulo,
+                body: cuerpo,
+                labels: ['listas'],
+              });
+            }
+
+      - name: Reflejar el fallo en el estado del trabajo
+        if: steps.listas.outcome == 'failure'
+        run: exit 1
