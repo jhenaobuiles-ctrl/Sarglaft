@@ -1,5 +1,5 @@
 {
-  "generado": "2026-08-18T15:19:09.632Z",
+  "generado": "2026-08-18T19:06:07.778Z",
   "listas": [
     {
       "id": "onu",
@@ -11,8 +11,8 @@
       "fechaPublicacion": "2026-08-17",
       "registros": 1011,
       "bytes": 479501,
-      "sha256": "5f955709b6bd32ebb5a9dce7e7c7e1ec8d553492706105cca3ca514bc6bbc717",
-      "actualizado": "2026-08-18T15:18:40.491Z",
+      "sha256": "291c431fa73c28eb78296a63353dd61cc1315704d8573069fdeec6a1ddcb0b95",
+      "actualizado": "2026-08-18T19:05:32.502Z",
       "estado": "ok"
     },
     {
@@ -22,11 +22,11 @@
       "autoridad": "OFAC — Departamento del Tesoro de Estados Unidos",
       "vinculante": false,
       "archivo": "ofac_sdn.json",
-      "fechaPublicacion": "2026-08-07",
-      "registros": 19199,
-      "bytes": 6577754,
-      "sha256": "0b6be58ea32cc5e7b755438b857f35f5ce50915ed63154326053ea0030c8c6db",
-      "actualizado": "2026-08-18T15:18:42.817Z",
+      "fechaPublicacion": "2026-08-18",
+      "registros": 19202,
+      "bytes": 6578348,
+      "sha256": "15bd4a3c68da3bc945c2d1a83ea3142846c0dd56c26f8d780563226cea0a47f3",
+      "actualizado": "2026-08-18T19:05:35.458Z",
       "estado": "ok"
     },
     {
@@ -39,8 +39,8 @@
       "fechaPublicacion": "2026-07-27",
       "registros": 481,
       "bytes": 340562,
-      "sha256": "c6eb438b7eecde8069c44a6055f9ce62bdc5ee585b088036a30f867db4752015",
-      "actualizado": "2026-08-18T15:18:43.049Z",
+      "sha256": "cbf6d08fbb7b4656f00e2cfa1cb0b77cf1c59e1d42eb3faa83d7aa03f74c7896",
+      "actualizado": "2026-08-18T19:05:35.707Z",
       "estado": "ok"
     },
     {
@@ -53,8 +53,8 @@
       "fechaPublicacion": "2026-08-05",
       "registros": 6234,
       "bytes": 1958227,
-      "sha256": "d3182e6fbb00b4170b8e85a0ec85d8a80f99df8c8196cc83f94113bf49f347d2",
-      "actualizado": "2026-08-18T15:18:47.565Z",
+      "sha256": "64bb5239a4ee8728bf0acd27d860661870e9e2ef92e0658c1890fc2cb1e4ae31",
+      "actualizado": "2026-08-18T19:05:39.510Z",
       "estado": "ok"
     },
     {
@@ -67,8 +67,8 @@
       "fechaPublicacion": "2026-08-18",
       "registros": 6334,
       "bytes": 4186816,
-      "sha256": "896e6d587dbedc75f34b0eacd8d52205f3cc1d1254098a2dd8be23594dbc2801",
-      "actualizado": "2026-08-18T15:19:09.632Z",
+      "sha256": "8c2e2a55b247516ff285ea10d148a07a9dd09a6b84cd76c71bf72e26614428ad",
+      "actualizado": "2026-08-18T19:06:07.778Z",
       "estado": "ok"
     }
   ]
