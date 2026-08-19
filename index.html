@@ -22,6 +22,8 @@
       <button type="button" data-seccion="consulta">Consulta puntual</button>
       <button type="button" data-seccion="cruce">Cruce masivo</button>
       <button type="button" data-seccion="antecedentes">Antecedentes Colombia</button>
+      <span class="grupo">Documentación</span>
+      <button type="button" data-seccion="documentos">Documentos del sistema</button>
       <span class="grupo">Registro</span>
       <button type="button" data-seccion="expediente">Expediente de consultas</button>
       <button type="button" data-seccion="listas">Estado de las listas</button>
@@ -38,6 +40,8 @@
         <h1>Panel de Cumplimiento SARLAFT</h1>
         <p>Estado de verificación de contrapartes y obligaciones del Régimen de Medidas Simplificadas.</p>
       </div>
+
+      <div id="avisos-panel"></div>
 
       <div class="indicadores" id="indicadores"></div>
 
@@ -131,6 +135,9 @@
 
       <div id="progreso-cruce"></div>
       <div id="resultado-cruce"></div>
+
+      <div id="revision-periodica"></div>
+      <div id="resultado-revision"></div>
     </section>
 
     <!-- ---------------- Antecedentes Colombia ---------------- -->
@@ -146,6 +153,31 @@
         el certificado que descargues, con constancia de cuándo se hizo.
       </div>
       <div id="antecedentes"></div>
+    </section>
+
+    <!-- ---------------- Documentos ---------------- -->
+    <section class="seccion" id="seccion-documentos" hidden>
+      <div class="encabezado-seccion">
+        <h1>Documentos del sistema</h1>
+        <p>
+          Los formatos que exige el sistema, diligenciados aquí y no en archivos sueltos: quedan
+          con fecha, identificador y copia dentro del respaldo.
+        </p>
+      </div>
+
+      <div id="editor-documento"></div>
+      <div id="catalogo-documentos"></div>
+
+      <div class="tarjeta">
+        <h2>Documentos diligenciados</h2>
+        <div class="campos no-imprimir">
+          <div style="grid-column: 1 / -1">
+            <label for="f-plantilla">Filtrar por formato</label>
+            <select id="f-plantilla"></select>
+          </div>
+        </div>
+        <div id="lista-documentos"></div>
+      </div>
     </section>
 
     <!-- ---------------- Expediente ---------------- -->
@@ -180,8 +212,8 @@
         </div>
         <div class="acciones">
           <button type="button" class="accion secundaria" id="exportar-csv">Exportar a CSV</button>
-          <button type="button" class="accion secundaria" id="exportar-json">Copia de seguridad (JSON)</button>
-          <button type="button" class="accion secundaria" id="importar-json">Restaurar copia</button>
+          <button type="button" class="accion" id="exportar-zip">Copia de seguridad (ZIP)</button>
+          <button type="button" class="accion secundaria" id="importar-copia">Restaurar copia</button>
         </div>
       </div>
       <div class="tarjeta" id="tabla-expediente"></div>
@@ -219,6 +251,14 @@
           <div>
             <label for="a-cargo">Cargo</label>
             <input type="text" id="a-cargo">
+          </div>
+          <div style="grid-column: 1 / -1">
+            <label for="a-marco">Marco normativo aplicable</label>
+            <input type="text" id="a-marco" placeholder="Ej.: Circular de la superintendencia que vigila a la empresa">
+            <p class="tenue" style="margin:.4em 0 0">
+              Se imprime al pie de cada documento. Escribe aquí la norma concreta que obliga a la
+              escuela: el panel no la supone para no citar en un formato una norma que no es.
+            </p>
           </div>
         </div>
         <div class="acciones">

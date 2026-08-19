@@ -3,8 +3,11 @@
 // Todo esto vive únicamente en este navegador. Exportar no es una comodidad:
 // es la única copia de seguridad que existe.
 
-import { estado, alCambiarRegistro, registroCambio } from './app.js';
-import { todos, obtener, guardarVarios, porIndice, ALMACENES } from '../registro/db.js';
+import { estado, alCambiarRegistro, registroCambio, aplicarPerfil } from './app.js';
+import { todos, obtener, porIndice, ALMACENES } from '../registro/db.js';
+import {
+  construirRespaldo, leerRespaldo, restaurar, anotarCopia,
+} from '../registro/respaldo.js';
 import { escribirCSV } from '../lib/csv.js';
 import { abrirCertificado } from './certificado.js';
 import { esc, fechaHora, ROTULOS, porcentaje, descargar, marcaArchivo } from './formato.js';
@@ -23,8 +26,8 @@ export function montarExpediente() {
   }
 
   document.getElementById('exportar-csv').addEventListener('click', exportarCSV);
-  document.getElementById('exportar-json').addEventListener('click', exportarJSON);
-  document.getElementById('importar-json').addEventListener('click', importarJSON);
+  document.getElementById('exportar-zip').addEventListener('click', exportarZIP);
+  document.getElementById('importar-copia').addEventListener('click', importarCopia);
 
   contenedor.addEventListener('click', async (evento) => {
     const verEvidencias = evento.target.closest('button[data-evidencias]');
@@ -224,70 +227,72 @@ function exportarCSV() {
   descargar(`expediente-sarlaft-${marcaArchivo()}.csv`, escribirCSV(filas, ';'), 'text/csv;charset=utf-8');
 }
 
-async function exportarJSON() {
-  const [listaConsultas, cruces, obligaciones] = await Promise.all([
-    todos(ALMACENES.consultas),
-    todos(ALMACENES.cruces),
-    todos(ALMACENES.obligaciones),
-  ]);
-  // Las evidencias son archivos binarios y no caben en JSON; se avisa en vez
-  // de dejar creer que la copia lo incluye todo.
-  const evidencias = await todos(ALMACENES.evidencias);
-  const respaldo = {
-    formato: 'sarglaft-respaldo',
-    version: 1,
-    generado: new Date().toISOString(),
-    perfil: estado.config,
-    consultas: listaConsultas,
-    cruces,
-    obligaciones,
-    evidenciasNoIncluidas: evidencias.length,
-  };
-  descargar(
-    `respaldo-sarlaft-${marcaArchivo()}.json`,
-    JSON.stringify(respaldo, null, 2),
-    'application/json;charset=utf-8',
-  );
-  if (evidencias.length) {
+async function exportarZIP() {
+  const boton = document.getElementById('exportar-zip');
+  const rotulo = boton.textContent;
+  boton.disabled = true;
+
+  try {
+    const copia = await construirRespaldo(estado.config, (hecho, total) => {
+      boton.textContent = `Empaquetando evidencia ${hecho} de ${total}…`;
+    });
+    boton.textContent = 'Descargando…';
+    descargar(copia.nombre, copia.blob, 'application/zip');
+    await anotarCopia(copia.nombre);
+    registroCambio();
     alert(
-      `La copia incluye ${listaConsultas.length} consultas.\n\n` +
-        `Los ${evidencias.length} archivo(s) de evidencia adjuntos NO van dentro del JSON: son ` +
-        'archivos binarios.\n\nPara guardarlos, ábrelos desde el botón "Evidencias" de cada ' +
-        'consulta en esta misma tabla y descárgalos a una carpeta junto a la copia.',
+      `Copia creada: ${copia.nombre}\n\n` +
+        `${copia.consultas} consulta(s), ${copia.documentos} documento(s) y ` +
+        `${copia.evidencias} archivo(s) de evidencia.\n\n` +
+        'Guárdala fuera de este equipo. Contiene datos personales: no la subas a una carpeta ' +
+        'compartida abierta.',
     );
+  } catch (error) {
+    alert(`No se pudo crear la copia: ${error.message}`);
+  } finally {
+    boton.disabled = false;
+    boton.textContent = rotulo;
   }
 }
 
-function importarJSON() {
+function importarCopia() {
   const entrada = document.createElement('input');
   entrada.type = 'file';
-  entrada.accept = '.json,application/json';
+  // Se siguen aceptando los .json que exportaban las versiones anteriores: una
+  // copia vieja tiene que poder restaurarse.
+  entrada.accept = '.zip,.json,application/zip,application/json';
   entrada.addEventListener('change', async () => {
     const archivo = entrada.files[0];
     if (!archivo) return;
     try {
-      const respaldo = JSON.parse(await archivo.text());
-      if (respaldo.formato !== 'sarglaft-respaldo') {
-        throw new Error('El archivo no es una copia de seguridad de este panel.');
-      }
-      const cuantas = (respaldo.consultas || []).length;
+      const copia = await leerRespaldo(archivo);
+      const cuantas = (copia.contenido.consultas || []).length;
+      const conArchivo = copia.evidencias.filter((e) => e.archivo).length;
       if (
         !confirm(
-          `La copia trae ${cuantas} consulta(s).\n\n` +
-            'Se añadirán a las que ya existen; las que tengan el mismo identificador se ' +
-            'sobrescriben. ¿Continuar?',
+          `La copia trae ${cuantas} consulta(s), ` +
+            `${(copia.contenido.documentos || []).length} documento(s) y ` +
+            `${conArchivo} evidencia(s).\n\n` +
+            'Se añadirán a lo que ya existe; lo que tenga el mismo identificador se ' +
+            'sobrescribe. ¿Continuar?',
         )
       ) {
         return;
       }
-      await guardarVarios(ALMACENES.consultas, respaldo.consultas || []);
-      await guardarVarios(ALMACENES.cruces, respaldo.cruces || []);
-      await guardarVarios(ALMACENES.obligaciones, respaldo.obligaciones || []);
+      const conteos = await restaurar(copia, estado.config);
+      if (conteos.perfil) aplicarPerfil(conteos.perfil);
       // Avisar a las demás vistas: sin esto el expediente se actualiza pero
       // los indicadores del resumen se quedan en cero y parece que la
       // restauración no funcionó.
       registroCambio();
-      alert(`Copia restaurada: ${cuantas} consulta(s).`);
+      alert(
+        `Copia restaurada: ${conteos.consultas} consulta(s), ${conteos.documentos} documento(s) ` +
+          `y ${conteos.evidencias} evidencia(s).` +
+          (conteos.evidenciasSinArchivo
+            ? `\n\n${conteos.evidenciasSinArchivo} evidencia(s) venían sin su archivo ` +
+              '(la copia era un .json antiguo, que no los incluía).'
+            : ''),
+      );
     } catch (error) {
       alert(`No se pudo restaurar: ${error.message}`);
     }

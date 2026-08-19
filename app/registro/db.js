@@ -6,13 +6,14 @@
 // comparte entre equipos, y por eso existen exportar e importar.
 
 const NOMBRE_BD = 'sarglaft';
-const VERSION = 1;
+const VERSION = 2;
 
 export const ALMACENES = {
   consultas: 'consultas',
   evidencias: 'evidencias',
   cruces: 'cruces',
   obligaciones: 'obligaciones',
+  documentos: 'documentos',
   config: 'config',
 };
 
@@ -44,6 +45,19 @@ export function abrir() {
 
         bd.createObjectStore(ALMACENES.obligaciones, { keyPath: 'id' });
         bd.createObjectStore(ALMACENES.config, { keyPath: 'clave' });
+      }
+
+      if (anterior < 2) {
+        // Los formatos documentales del sistema: manual, declaraciones PEP,
+        // actas de capacitación. Se añaden en una versión aparte para no
+        // tocar la base de quien ya venía usando el panel.
+        const documentos = bd.createObjectStore(ALMACENES.documentos, { keyPath: 'id' });
+        documentos.createIndex('fecha', 'fecha');
+        documentos.createIndex('plantilla', 'plantilla');
+        // Permite reunir en un mismo expediente todos los papeles de una
+        // contraparte, que es como los pide una visita.
+        documentos.createIndex('documentoNormalizado', 'documentoNormalizado');
+        documentos.createIndex('nombreNormalizado', 'nombreNormalizado');
       }
     };
 

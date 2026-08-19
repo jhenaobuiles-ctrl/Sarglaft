@@ -15,9 +15,21 @@ import {
 } from './formato.js';
 
 export function abrirCertificado(consulta, perfil) {
+  imprimirHoja(certificadoHTML(consulta, perfil));
+}
+
+/**
+ * Saca una hoja por la impresora del navegador.
+ *
+ * La usan el certificado de consulta y los documentos del catálogo: el
+ * mecanismo —ocultar el panel, pintar la hoja, imprimir y recogerla— es el
+ * mismo, y duplicarlo dejaría la pantalla trabada si solo se arreglara uno de
+ * los dos.
+ */
+export function imprimirHoja(html) {
   const contenedor = document.createElement('div');
   contenedor.id = 'hoja-certificado';
-  contenedor.innerHTML = certificadoHTML(consulta, perfil);
+  contenedor.innerHTML = html;
   document.body.appendChild(contenedor);
   document.body.classList.add('imprimiendo');
 

@@ -1,9 +1,15 @@
 // Resumen: indicadores, últimas consultas y estado de las obligaciones.
 
-import { alCambiarRegistro } from './app.js';
-import { todos, ALMACENES } from '../registro/db.js';
+import { alCambiarRegistro, mostrarSeccion } from './app.js';
+import { todos, leerConfig, ALMACENES } from '../registro/db.js';
+import { diasDesde } from '../registro/respaldo.js';
 import { listar, estadoDe, claseEstado, ESTADOS, marcarCumplida } from './obligaciones.js';
 import { esc, fechaHora, ROTULOS } from './formato.js';
+
+// A partir de aquí, la copia de seguridad se considera vieja. Un mes es el
+// período de la obligación mensual: si se exporta al cerrar cada mes, el
+// aviso no aparece nunca.
+const DIAS_SIN_COPIA = 30;
 
 export function montarPanel() {
   refrescar();
@@ -15,16 +21,82 @@ export function montarPanel() {
     await marcarCumplida(boton.dataset.cumplir);
     refrescar();
   });
+
+  document.getElementById('avisos-panel').addEventListener('click', (evento) => {
+    const enlace = evento.target.closest('button[data-ir]');
+    if (enlace) mostrarSeccion(enlace.dataset.ir);
+  });
 }
 
 async function refrescar() {
-  const consultas = await todos(ALMACENES.consultas);
-  pintarIndicadores(consultas);
+  const [consultas, documentos, ultimaCopia] = await Promise.all([
+    todos(ALMACENES.consultas),
+    todos(ALMACENES.documentos),
+    leerConfig('ultimaCopia'),
+  ]);
+  pintarAvisos(consultas, documentos, ultimaCopia);
+  pintarIndicadores(consultas, documentos);
   pintarUltimas(consultas);
   await pintarObligaciones();
 }
 
-function pintarIndicadores(consultas) {
+/**
+ * Lo que hay que hacer hoy, antes de cualquier cifra.
+ *
+ * Son los dos olvidos que dejan el sistema sin valor probatorio: una alerta
+ * que nadie cerró —el auditor pregunta «¿y qué hicieron con esto?»— y una
+ * copia de seguridad vieja, que con el registro viviendo solo en este
+ * navegador significa que un formateo se lleva el expediente entero.
+ */
+function pintarAvisos(consultas, documentos, ultimaCopia) {
+  const sinCerrar = alertasSinCerrar(consultas, documentos);
+  const dias = diasDesde(ultimaCopia);
+  const avisos = [];
+
+  if (sinCerrar.length) {
+    avisos.push(`<div class="aviso atencion">
+      <strong>${sinCerrar.length} alerta(s) sin analizar.</strong>
+      Una coincidencia sin decisión escrita deja el expediente incompleto: registra la
+      observación en la consulta o diligencia el formato de debida diligencia intensificada.
+      <button type="button" class="accion secundaria no-imprimir" style="margin-left:8px" data-ir="expediente">Ver el expediente</button>
+    </div>`);
+  }
+  if (dias === null) {
+    avisos.push(`<div class="aviso atencion">
+      <strong>Nunca se ha exportado una copia de seguridad.</strong>
+      El expediente vive solo en este navegador: si se borran los datos del sitio, se pierde.
+      <button type="button" class="accion secundaria no-imprimir" style="margin-left:8px" data-ir="expediente">Crear la copia</button>
+    </div>`);
+  } else if (dias >= DIAS_SIN_COPIA) {
+    avisos.push(`<div class="aviso atencion">
+      <strong>La última copia de seguridad es de hace ${dias} días.</strong>
+      <button type="button" class="accion secundaria no-imprimir" style="margin-left:8px" data-ir="expediente">Crear una nueva</button>
+    </div>`);
+  }
+  document.getElementById('avisos-panel').innerHTML = avisos.join('');
+}
+
+/**
+ * Una alerta está atendida cuando quedó por escrito qué se decidió: la
+ * observación del responsable en la propia consulta, o un formato de debida
+ * diligencia intensificada que la cite.
+ */
+export function alertasSinCerrar(consultas, documentos) {
+  const analizadas = new Set(
+    documentos
+      .filter((d) => d.plantilla === 'debida-diligencia')
+      .map((d) => (d.valores?.consultaId || '').trim())
+      .filter(Boolean),
+  );
+  return consultas.filter(
+    (c) =>
+      (c.resultado === 'ALERTA' || c.resultado === 'EN_REVISION') &&
+      !String(c.observaciones || '').trim() &&
+      !analizadas.has(c.id),
+  );
+}
+
+function pintarIndicadores(consultas, documentos) {
   const cuenta = (r) => consultas.filter((c) => c.resultado === r).length;
   // "PEP identificados" sale de la marca que deja el responsable en la
   // consulta, no de una lista: en Colombia no existe un listado oficial de
@@ -37,6 +109,7 @@ function pintarIndicadores(consultas) {
     { rotulo: 'En revisión', valor: cuenta('EN_REVISION'), clase: 'revision' },
     { rotulo: 'Con alerta', valor: cuenta('ALERTA'), clase: 'alerta' },
     { rotulo: 'PEP identificados', valor: pep, clase: '' },
+    { rotulo: 'Documentos del sistema', valor: documentos.length, clase: '' },
   ];
 
   document.getElementById('indicadores').innerHTML = tarjetas

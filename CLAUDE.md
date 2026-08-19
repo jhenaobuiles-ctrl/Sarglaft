@@ -11,7 +11,7 @@ commit e interfaz. Mantén esa convención.
 ## Comandos
 
 ```bash
-node --test                                  # todas las pruebas (48)
+node --test                                  # todas las pruebas (84)
 node --test scripts/test/scoring.test.mjs    # un solo archivo
 node --test --test-name-pattern="tildes"     # filtrar por nombre de prueba
 
@@ -102,11 +102,46 @@ vistas se refrescan vía `alCambiarRegistro` / `registroCambio()`.
   cobertura simple: sin la simetría, «Juan Restrepo» daría coincidencia
   perfecta contra «Juan Carlos Restrepo Ospina Mejía».
 - `app/registro/db.js` — IndexedDB con los almacenes `consultas`, `evidencias`,
-  `cruces`, `obligaciones`, `config`.
+  `cruces`, `obligaciones`, `documentos` y `config`. Va por la **versión 2**:
+  cada almacén nuevo se crea en su propio bloque `if (anterior < N)`, nunca
+  dentro del bloque de la versión 1, o la base de quien ya usaba el panel se
+  queda sin él.
+- `app/lib/zip.js` — lector y escritor de ZIP a mano (deflate por
+  `CompressionStream`, sin ZIP64). Existe porque la copia de seguridad tenía
+  que llevar las evidencias, que son binarias y no caben en un JSON.
+- `app/registro/respaldo.js` — arma y restaura esa copia. Al restaurar, el
+  perfil de la empresa solo se aplica si el equipo no tiene uno propio
+  (`equipoSinConfigurar`): sin eso, restaurar en una máquina recién puesta
+  devolvía los documentos pero no quién los firma.
 
 El cruce masivo (`app/ui/cruce.js`) corre en el hilo principal cediendo cada 200
 filas. **No lo muevas a un Web Worker**: el motor resuelve mil consultas en
 ~40 ms y clonar decenas de MB a otro hilo costaría más de lo que ahorra.
+
+`app/ui/revision.js` vuelve a consultar a las contrapartes que ya están en el
+expediente. Guarda **una** entrada de `cruces` con el barrido completo y filas
+de `consultas` solo para las que cambiaron o no salieron limpias: una fila por
+contraparte en cada barrido llenaría el expediente de «sin hallazgos»
+repetidos y enterraría lo único que hay que mirar.
+
+### Los documentos
+
+`app/documentos/plantillas.js` declara los catorce formatos como datos
+—secciones, campos, declaraciones, firmas— y `app/ui/documentos.js` los pinta
+todos con el mismo formulario; `app/documentos/impreso.js` hace lo propio con
+la versión imprimible. Añadir un formato es añadir un objeto, no escribir otra
+pantalla. Tipos de campo: `texto`, `area`, `fecha`, `numero`, `select`,
+`si_no`, `casillas` y `tabla`.
+
+Una plantilla con `obligacion: '<id>'` marca esa obligación cumplida al
+guardarse: el acta de capacitación *es* la prueba de la capacitación. El id
+tiene que existir en `OBLIGACIONES_BASE` y hay una prueba que lo comprueba.
+
+**Ninguna plantilla cita una norma de supervisión concreta.** El panel no sabe
+qué superintendencia vigila a la escuela; ese texto se escribe en Ajustes
+(`perfil.marcoNormativo`) y se imprime al pie. Hay una prueba que falla si
+alguien mete una circular en las plantillas: una cita inventada en un formato
+que va a firmar un tercero es peor que un campo vacío.
 
 ## Reglas que no se pueden romper
 
@@ -123,6 +158,10 @@ posible aquí. Para una reducción legítima y verificada, `--forzar`.
 **Aislamiento por fuente.** Si una lista falla, las demás se actualizan igual;
 la afectada conserva su última versión buena marcada como `obsoleto`. No
 conviertas un fallo puntual en un fallo total.
+
+**No inventar la norma que obliga.** Ley 1581 de 2012, Decreto 830 de 2021 y
+el reporte a la UIAF aplican con certeza y se citan. La circular de la
+superintendencia que vigila a esta escuela, no: la escribe quien la conoce.
 
 **El certificado no puede afirmar lo que no hizo.** `app/ui/certificado.js`
 adapta título, explicación del veredicto y alcance a lo realmente verificado, y
@@ -151,7 +190,9 @@ Para el panel hay pruebas de extremo a extremo con Playwright sobre el Chromium
 preinstalado (`/opt/pw-browsers/chromium-*/chrome-linux/chrome`) contra los
 datos reales ya publicados. Es lo que ha destapado los fallos que las pruebas
 unitarias no ven: fechas corridas un día, contadores muertos, evidencia que no
-se podía recuperar.
+se podía recuperar, y una restauración que devolvía los documentos pero no el
+perfil de quien los firma. Cualquier cambio en el flujo de respaldo,
+restauración o impresión se prueba así antes de darlo por bueno.
 
 ## Despliegue
 

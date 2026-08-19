@@ -7,7 +7,10 @@ Sin dependencias, sin servidor y sin costo de operación.
 
 Permite consultar un nombre o un número de documento contra las listas de
 sanciones oficiales, dejar constancia auditable de esa consulta, y correr el
-cruce masivo mensual de todas las contrapartes.
+cruce masivo mensual de todas las contrapartes. También diligencia e imprime
+los formatos documentales del sistema —manual, matriz de riesgo, declaración
+PEP, origen de fondos, actas— y guarda todo, evidencias incluidas, en una
+copia de seguridad en ZIP.
 
 Los servicios comerciales de *screening* cobran por la comodidad de una API,
 no por el dato: las listas vinculantes son información pública y se descargan
@@ -22,6 +25,7 @@ data/listas/     Listas normalizadas + manifest.json (generado, no editar a mano
 scripts/         Descarga y normalización — corre en GitHub Actions
   fuentes/       Un parser por lista
 app/motor/       Normalización, índice invertido y puntuación
+app/documentos/  Catálogo de formatos y su versión imprimible
 app/             Interfaz, registro de consultas y exportaciones
 ```
 
@@ -63,6 +67,40 @@ datos—. Queda como consulta manual. **INTERPOL** no permite descargar el
 listado; el panel intenta su API pública desde el navegador y, si la política
 de origen cruzado la bloquea, lo dice y ofrece el enlace.
 
+## Las cuatro cosas que hace el panel
+
+**Consultar.** Un nombre o un documento contra las listas cargadas. El
+resultado se guarda con la versión exacta —fecha de publicación y `sha256`— de
+cada archivo usado, y de ahí sale un certificado imprimible. Eso es lo que
+pide un auditor: no que se consultara, sino contra qué se consultó.
+
+**Revisar de nuevo.** Una consulta prueba que esa persona estaba limpia ese
+día, y nada más; las designaciones se publican a diario. La *revisión
+periódica* vuelve a pasar por las listas de hoy a todas las contrapartes que ya
+están en el expediente —sin cargar ningún archivo— y señala cuáles empeoraron
+desde la última vez. Con eso queda cubierta la obligación mensual de cruce.
+
+**Documentar.** Catorce formatos que se diligencian, se guardan con fecha e
+identificador y se imprimen: conocimiento de contraparte (natural y jurídica),
+declaración PEP, origen de fondos, autorización de tratamiento de datos,
+debida diligencia intensificada, análisis de operación inusual, constancias de
+ROS y de ausencia de reportes, designación del oficial de cumplimiento, acta de
+capacitación, informe del oficial, matriz de riesgo y manual del sistema. El
+manual y la matriz vienen con contenido ajustado a una escuela de conducción,
+para editar en vez de empezar en blanco. Los formatos que corresponden a una
+obligación periódica la marcan cumplida al guardarse.
+
+**Respaldar.** La copia de seguridad va en ZIP e incluye las evidencias
+binarias —los PDF de la Procuraduría, las capturas—, más el expediente en CSV
+legible sin el panel y un LEEME con las instrucciones de restauración. El
+resumen avisa cuando la última copia pasa de un mes, y también cuando queda
+una alerta sin analizar.
+
+Sobre el **marco normativo**: el panel no supone qué superintendencia vigila a
+la empresa ni cita ninguna circular por su cuenta. Ese dato se escribe en
+Ajustes y se imprime al pie de cada documento. Poner una cita inventada en un
+formato que va a firmar un tercero es peor que dejar el campo vacío.
+
 ## Privacidad
 
 Este repositorio es público y **no contiene ni puede contener datos
@@ -72,6 +110,11 @@ pública oficial.
 Los nombres consultados, los documentos, los resultados y las evidencias viven
 únicamente en el navegador de quien usa el panel (IndexedDB), con exportación e
 importación manual. Es lo que exige la Ley 1581 de 2012.
+
+El precio de esa decisión es que **no hay nada que respalde el expediente
+salvo la copia que se exporte**. El ZIP contiene datos personales: se guarda
+donde solo pueda abrirlo quien deba, nunca en un repositorio ni en una carpeta
+compartida abierta.
 
 ## Operación
 

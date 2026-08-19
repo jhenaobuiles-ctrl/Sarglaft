@@ -8,7 +8,9 @@ import { esc } from './formato.js';
 import { montarPanel } from './panel.js';
 import { montarConsulta } from './consulta.js';
 import { montarCruce } from './cruce.js';
+import { montarRevision } from './revision.js';
 import { montarAntecedentes } from './antecedentes.js';
+import { montarDocumentos } from './documentos.js';
 import { montarExpediente } from './expediente.js';
 import { montarListas } from './listas.js';
 
@@ -37,6 +39,9 @@ const CONFIG_POR_OMISION = {
   nit: '',
   responsable: '',
   cargo: 'Oficial de cumplimiento',
+  // La norma concreta que vigila a la empresa la escribe quien la conoce: se
+  // imprime al pie de cada documento y suponerla sería citar una norma falsa.
+  marcoNormativo: '',
 };
 
 async function arrancar() {
@@ -75,7 +80,9 @@ async function arrancar() {
   montarPanel();
   montarConsulta();
   montarCruce();
+  montarRevision();
   montarAntecedentes();
+  montarDocumentos();
   montarExpediente();
   montarListas();
   montarAjustes();
@@ -146,8 +153,24 @@ export function mostrarSeccion(nombre) {
 /* ---------- ajustes ---------- */
 
 async function cargarConfig() {
-  estado.config = { ...CONFIG_POR_OMISION, ...((await leerConfig('perfil')) || {}) };
-  document.getElementById('marca-empresa').textContent = estado.config.empresa;
+  aplicarPerfil((await leerConfig('perfil')) || {});
+}
+
+/**
+ * Deja el perfil en memoria y en pantalla. Lo usa el arranque y también la
+ * restauración de una copia, que trae el perfil de quien la exportó.
+ */
+export function aplicarPerfil(perfil) {
+  estado.config = { ...CONFIG_POR_OMISION, ...perfil };
+  document.getElementById('marca-empresa').textContent =
+    estado.config.empresa || CONFIG_POR_OMISION.empresa;
+  for (const [clave, id] of Object.entries({
+    empresa: 'a-empresa', nit: 'a-nit', responsable: 'a-responsable',
+    cargo: 'a-cargo', marcoNormativo: 'a-marco',
+  })) {
+    const campo = document.getElementById(id);
+    if (campo) campo.value = estado.config[clave] || '';
+  }
 }
 
 function montarAjustes() {
@@ -157,6 +180,7 @@ function montarAjustes() {
     nit: document.getElementById('a-nit'),
     responsable: document.getElementById('a-responsable'),
     cargo: document.getElementById('a-cargo'),
+    marcoNormativo: document.getElementById('a-marco'),
   };
   for (const [clave, campo] of Object.entries(campos)) campo.value = estado.config[clave] || '';
 
