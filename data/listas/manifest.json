@@ -1,5 +1,5 @@
 {
-  "generado": "2026-08-18T19:06:07.778Z",
+  "generado": "2026-08-19T08:44:40.671Z",
   "listas": [
     {
       "id": "onu",
@@ -8,11 +8,11 @@
       "autoridad": "Organización de las Naciones Unidas",
       "vinculante": true,
       "archivo": "onu.json",
-      "fechaPublicacion": "2026-08-17",
+      "fechaPublicacion": "2026-08-18",
       "registros": 1011,
-      "bytes": 479501,
-      "sha256": "291c431fa73c28eb78296a63353dd61cc1315704d8573069fdeec6a1ddcb0b95",
-      "actualizado": "2026-08-18T19:05:32.502Z",
+      "bytes": 480384,
+      "sha256": "d9d92496116c197f185f2cc16db2cde0e91e7de4e328795fa9ca2f74dc39b583",
+      "actualizado": "2026-08-19T08:44:01.543Z",
       "estado": "ok"
     },
     {
@@ -25,8 +25,8 @@
       "fechaPublicacion": "2026-08-18",
       "registros": 19202,
       "bytes": 6578348,
-      "sha256": "15bd4a3c68da3bc945c2d1a83ea3142846c0dd56c26f8d780563226cea0a47f3",
-      "actualizado": "2026-08-18T19:05:35.458Z",
+      "sha256": "71c15a541e6f0bffbbc5b8557d1f1865d86dce352e0bd3a951223ab6a5244e0a",
+      "actualizado": "2026-08-19T08:44:04.512Z",
       "estado": "ok"
     },
     {
@@ -39,8 +39,8 @@
       "fechaPublicacion": "2026-07-27",
       "registros": 481,
       "bytes": 340562,
-      "sha256": "cbf6d08fbb7b4656f00e2cfa1cb0b77cf1c59e1d42eb3faa83d7aa03f74c7896",
-      "actualizado": "2026-08-18T19:05:35.707Z",
+      "sha256": "d8abe6dd81d0711f503a96d2d8f3933b11f76236eb24e5d81ecb80a42e5bb009",
+      "actualizado": "2026-08-19T08:44:04.775Z",
       "estado": "ok"
     },
     {
@@ -53,8 +53,8 @@
       "fechaPublicacion": "2026-08-05",
       "registros": 6234,
       "bytes": 1958227,
-      "sha256": "64bb5239a4ee8728bf0acd27d860661870e9e2ef92e0658c1890fc2cb1e4ae31",
-      "actualizado": "2026-08-18T19:05:39.510Z",
+      "sha256": "715e4ec1e1a90a0cf8dc875c039e05da7c39da98dc5978441ea54397a1f5b1f6",
+      "actualizado": "2026-08-19T08:44:09.393Z",
       "estado": "ok"
     },
     {
@@ -67,8 +67,8 @@
       "fechaPublicacion": "2026-08-18",
       "registros": 6334,
       "bytes": 4186816,
-      "sha256": "8c2e2a55b247516ff285ea10d148a07a9dd09a6b84cd76c71bf72e26614428ad",
-      "actualizado": "2026-08-18T19:06:07.778Z",
+      "sha256": "a4df14f55bbbc48acfc0e68bff2160888b12f37ee80526f7df7dcc29ac48707c",
+      "actualizado": "2026-08-19T08:44:40.671Z",
       "estado": "ok"
     }
   ]
