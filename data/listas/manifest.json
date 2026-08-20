@@ -1,5 +1,5 @@
 {
-  "generado": "2026-08-19T11:27:31.590Z",
+  "generado": "2026-08-20T11:29:09.961Z",
   "listas": [
     {
       "id": "onu",
@@ -8,11 +8,11 @@
       "autoridad": "Organización de las Naciones Unidas",
       "vinculante": true,
       "archivo": "onu.json",
-      "fechaPublicacion": "2026-08-18",
+      "fechaPublicacion": "2026-08-19",
       "registros": 1011,
       "bytes": 480384,
-      "sha256": "03075dd871a126468eacd6321971039a8ef7fd5b5a95ff534f136594db40739d",
-      "actualizado": "2026-08-19T11:26:52.911Z",
+      "sha256": "2eb540636dfcd2b82b1c977112c0ad3568fa9133fb4220a2cd6a3abc2a39acef",
+      "actualizado": "2026-08-20T11:28:33.104Z",
       "estado": "ok"
     },
     {
@@ -25,8 +25,8 @@
       "fechaPublicacion": "2026-08-18",
       "registros": 19202,
       "bytes": 6578348,
-      "sha256": "7d523767b94a4dc17213a30d97ca8964720eb1b2543c68127446fa32efcb5ecf",
-      "actualizado": "2026-08-19T11:26:56.317Z",
+      "sha256": "6e57589de855bfe31c1881b850b04b4b77e5786dbe7ce6140be5a402d05629e7",
+      "actualizado": "2026-08-20T11:28:36.281Z",
       "estado": "ok"
     },
     {
@@ -39,8 +39,8 @@
       "fechaPublicacion": "2026-07-27",
       "registros": 481,
       "bytes": 340562,
-      "sha256": "e254e242dd19fc7403523563889d571c956cef68479455b7bb2ee3b0ea7a12b7",
-      "actualizado": "2026-08-19T11:26:56.567Z",
+      "sha256": "b16f7b7ca298fb332015f3a938957b4f8fce3756465531609d2d9b54be38343a",
+      "actualizado": "2026-08-20T11:28:36.519Z",
       "estado": "ok"
     },
     {
@@ -53,8 +53,8 @@
       "fechaPublicacion": "2026-08-05",
       "registros": 6234,
       "bytes": 1958227,
-      "sha256": "1c97bb5a0526b5a56fdeb81ace7f668eaa008688789be46a63ab31d75fc5279a",
-      "actualizado": "2026-08-19T11:27:00.163Z",
+      "sha256": "b2f785c59fcc0fef9285bc7c05a9b76ef3698b784927bd7140df1c168dd3fe84",
+      "actualizado": "2026-08-20T11:28:40.366Z",
       "estado": "ok"
     },
     {
@@ -64,11 +64,11 @@
       "autoridad": "Office of Financial Sanctions Implementation, HM Treasury",
       "vinculante": false,
       "archivo": "uk.json",
-      "fechaPublicacion": "2026-08-18",
+      "fechaPublicacion": "2026-08-20",
       "registros": 6334,
-      "bytes": 4186816,
-      "sha256": "98ed5c363d6968453d0fe3759d70c7f8636899e1c33e97b801bc91280683c86d",
-      "actualizado": "2026-08-19T11:27:31.590Z",
+      "bytes": 4187032,
+      "sha256": "d2be1605c1ddbdf8fe37cd9f757c4e241f7dc8dbc0e032d9bd1e2767f173cf9d",
+      "actualizado": "2026-08-20T11:29:09.961Z",
       "estado": "ok"
     }
   ]
