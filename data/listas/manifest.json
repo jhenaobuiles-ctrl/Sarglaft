@@ -1,5 +1,5 @@
 {
-  "generado": "2026-08-20T11:29:09.961Z",
+  "generado": "2026-08-21T11:28:51.984Z",
   "listas": [
     {
       "id": "onu",
@@ -8,11 +8,11 @@
       "autoridad": "Organización de las Naciones Unidas",
       "vinculante": true,
       "archivo": "onu.json",
-      "fechaPublicacion": "2026-08-19",
+      "fechaPublicacion": "2026-08-20",
       "registros": 1011,
       "bytes": 480384,
-      "sha256": "2eb540636dfcd2b82b1c977112c0ad3568fa9133fb4220a2cd6a3abc2a39acef",
-      "actualizado": "2026-08-20T11:28:33.104Z",
+      "sha256": "f5881fce2fb8c60a716e258ddab503d9db13eaa56ccdcf9579c62ba75b1e1ee3",
+      "actualizado": "2026-08-21T11:28:16.161Z",
       "estado": "ok"
     },
     {
@@ -22,11 +22,11 @@
       "autoridad": "OFAC — Departamento del Tesoro de Estados Unidos",
       "vinculante": false,
       "archivo": "ofac_sdn.json",
-      "fechaPublicacion": "2026-08-18",
-      "registros": 19202,
-      "bytes": 6578348,
-      "sha256": "6e57589de855bfe31c1881b850b04b4b77e5786dbe7ce6140be5a402d05629e7",
-      "actualizado": "2026-08-20T11:28:36.281Z",
+      "fechaPublicacion": "2026-08-20",
+      "registros": 19249,
+      "bytes": 6593456,
+      "sha256": "bef32bbe83a7214b734c73773d702b746297d920ab21578c894657e707997632",
+      "actualizado": "2026-08-21T11:28:19.852Z",
       "estado": "ok"
     },
     {
@@ -39,8 +39,8 @@
       "fechaPublicacion": "2026-07-27",
       "registros": 481,
       "bytes": 340562,
-      "sha256": "b16f7b7ca298fb332015f3a938957b4f8fce3756465531609d2d9b54be38343a",
-      "actualizado": "2026-08-20T11:28:36.519Z",
+      "sha256": "d4cd91bf252058e6255316e7f51c40233b08297cbef28a1f728f277f6eb87af0",
+      "actualizado": "2026-08-21T11:28:20.128Z",
       "estado": "ok"
     },
     {
@@ -53,8 +53,8 @@
       "fechaPublicacion": "2026-08-05",
       "registros": 6234,
       "bytes": 1958227,
-      "sha256": "b2f785c59fcc0fef9285bc7c05a9b76ef3698b784927bd7140df1c168dd3fe84",
-      "actualizado": "2026-08-20T11:28:40.366Z",
+      "sha256": "623c9f305ac8d1b585d891892b83a749dc053284770411ec2c472e6cc2d73a85",
+      "actualizado": "2026-08-21T11:28:24.484Z",
       "estado": "ok"
     },
     {
@@ -67,8 +67,8 @@
       "fechaPublicacion": "2026-08-20",
       "registros": 6334,
       "bytes": 4187032,
-      "sha256": "d2be1605c1ddbdf8fe37cd9f757c4e241f7dc8dbc0e032d9bd1e2767f173cf9d",
-      "actualizado": "2026-08-20T11:29:09.961Z",
+      "sha256": "085cd185510d1c1385f83862a6b0265bacdc29e71f4d368a6d0279f5dbe30f14",
+      "actualizado": "2026-08-21T11:28:51.984Z",
       "estado": "ok"
     }
   ]
