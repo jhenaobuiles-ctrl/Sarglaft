@@ -1,5 +1,5 @@
 {
-  "generado": "2026-08-26T11:32:37.787Z",
+  "generado": "2026-08-27T20:56:09.523Z",
   "listas": [
     {
       "id": "onu",
@@ -8,11 +8,11 @@
       "autoridad": "Organización de las Naciones Unidas",
       "vinculante": true,
       "archivo": "onu.json",
-      "fechaPublicacion": "2026-08-25",
+      "fechaPublicacion": "2026-08-27",
       "registros": 1011,
-      "bytes": 480384,
-      "sha256": "d995d9de46806a9da883c2b65f6ec9d7adf5aaa1d94da93df5b5c0edc2b2fa70",
-      "actualizado": "2026-08-26T11:32:01.693Z",
+      "bytes": 480418,
+      "sha256": "ba3977b0dd5fa80ad2bddfe983d4d8204f959ab847b3b9558bd52b11f3ae1c4f",
+      "actualizado": "2026-08-27T20:55:29.832Z",
       "estado": "ok"
     },
     {
@@ -22,11 +22,11 @@
       "autoridad": "OFAC — Departamento del Tesoro de Estados Unidos",
       "vinculante": false,
       "archivo": "ofac_sdn.json",
-      "fechaPublicacion": "2026-08-24",
-      "registros": 19314,
-      "bytes": 6618031,
-      "sha256": "4c0a008ea304c245031b3daa69499c3d4300a96434f49b32c744c26faa755a23",
-      "actualizado": "2026-08-26T11:32:04.939Z",
+      "fechaPublicacion": "2026-08-26",
+      "registros": 19319,
+      "bytes": 6619806,
+      "sha256": "e5ce0c40c5ae7021d98b6d5a35a626b0b6a8b219ee8a020359eda41681f5e54f",
+      "actualizado": "2026-08-27T20:55:32.809Z",
       "estado": "ok"
     },
     {
@@ -39,8 +39,8 @@
       "fechaPublicacion": "2026-07-27",
       "registros": 481,
       "bytes": 340562,
-      "sha256": "89a26f350f8571d2bfa77aa9481e21bc40cecdb7ca6314c29b97322ac97937ec",
-      "actualizado": "2026-08-26T11:32:05.168Z",
+      "sha256": "3b17c7e504f158084ecb8a88b32e6244aaff7babb293ecefd063eff80264ba95",
+      "actualizado": "2026-08-27T20:55:33.074Z",
       "estado": "ok"
     },
     {
@@ -53,8 +53,8 @@
       "fechaPublicacion": "2026-08-05",
       "registros": 6234,
       "bytes": 1958227,
-      "sha256": "d0e093a07680bf1dd1411c6696e94659b1ecd7e5d283e0caccc362611ab35dfd",
-      "actualizado": "2026-08-26T11:32:09.219Z",
+      "sha256": "f26901b27728676025f9a35961595da4a5741e7f932fb78ec7fb3d3e0f74475a",
+      "actualizado": "2026-08-27T20:55:36.947Z",
       "estado": "ok"
     },
     {
@@ -64,11 +64,11 @@
       "autoridad": "Office of Financial Sanctions Implementation, HM Treasury",
       "vinculante": false,
       "archivo": "uk.json",
-      "fechaPublicacion": "2026-08-20",
+      "fechaPublicacion": "2026-08-27",
       "registros": 6334,
-      "bytes": 4187032,
-      "sha256": "bb68fbdb470aa984e726db6fbc6fdbb2f8b7eed7cfe5abd11fdd09bafa0b07ee",
-      "actualizado": "2026-08-26T11:32:37.787Z",
+      "bytes": 4187026,
+      "sha256": "31249dcc810036e7889ab059ffd970d46e941c543fbe1e643a94fd8aa4492af6",
+      "actualizado": "2026-08-27T20:56:09.523Z",
       "estado": "ok"
     }
   ]
