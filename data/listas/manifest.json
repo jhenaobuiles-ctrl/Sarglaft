@@ -1,5 +1,5 @@
 {
-  "generado": "2026-09-02T22:19:44.082Z",
+  "generado": "2026-09-02T22:29:48.987Z",
   "listas": [
     {
       "id": "onu",
@@ -7,12 +7,13 @@
       "fuente": "https://scsanctions.un.org/resources/xml/en/consolidated.xml",
       "autoridad": "Organización de las Naciones Unidas",
       "vinculante": true,
+      "toleranciaDias": 30,
       "archivo": "onu.json",
       "fechaPublicacion": "2026-09-01",
       "registros": 1011,
       "bytes": 480418,
-      "sha256": "d167381b6f5262af90e14414ce957673c22f59db5518686ef1d619e7685306f4",
-      "actualizado": "2026-09-02T22:19:08.204Z",
+      "sha256": "fa4046ae5cda11ad621f1d0599e76edd877108b19825c9a28c04a10f7bd54230",
+      "actualizado": "2026-09-02T22:29:08.706Z",
       "estado": "ok"
     },
     {
@@ -21,12 +22,13 @@
       "fuente": "https://sanctionslistservice.ofac.treas.gov/api/PublicationPreview/exports/SDN.XML",
       "autoridad": "OFAC — Departamento del Tesoro de Estados Unidos",
       "vinculante": false,
+      "toleranciaDias": 30,
       "archivo": "ofac_sdn.json",
       "fechaPublicacion": "2026-08-28",
       "registros": 19321,
       "bytes": 6620415,
-      "sha256": "4f533337611c366fe9180f39f6b6926554a62750bd4ea099e72bca3fcc086510",
-      "actualizado": "2026-09-02T22:19:11.307Z",
+      "sha256": "bb04ae0a42e18711ad2625d700c285a7ca20b602a784c8209c809c3afefba997",
+      "actualizado": "2026-09-02T22:29:10.620Z",
       "estado": "ok"
     },
     {
@@ -35,12 +37,13 @@
       "fuente": "https://sanctionslistservice.ofac.treas.gov/api/PublicationPreview/exports/CONSOLIDATED.XML",
       "autoridad": "OFAC — Departamento del Tesoro de Estados Unidos",
       "vinculante": false,
+      "toleranciaDias": 120,
       "archivo": "ofac_nosdn.json",
       "fechaPublicacion": "2026-07-27",
       "registros": 481,
       "bytes": 340562,
-      "sha256": "9a9af06a69b9ba3c5e70053c45bbaf44c77cf9a54a4323d4ca27686354d579e8",
-      "actualizado": "2026-09-02T22:19:11.548Z",
+      "sha256": "45d34cafffaa9e90b007b9791db61e65d13e686cc2389f278139398b414b0c37",
+      "actualizado": "2026-09-02T22:29:10.891Z",
       "estado": "ok"
     },
     {
@@ -49,12 +52,13 @@
       "fuente": "https://webgate.ec.europa.eu/fsd/fsf/public/files/xmlFullSanctionsList_1_1/content?token=dG9rZW4tMjAxNw",
       "autoridad": "Comisión Europea",
       "vinculante": false,
+      "toleranciaDias": 60,
       "archivo": "ue.json",
       "fechaPublicacion": "2026-08-05",
       "registros": 6234,
       "bytes": 1958227,
-      "sha256": "7379724e45110e9cb705f7ee6640f50253f54dc79982218e1e47d908618b690d",
-      "actualizado": "2026-09-02T22:19:15.559Z",
+      "sha256": "6eb7e8dba6d9fdb343327aefc0ef94a4dc3220b963c39240f88eafd0a1cffe7d",
+      "actualizado": "2026-09-02T22:29:16.273Z",
       "estado": "ok"
     },
     {
@@ -63,12 +67,13 @@
       "fuente": "https://sanctionslist.fcdo.gov.uk/docs/UK-Sanctions-List.csv",
       "autoridad": "Office of Financial Sanctions Implementation, HM Treasury",
       "vinculante": false,
+      "toleranciaDias": 45,
       "archivo": "uk.json",
       "fechaPublicacion": "2026-09-02",
       "registros": 6334,
       "bytes": 4187085,
-      "sha256": "584a2e4ff7f6dde22d4a1c7dcd8b2078cd7028911a78986c2f5859ccdc869dca",
-      "actualizado": "2026-09-02T22:19:44.082Z",
+      "sha256": "e7d8fb3e5bb41c521753ee089604a6793c9fc3fc4e65b498623ae843c07678cf",
+      "actualizado": "2026-09-02T22:29:48.986Z",
       "estado": "ok"
     }
   ]
