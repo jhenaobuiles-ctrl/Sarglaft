@@ -279,7 +279,11 @@ async function guardarConstancia() {
     id: idConsulta,
     fecha: new Date().toISOString(),
     tipo: 'antecedentes',
-    consulta: { nombre, documento, tipoDocumento: tipo === 'empresa' ? 'NIT' : '' },
+    consulta: {
+      nombre,
+      documento,
+      tipoDocumento: tipo === 'empresa' ? 'NIT' : 'Cédula de ciudadanía',
+    },
     nombreNormalizado: normalizarNombre(nombre),
     documentoNormalizado: normalizarDocumento(documento),
     resultado,

@@ -121,20 +121,35 @@ function unirPorNombre(grupos) {
   }
 }
 
+/**
+ * Ordena de lo más reciente a lo más antiguo, desempatando por identificador.
+ *
+ * Dos registros del mismo segundo —lo normal dentro de un cruce— quedarían en
+ * un orden arbitrario, y de ese orden depende qué nombre y qué documento se
+ * muestran. El identificador lleva la marca de tiempo, así que desempata sin
+ * inventar nada.
+ */
+function masRecientePrimero(fechaDe) {
+  return (a, b) =>
+    (fechaDe(b) || '').localeCompare(fechaDe(a) || '') || (b.id || '').localeCompare(a.id || '');
+}
+
 /** Calcula lo que se lee de un vistazo: quién es y qué queda pendiente. */
 function rematar(ficha, cerradasPorDocumento) {
-  ficha.consultas.sort((a, b) => (b.fecha || '').localeCompare(a.fecha || ''));
-  ficha.documentos.sort((a, b) =>
-    (b.actualizado || b.fecha || '').localeCompare(a.actualizado || a.fecha || ''),
-  );
-  ficha.evidencias.sort((a, b) => (b.fecha || '').localeCompare(a.fecha || ''));
+  ficha.consultas.sort(masRecientePrimero((c) => c.fecha));
+  ficha.documentos.sort(masRecientePrimero((d) => d.actualizado || d.fecha));
+  ficha.evidencias.sort(masRecientePrimero((e) => e.fecha));
 
   // El dato más reciente que no venga vacío: una consulta por cédula sin
   // nombre no debe borrar el nombre que ya se conocía.
   for (const consulta of ficha.consultas) {
     ficha.nombre ||= consulta.consulta?.nombre || '';
-    ficha.documento ||= consulta.consulta?.documento || '';
-    ficha.tipoDocumento ||= consulta.consulta?.tipoDocumento || '';
+    // El tipo viaja pegado al número que lo trajo: etiquetar un documento con
+    // el tipo declarado en otra consulta sería ponerle un rótulo inventado.
+    if (!ficha.documento && consulta.consulta?.documento) {
+      ficha.documento = consulta.consulta.documento;
+      ficha.tipoDocumento = consulta.consulta.tipoDocumento || '';
+    }
     ficha.vinculo ||= consulta.vinculo || '';
     if (consulta.pep) {
       ficha.pep = true;

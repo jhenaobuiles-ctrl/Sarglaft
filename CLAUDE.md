@@ -11,7 +11,7 @@ commit e interfaz. Mantén esa convención.
 ## Comandos
 
 ```bash
-node --test                                  # todas las pruebas (126)
+node --test                                  # todas las pruebas (130)
 node --test scripts/test/scoring.test.mjs    # un solo archivo
 node --test --test-name-pattern="tildes"     # filtrar por nombre de prueba
 
@@ -81,6 +81,13 @@ reducir el peso del archivo que descarga el navegador:
 | `n` | nombre principal | `pg` | programa de sanción |
 | `a` | alias | `fl` | fecha de listado |
 | `d` | documentos `{t,n,p}` | `ob` | observaciones |
+
+**El tipo de documento no puede quedar en blanco.** `variantesDocumento` solo
+busca un NIT sin su dígito de verificación cuando el tipo declarado es NIT, de
+modo que consultar «900.228.328-7» con el tipo sin declarar devuelve un «sin
+hallazgos» falso sobre una empresa designada. Por eso el selector nace en
+cédula y no en vacío, y `pareceNitConVerificacion` avisa cuando el número
+está escrito como un NIT y el tipo dice otra cosa.
 
 `fechaISO(valor, orden)` exige que cada fuente **declare su convención**:
 `12/11/1965` es diciembre en OFAC (`'MDA'`) y noviembre en OFSI (`'DMA'`).

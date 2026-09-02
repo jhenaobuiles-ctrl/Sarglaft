@@ -359,3 +359,16 @@ body.imprimiendo #hoja-certificado { display: block; padding: 0; }
 /* Lista impresa de vacíos del expediente */
 #hoja-certificado ul { margin: 0 0 .8em; padding-left: 1.2em; }
 #hoja-certificado li { margin-bottom: .25em; }
+
+/* Aviso de un formulario. Va fuera de la rejilla de campos: dentro de una
+   celda la haría crecer y, con `align-items: end`, desalinearía la fila. */
+.aviso-campo {
+  margin: 14px 0 0;
+  padding: 9px 13px;
+  font-size: .85rem;
+  font-weight: 600;
+  color: #92400e;
+  background: var(--revision-fondo);
+  border: 1px solid #fcd34d;
+  border-radius: var(--radio);
+}

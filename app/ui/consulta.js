@@ -2,7 +2,9 @@
 
 import { estado, registroCambio } from './app.js';
 import { guardar, ALMACENES, nuevoId } from '../registro/db.js';
-import { normalizarNombre, normalizarDocumento } from '../motor/normalizar.js';
+import {
+  normalizarNombre, normalizarDocumento, pareceNitConVerificacion,
+} from '../motor/normalizar.js';
 import { abrirCertificado } from './certificado.js';
 import { formularioHTML as desenlaceHTML, conectar as conectarDesenlace, requiereDesenlace } from './desenlace.js';
 import {
@@ -12,6 +14,7 @@ import {
 export function montarConsulta() {
   const formulario = document.getElementById('formulario-consulta');
   const salida = document.getElementById('resultado-consulta');
+  avisarSiEsNit();
 
   formulario.addEventListener('submit', async (evento) => {
     evento.preventDefault();
@@ -57,6 +60,31 @@ export function montarConsulta() {
     salida.innerHTML = '';
     document.getElementById('c-nombre').focus();
   });
+}
+
+/**
+ * Avisa cuando el número está escrito como un NIT y el tipo dice otra cosa.
+ *
+ * Solo con el tipo NIT se busca además el número sin su dígito de
+ * verificación. Sin ese aviso, consultar "900.228.328-7" como cédula devuelve
+ * «sin hallazgos» sobre una empresa que sí está designada, y nada en la
+ * pantalla delata el motivo.
+ */
+function avisarSiEsNit() {
+  const documento = document.getElementById('c-doc');
+  const tipo = document.getElementById('c-tipo-doc');
+  const aviso = document.getElementById('aviso-tipo-doc');
+
+  const revisar = () => {
+    const sospecha = pareceNitConVerificacion(documento.value) && tipo.value !== 'NIT';
+    aviso.hidden = !sospecha;
+    aviso.textContent = sospecha
+      ? 'Ese número está escrito como un NIT con dígito de verificación. Elige NIT para que también se busque sin él.'
+      : '';
+  };
+  documento.addEventListener('input', revisar);
+  tipo.addEventListener('change', revisar);
+  revisar();
 }
 
 export function vistaResultado(consulta) {

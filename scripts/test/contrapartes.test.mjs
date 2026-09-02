@@ -147,3 +147,48 @@ test('el buscador encuentra por nombre y por documento', () => {
   assert.equal(filtrarFichas(fichas, '').length, 2);
   assert.equal(filtrarFichas(fichas, 'nadie').length, 0);
 });
+
+test('el tipo de documento viene de la consulta que trajo el número', () => {
+  // Etiquetar el documento con el tipo declarado en otra consulta —que pudo
+  // ser sobre otro número— sería ponerle un rótulo inventado.
+  const fichas = construirFichas({
+    consultas: [
+      consulta({
+        id: 'c2', fecha: '2026-08-20T10:00:00.000Z', documentoNormalizado: '900228328',
+        consulta: { nombre: 'Centro de Diagnóstico', tipoDocumento: 'NIT', documento: '900.228.328-7' },
+      }),
+      consulta({
+        id: 'c1', fecha: '2026-08-01T10:00:00.000Z', documentoNormalizado: '900228328',
+        consulta: { nombre: 'Centro de Diagnóstico', tipoDocumento: 'Otro', documento: '900228328' },
+      }),
+    ],
+  });
+  assert.equal(fichas[0].documento, '900.228.328-7');
+  assert.equal(fichas[0].tipoDocumento, 'NIT');
+});
+
+test('una consulta sin documento no le pone tipo a la ficha', () => {
+  const fichas = construirFichas({
+    consultas: [
+      consulta({ id: 'c1', nombreNormalizado: 'JUAN PEREZ', consulta: { nombre: 'Juan Pérez', tipoDocumento: 'NIT' } }),
+    ],
+  });
+  assert.equal(fichas[0].documento, '');
+  assert.equal(fichas[0].tipoDocumento, '', 'sin número no hay nada que etiquetar');
+});
+
+test('dos registros del mismo segundo se ordenan igual siempre', () => {
+  // Dentro de un cruce todas las consultas comparten el segundo; sin un
+  // desempate estable, qué nombre se muestra dependería del azar.
+  const mismoInstante = '2026-08-20T10:00:00.000Z';
+  const entrada = () => ({
+    consultas: [
+      consulta({ id: 'c_a', fecha: mismoInstante, documentoNormalizado: '79123456', consulta: { nombre: 'Primero', documento: '79123456' } }),
+      consulta({ id: 'c_b', fecha: mismoInstante, documentoNormalizado: '79123456', consulta: { nombre: 'Segundo', documento: '79123456' } }),
+    ],
+  });
+  const uno = construirFichas(entrada());
+  const otro = construirFichas(entrada());
+  assert.equal(uno[0].nombre, otro[0].nombre);
+  assert.equal(uno[0].nombre, 'Segundo', 'desempata por identificador, el mayor primero');
+});

@@ -138,4 +138,18 @@ export function variantesDocumento(valor, tipo = '') {
   return [...new Set(variantes)];
 }
 
+/**
+ * ¿Está escrito como un NIT con su dígito de verificación?
+ *
+ * "900.228.328-7" solo se busca también como "900228328" si el tipo declarado
+ * es NIT. Elegir otro tipo con un número así escrito produce un «sin
+ * hallazgos» falso sobre una empresa que sí está designada, así que el panel
+ * lo advierte. Una cédula nunca se escribe con un guion y un dígito al final,
+ * de modo que la señal no se confunde con nada.
+ */
+export function pareceNitConVerificacion(valor) {
+  const limpio = String(valor ?? '').replace(/[.\s]/g, '');
+  return /^[0-9]{6,12}-[0-9]$/.test(limpio);
+}
+
 export const _internos = { SUFIJOS_SOCIETARIOS, PARTICULAS, unirIniciales };

@@ -6,6 +6,7 @@ import {
   normalizarDocumento,
   tokensSignificativos,
   variantesDocumento,
+  pareceNitConVerificacion,
 } from '../../app/motor/normalizar.js';
 
 test('normalizarNombre quita tildes, puntuación y mayúsculas', () => {
@@ -64,4 +65,17 @@ test('tokensSignificativos descarta partículas', () => {
   assert.deepEqual(tokensSignificativos('MARIA DE LOS ANGELES RESTREPO OSPINA'), [
     'MARIA', 'ANGELES', 'RESTREPO', 'OSPINA',
   ]);
+});
+
+test('reconoce un NIT escrito con su dígito de verificación', () => {
+  // Con el tipo mal declarado, "900.228.328-7" nunca se busca como
+  // "900228328" y una empresa designada sale "sin hallazgos".
+  assert.equal(pareceNitConVerificacion('900.228.328-7'), true);
+  assert.equal(pareceNitConVerificacion('900228328-7'), true);
+  assert.equal(pareceNitConVerificacion('900 228 328 - 7'), true);
+  // Una cédula no se escribe con guion y un dígito al final.
+  assert.equal(pareceNitConVerificacion('79.123.456'), false);
+  assert.equal(pareceNitConVerificacion('1144087221'), false);
+  assert.equal(pareceNitConVerificacion(''), false);
+  assert.equal(pareceNitConVerificacion('AB-1'), false);
 });

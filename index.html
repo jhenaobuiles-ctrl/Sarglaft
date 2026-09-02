@@ -76,12 +76,11 @@
           <div>
             <label for="c-tipo-doc">Tipo de documento</label>
             <select id="c-tipo-doc">
-              <option value="">Sin documento</option>
               <option value="Cédula de ciudadanía">Cédula de ciudadanía</option>
               <option value="Cédula de extranjería">Cédula de extranjería</option>
+              <option value="NIT">NIT (empresas)</option>
               <option value="Pasaporte">Pasaporte</option>
-              <option value="NIT">NIT</option>
-              <option value="Otro">Otro</option>
+              <option value="Otro">Otro o sin especificar</option>
             </select>
           </div>
           <div>
@@ -108,6 +107,7 @@
             </select>
           </div>
         </div>
+        <p class="aviso-campo" id="aviso-tipo-doc" hidden></p>
         <div class="acciones">
           <button type="submit" class="accion" id="boton-consultar">Consultar</button>
           <button type="button" class="accion secundaria" id="boton-limpiar">Limpiar</button>
