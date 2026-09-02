@@ -11,7 +11,7 @@ commit e interfaz. Mantén esa convención.
 ## Comandos
 
 ```bash
-node --test                                  # todas las pruebas (141)
+node --test                                  # todas las pruebas (146)
 node --test scripts/test/scoring.test.mjs    # un solo archivo
 node --test --test-name-pattern="tildes"     # filtrar por nombre de prueba
 
@@ -108,6 +108,16 @@ vistas se refrescan vía `alCambiarRegistro` / `registroCambio()`.
 - `app/motor/scoring.js` puntúa con **F1 simétrico de cobertura de tokens**, no
   cobertura simple: sin la simetría, «Juan Restrepo» daría coincidencia
   perfecta contra «Juan Carlos Restrepo Ospina Mejía».
+- Los `UMBRALES` de `app/motor/consulta.js` **no son simétricos entre alerta y
+  revisión, y es a propósito**. Con menos de tres tokens alertar exige 0.98,
+  pero revisar basta con 0.82: un designado del que solo se escribieron dos
+  palabras puntúa alrededor de 0.80, así que el umbral normal lo devolvía como
+  «sin hallazgos». Medido con `scripts/evaluar-motor.mjs` sobre los designados
+  publicados de tres palabras, bajarlo llevó la recuperación del 4,7% al 57,3%
+  sin mover la tasa de alerta, a cambio de unas 9 revisiones de más por cada
+  300 contrapartes. Si vuelves a tocarlos, mídelo con ese script antes: el
+  ruido de los nombres de cuatro palabras **no** pasa por esta regla, así que
+  medir solo con esos hace parecer gratis cualquier cambio.
 - `app/registro/db.js` — IndexedDB con los almacenes `consultas`, `evidencias`,
   `cruces`, `obligaciones`, `documentos` y `config`. Va por la **versión 2**:
   cada almacén nuevo se crea en su propio bloque `if (anterior < N)`, nunca

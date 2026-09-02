@@ -27,7 +27,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
-import { crearMotor } from '../app/motor/consulta.js';
+import { crearMotor, UMBRALES } from '../app/motor/consulta.js';
 import { normalizarNombre } from '../app/motor/normalizar.js';
 
 const AQUI = dirname(fileURLToPath(import.meta.url));
@@ -206,37 +206,34 @@ function medirDocumentos(motor, listas) {
  * La única forma honesta de elegir es ver las dos cifras a la vez sobre los
  * registros reales, en vez de discutirlo en abstracto.
  */
-function barrer(listas, nombres, cortos, designados, colombianos) {
+function barrer(listas, cortos, designados, colombianos) {
   const juegos = [
-    { etiqueta: 'actual', umbrales: {} },
-    { etiqueta: 'corto 0.90', umbrales: { revisionNombreCorto: 0.9 } },
-    { etiqueta: 'corto 0.87', umbrales: { revisionNombreCorto: 0.87 } },
-    { etiqueta: 'corto 0.85', umbrales: { revisionNombreCorto: 0.85 } },
-    { etiqueta: 'corto 0.82', umbrales: { revisionNombreCorto: 0.82 } },
+    { etiqueta: `actual (${UMBRALES.revisionNombreCorto})`, umbrales: {} },
+    { etiqueta: 'corto 0.93', umbrales: { revisionNombreCorto: 0.93 } },
+    { etiqueta: 'corto 0.86', umbrales: { revisionNombreCorto: 0.86 } },
+    { etiqueta: 'corto 0.84', umbrales: { revisionNombreCorto: 0.84 } },
     { etiqueta: 'corto 0.80', umbrales: { revisionNombreCorto: 0.8 } },
-    { etiqueta: 'largo 0.75', umbrales: { revision: 0.75 } },
-    { etiqueta: 'corto 0.85 + largo 0.75', umbrales: { revisionNombreCorto: 0.85, revision: 0.75 } },
   ];
 
   console.log('\nBARRIDO DE UMBRALES');
-  console.log('  ruido = cuántas contrapartes de cada 300 saldrían a revisar de más');
+  console.log('  Solo se mide el ruido de los nombres de dos palabras: es la única');
+  console.log('  población que pasa por la regla del nombre corto, y ya se comprobó');
+  console.log('  que el ruido de los nombres completos no se mueve al cambiarla.');
+  console.log('  ruido = de cada 300 contrapartes, cuántas saldrían a revisar de más\n');
   console.log(
-    `  ${'juego'.padEnd(24)} ${'ruido 4 pal.'.padStart(12)} ${'ruido 2 pal.'.padStart(12)} ${'sin apellido'.padStart(13)} ${'col. sin ap.'.padStart(13)}`,
+    `  ${'juego'.padEnd(24)} ${'ruido 2 pal.'.padStart(12)} ${'sin apellido'.padStart(13)} ${'col. sin ap.'.padStart(13)}`,
   );
-
-  const porTrescientos = (motor, poblacion) => {
-    const r = medirRuido(motor, poblacion);
-    return ((r.cuenta.EN_REVISION + r.cuenta.ALERTA) / r.total) * 300;
-  };
 
   for (const juego of juegos) {
     const motor = crearMotor(listas, { umbrales: juego.umbrales });
+    const r = medirRuido(motor, cortos);
+    const ruido = (((r.cuenta.EN_REVISION + r.cuenta.ALERTA) / r.total) * 300).toFixed(1);
+    const pct = (m, k) => porcentaje(m.get(k).encontrado, m.get(k).total) + '%';
     const alcance = medirAlcance(motor, designados);
     const colombiano = medirAlcance(motor, colombianos);
-    const pct = (m, k) => porcentaje(m.get(k).encontrado, m.get(k).total) + '%';
+    // Fila a fila, no al final: así una corrida interrumpida sigue sirviendo.
     console.log(
-      `  ${juego.etiqueta.padEnd(24)} ${porTrescientos(motor, nombres).toFixed(1).padStart(12)} ` +
-        `${porTrescientos(motor, cortos).toFixed(1).padStart(12)} ` +
+      `  ${juego.etiqueta.padEnd(24)} ${ruido.padStart(12)} ` +
         `${pct(alcance, 'sin el último apellido').padStart(13)} ${pct(colombiano, 'sin el último apellido').padStart(13)}`,
     );
   }
@@ -330,7 +327,7 @@ function principal() {
     }
   }
 
-  if (process.argv.includes('--barrido')) barrer(listas, nombres, cortos, muestra, muestraCol);
+  if (process.argv.includes('--barrido')) barrer(listas, cortos, muestra, muestraCol);
 
   /* Documentos */
   const docs = medirDocumentos(motor, listas);

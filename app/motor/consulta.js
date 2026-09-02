@@ -18,9 +18,19 @@ export const UMBRALES = {
   alerta: 0.93,
   revision: 0.8,
   // Con uno o dos tokens ("Juan Pérez") casi cualquier apellido común pasa el
-  // umbral normal, así que se exige mucho más.
+  // umbral normal, así que para *alertar* se exige mucho más.
   alertaNombreCorto: 0.98,
-  revisionNombreCorto: 0.93,
+  // La revisión, en cambio, se abre. Medido con `scripts/evaluar-motor.mjs`
+  // sobre las listas publicadas: a 0.93 un designado del que solo se escribió
+  // el primer apellido —"Rashid Taan" por "Rashid Taan Kathim", que es como
+  // llega media matrícula— se encontraba el 29% de las veces (69,5% entre los
+  // designados colombianos); a 0.82 sube a 70,5% y 87%. El precio son unas 9
+  // revisiones de más por cada 300 contrapartes de dos palabras, y **ninguna
+  // alerta nueva**: `alertaNombreCorto` no se toca, así que lo que entra queda
+  // en EN_REVISION, que es una mirada humana y no un bloqueo. En un panel
+  // SARLAFT ese cambio vale: el falso negativo se firma sin enterarse, el
+  // falso positivo se descarta leyendo dos líneas.
+  revisionNombreCorto: 0.82,
 };
 
 export function crearMotor(listas, opciones = {}) {
