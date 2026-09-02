@@ -5,7 +5,7 @@
 // protocolo. El modo sin conexión se consigue así: visitando el panel una vez
 // con conexión y volviendo a abrirlo después, ya sin ella.
 
-const CACHE = 'sarglaft-app-v4';
+const CACHE = 'sarglaft-app-v5';
 
 // Las listas no se precargan aquí: pesan decenas de MB y las gestiona el
 // cargador con su propia caché por sha256.

@@ -11,7 +11,7 @@ commit e interfaz. Mantén esa convención.
 ## Comandos
 
 ```bash
-node --test                                  # todas las pruebas (106)
+node --test                                  # todas las pruebas (111)
 node --test scripts/test/scoring.test.mjs    # un solo archivo
 node --test --test-name-pattern="tildes"     # filtrar por nombre de prueba
 
@@ -138,10 +138,19 @@ certificado; si se duplica esa regla en otro sitio, el panel y el expediente
 acaban contando cosas distintas. Un formato de debida diligencia que cite la
 consulta cierra la alerta igual que el desenlace.
 
-El mismo formulario se monta en la consulta recién hecha y en una fila
-desplegable del expediente, porque la mayoría de las alertas no nacen de una
-consulta puntual sino de un cruce masivo y allí la única puerta es el
-expediente.
+El mismo formulario se monta en cuatro sitios —la consulta recién hecha y una
+fila desplegable en el expediente, en el resultado del cruce y en el de la
+revisión— mediante `alternarFila()` y `conectarDecisiones()`. Ese conector se
+registra **al montar la vista y no al pintar los resultados**: pintar ocurre
+una vez por cruce, y engancharlo ahí apila un manejador por cada uno hasta que
+el desplegable se abre y se cierra en el mismo clic.
+
+`planDeRegistro()` decide qué guarda un barrido. Vive en `desenlace.js` y no
+en `revision.js` porque de esa regla depende que «una alerta abierta» siga
+significando una contraparte y no un barrido: si la coincidencia sigue igual
+que la última vez, la fila reutiliza la consulta ya abierta en vez de crear
+una copia. Crear una copia cada mes reabriría una decisión ya tomada y dejaría
+el contador de pendientes creciendo para siempre.
 
 `app/ui/revision.js` vuelve a consultar a las contrapartes que ya están en el
 expediente. Guarda **una** entrada de `cruces` con el barrido completo y filas

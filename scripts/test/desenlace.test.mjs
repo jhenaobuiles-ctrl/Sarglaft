@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   DESENLACES, requiereDesenlace, estaCerrada, citadasEnDocumentos,
-  resumenDesenlaces, etiquetaDesenlace, claseDesenlace,
+  resumenDesenlaces, etiquetaDesenlace, claseDesenlace, planDeRegistro, gravedad,
 } from '../../app/ui/desenlace.js';
 
 const consulta = (extra = {}) => ({ id: 'c_1', resultado: 'ALERTA', ...extra });
@@ -79,4 +79,38 @@ test('un desenlace desconocido no rompe la impresión', () => {
 test('los cuatro desenlaces cubren las salidas reales de una alerta', () => {
   const ids = DESENLACES.map((d) => d.id);
   assert.deepEqual(ids, ['homonimo', 'seguimiento', 'rechazada', 'reportada']);
+});
+
+/* ---------- qué registra la revisión periódica ---------- */
+
+test('la revisión registra una consulta nueva solo si la contraparte empeoró', () => {
+  const previa = { id: 'c_1', resultado: 'SIN_HALLAZGOS' };
+  const plan = planDeRegistro(previa, 'ALERTA');
+  assert.deepEqual(plan, { interesa: true, empeoro: true, reusaConsulta: false });
+});
+
+test('una alerta que sigue igual reutiliza la consulta ya abierta', () => {
+  // Crear una copia en cada barrido reabriría una decisión ya tomada y dejaría
+  // el contador de pendientes creciendo mes a mes por la misma alerta.
+  const plan = planDeRegistro({ id: 'c_1', resultado: 'ALERTA' }, 'ALERTA');
+  assert.deepEqual(plan, { interesa: true, empeoro: false, reusaConsulta: true });
+});
+
+test('una contraparte que sigue limpia no deja rastro individual', () => {
+  const plan = planDeRegistro({ id: 'c_1', resultado: 'SIN_HALLAZGOS' }, 'SIN_HALLAZGOS');
+  assert.equal(plan.interesa, false);
+});
+
+test('mejorar tampoco crea una consulta nueva, pero sí se muestra', () => {
+  // La coincidencia bajó de alerta a revisión: sigue habiendo algo que mirar,
+  // y lo que hay que mirar es la alerta que ya estaba abierta.
+  const plan = planDeRegistro({ id: 'c_1', resultado: 'ALERTA' }, 'EN_REVISION');
+  assert.equal(plan.interesa, true);
+  assert.equal(plan.reusaConsulta, true);
+});
+
+test('la gravedad ordena los tres veredictos', () => {
+  assert.ok(gravedad('ALERTA') > gravedad('EN_REVISION'));
+  assert.ok(gravedad('EN_REVISION') > gravedad('SIN_HALLAZGOS'));
+  assert.equal(gravedad('lo que sea'), 0);
 });

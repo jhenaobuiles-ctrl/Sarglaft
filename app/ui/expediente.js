@@ -12,7 +12,7 @@ import { escribirCSV } from '../lib/csv.js';
 import { abrirCertificado } from './certificado.js';
 import {
   formularioHTML as desenlaceHTML, conectar as conectarDesenlace,
-  requiereDesenlace, etiquetaDesenlace, claseDesenlace, estaCerrada, citadasEnDocumentos,
+  requiereDesenlace, chipHTML, estaCerrada, citadasEnDocumentos, alternarFila,
 } from './desenlace.js';
 import { esc, fechaHora, ROTULOS, porcentaje, descargar, marcaArchivo } from './formato.js';
 
@@ -121,40 +121,13 @@ async function mostrarEvidencias(boton) {
   boton.textContent = 'Ocultar';
 }
 
-/**
- * Despliega la decisión de una alerta debajo de su fila.
- *
- * Va en una fila propia y no dentro de la celda porque el formulario necesita
- * el ancho de la tabla: encajado en la columna de acciones queda ilegible.
- */
 async function mostrarDesenlace(boton) {
-  const fila = boton.closest('tr');
-  const abierta = fila.nextElementSibling;
-  if (abierta?.classList.contains('fila-desenlace')) {
-    abierta.remove();
-    boton.textContent = boton.dataset.rotulo;
-    return;
-  }
-
-  const consulta = await obtener(ALMACENES.consultas, boton.dataset.analizar);
-  if (!consulta) return;
-
-  const nueva = document.createElement('tr');
-  nueva.className = 'fila-desenlace';
-  const celda = document.createElement('td');
-  celda.colSpan = fila.cells.length;
-  celda.innerHTML = desenlaceHTML(consulta);
-  nueva.appendChild(celda);
-  fila.after(nueva);
-
-  conectarDesenlace(celda, consulta, {
+  await alternarFila(boton, {
     responsable: estado.config.responsable || '',
     // Al guardar se repinta todo: la fila pasa a mostrar el desenlace y el
     // resumen deja de contar esta alerta como pendiente.
     alGuardar: () => registroCambio(),
   });
-  boton.textContent = 'Ocultar';
-  nueva.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 function filtradas() {
@@ -232,14 +205,10 @@ function pintar() {
 /** El desenlace bajo el veredicto, o el aviso de que falta decidirlo. */
 function desenlaceHTMLFila(c) {
   if (!requiereDesenlace(c)) return '';
-  const elegido = c.decision?.desenlace;
-  if (elegido) {
-    return `<br><span class="etiqueta ${claseDesenlace(elegido)} menuda">${esc(etiquetaDesenlace(elegido))}</span>`;
-  }
-  if (cerradasPorDocumento.has(c.id)) {
+  if (!c.decision?.desenlace && cerradasPorDocumento.has(c.id)) {
     return '<br><span class="tenue">Analizada en un formato de debida diligencia</span>';
   }
-  return '<br><span class="sin-decidir">Sin decidir</span>';
+  return `<br>${chipHTML(c)}`;
 }
 
 function adjuntosHTML(c) {

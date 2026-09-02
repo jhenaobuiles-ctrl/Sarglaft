@@ -95,7 +95,9 @@ manual y la matriz vienen con contenido ajustado a una escuela de conducción,
 para editar en vez de empezar en blanco. Los formatos que corresponden a una
 obligación periódica la marcan cumplida al guardarse.
 
-**Cerrar la alerta.** Una coincidencia obliga a registrar el desenlace
+**Cerrar la alerta.** Se decide donde aparece —en la consulta, en el
+resultado del cruce, en el de la revisión o en el expediente— sin tener que ir
+a buscarla a otra pantalla. Una coincidencia obliga a registrar el desenlace
 —homónimo descartado, se vincula con seguimiento, no se vincula, se reporta a
 la UIAF— con su sustento escrito, que es obligatorio. Hasta que eso ocurra, el
 resumen la cuenta como pendiente, el expediente la marca en rojo y el

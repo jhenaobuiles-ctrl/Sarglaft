@@ -13,6 +13,7 @@ import { leerCSV, detectarSeparador, filasAObjetos, escribirCSV } from '../lib/c
 import { interpretarPegado, resumirPegado } from '../lib/pegado.js';
 import { normalizarNombre, normalizarDocumento } from '../motor/normalizar.js';
 import { marcarCumplida } from './obligaciones.js';
+import { requiereDesenlace, conectarDecisiones } from './desenlace.js';
 import { esc, ROTULOS, porcentaje, descargar, marcaArchivo, fechaHora } from './formato.js';
 
 const FILAS_POR_TANDA = 200;
@@ -30,6 +31,13 @@ let encabezadoCargado = [];
 
 export function montarCruce() {
   montarPegado();
+  // El escuchador va aquí y no al pintar los resultados: pintarlos ocurre una
+  // vez por cruce, y registrarlo ahí apilaría un manejador por cada cruce
+  // hasta que el desplegable se abriera y se cerrara solo.
+  conectarDecisiones('resultado-cruce', () => ({
+    responsable: estado.config.responsable || '',
+    alGuardar: registroCambio,
+  }));
 
   document.getElementById('archivo-cruce').addEventListener('change', async (evento) => {
     const archivo = evento.target.files[0];
@@ -204,10 +212,13 @@ async function ejecutarCruce(contrapartes) {
     const { linea, nombre, documento, tipoDocumento = '', vinculo = '' } = contrapartes[i];
 
     const resultado = estado.motor.consultar({ nombre, documento, tipoDocumento });
-    resultados.push({ linea, nombre, documento, tipoDocumento, vinculo, ...resultado });
+    // El identificador se comparte entre lo que se guarda y lo que se pinta:
+    // sin él, la tabla de resultados no podría abrir la decisión de la fila.
+    const idConsulta = nuevoId('c');
+    resultados.push({ linea, nombre, documento, tipoDocumento, vinculo, id: idConsulta, ...resultado });
 
     registros.push({
-      id: nuevoId('c'),
+      id: idConsulta,
       fecha: resultado.fecha,
       tipo: 'cruce',
       cruceId,
@@ -275,7 +286,7 @@ function pintarResultados(cruce, resultados) {
         revisar.length
           ? `<p class="tenue">Ordenadas por similitud. El resto de contrapartes salió sin hallazgos y quedó registrado en el expediente.</p>
              <div class="envoltura-tabla"><table>
-               <thead><tr><th>Línea</th><th>Contraparte</th><th>Documento</th><th>Resultado</th><th>Coincidencia más fuerte</th><th>Lista</th></tr></thead>
+               <thead><tr><th>Línea</th><th>Contraparte</th><th>Documento</th><th>Resultado</th><th>Coincidencia más fuerte</th><th>Lista</th><th></th></tr></thead>
                <tbody>${revisar
                  .map((r) => {
                    const c = r.coincidencias[0];
@@ -283,9 +294,15 @@ function pintarResultados(cruce, resultados) {
                      <td class="numero">${r.linea}</td>
                      <td>${esc(r.nombre) || '—'}</td>
                      <td class="numero">${esc(r.documento) || '—'}</td>
-                     <td><span class="etiqueta ${r.resultado}">${esc(ROTULOS[r.resultado])}</span></td>
+                     <td>
+                       <span class="etiqueta ${r.resultado}">${esc(ROTULOS[r.resultado])}</span>
+                       <br><span data-chip="${esc(r.id)}"></span>
+                     </td>
                      <td>${c ? `${esc(c.registro.n)}<br><span class="tenue">${c.motivo === 'documento' ? 'documento exacto' : `similitud ${esc(porcentaje(c.puntaje))}`}</span>` : '—'}</td>
                      <td>${c ? esc(c.lista.nombre) : '—'}</td>
+                     <td class="acciones-fila">
+                       ${requiereDesenlace(r) ? `<button type="button" class="accion no-imprimir" data-analizar="${esc(r.id)}" data-rotulo="Decidir">Decidir</button>` : ''}
+                     </td>
                    </tr>`;
                  })
                  .join('')}</tbody>

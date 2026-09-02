@@ -11,14 +11,21 @@
 // paso que hace que la revisión mensual no se haga.
 //
 // Qué se guarda: un registro del barrido completo —cuántas contrapartes,
-// contra qué versión de cada lista— y consultas individuales solo para las
-// que cambiaron o no salieron limpias. Guardar una fila por contraparte en
-// cada barrido llenaría el expediente de miles de «sin hallazgos» repetidos y
-// enterraría lo único que importa mirar.
+// contra qué versión de cada lista— y una consulta individual solo para las
+// que **empeoraron**. Guardar una fila por contraparte en cada barrido
+// llenaría el expediente de miles de «sin hallazgos» repetidos y enterraría lo
+// único que importa mirar.
+//
+// Y tampoco se duplica la alerta que ya se conocía: si la coincidencia sigue
+// igual que la última vez, la fila del barrido apunta a la consulta que ya
+// está abierta en el expediente. Crear una nueva cada mes reabriría una
+// decisión ya tomada y dejaría el contador de pendientes creciendo para
+// siempre por una alerta que alguien ya atendió.
 
 import { estado, registroCambio, alCambiarRegistro } from './app.js';
 import { todos, guardar, guardarVarios, ALMACENES, nuevoId } from '../registro/db.js';
 import { marcarCumplida } from './obligaciones.js';
+import { requiereDesenlace, conectarDecisiones, planDeRegistro } from './desenlace.js';
 import { esc, ROTULOS, porcentaje, fechaHora, descargar, marcaArchivo } from './formato.js';
 import { escribirCSV } from '../lib/csv.js';
 
@@ -28,6 +35,10 @@ export function montarRevision() {
   document.getElementById('revision-periodica').addEventListener('click', (evento) => {
     if (evento.target.closest('#ejecutar-revision')) ejecutar();
   });
+  conectarDecisiones('resultado-revision', () => ({
+    responsable: estado.config.responsable || '',
+    alGuardar: registroCambio,
+  }));
   pintar();
   // Tras un cruce o una restauración hay más contrapartes que revisar.
   alCambiarRegistro(pintar);
@@ -122,9 +133,14 @@ async function ejecutar() {
       tipoDocumento: datos.tipoDocumento || '',
     });
 
-    const empeoro = gravedad(resultado.resultado) > gravedad(previa.resultado);
-    if (empeoro || resultado.resultado !== 'SIN_HALLAZGOS') {
+    const { interesa, empeoro, reusaConsulta } = planDeRegistro(previa, resultado.resultado);
+    if (interesa) {
+      // Reutilizar el identificador de la consulta abierta hace que decidir
+      // desde el barrido cierre esa y no una copia recién creada.
+      const idConsulta = reusaConsulta ? previa.id : nuevoId('c');
       cambios.push({
+        id: idConsulta,
+        resultado: resultado.resultado,
         nombre: datos.nombre || '',
         documento: datos.documento || '',
         antes: previa.resultado,
@@ -133,8 +149,8 @@ async function ejecutar() {
         coincidencia: resultado.coincidencias[0] || null,
         fechaAnterior: previa.fecha,
       });
-      nuevosRegistros.push({
-        id: nuevoId('c'),
+      if (empeoro) nuevosRegistros.push({
+        id: idConsulta,
         fecha: resultado.fecha,
         tipo: 'cruce',
         cruceId: revisionId,
@@ -149,9 +165,7 @@ async function ejecutar() {
         // Las listas viven una sola vez, en el registro de la revisión.
         listas: [],
         responsable: estado.config.responsable || '',
-        observaciones: empeoro
-          ? `Detectada en la revisión periódica del ${fechaHora(inicio)}. En la consulta anterior (${fechaHora(previa.fecha)}) el resultado era «${ROTULOS[previa.resultado] || previa.resultado}».`
-          : '',
+        observaciones: `Detectada en la revisión periódica del ${fechaHora(inicio)}. En la consulta anterior (${fechaHora(previa.fecha)}) el resultado era «${ROTULOS[previa.resultado] || previa.resultado}».`,
       });
     }
 
@@ -193,10 +207,6 @@ async function ejecutar() {
   pintarResultado(revision, cambios);
 }
 
-function gravedad(resultado) {
-  return { SIN_HALLAZGOS: 0, EN_REVISION: 1, ALERTA: 2 }[resultado] ?? 0;
-}
-
 function pintarResultado(revision, cambios) {
   const nuevas = cambios.filter((c) => c.nuevo);
   const salida = document.getElementById('resultado-revision');
@@ -217,7 +227,7 @@ function pintarResultado(revision, cambios) {
                que mirar hoy. Todas quedaron registradas en el expediente con su certificado.
              </p>
              <div class="envoltura-tabla"><table>
-               <thead><tr><th></th><th>Contraparte</th><th>Documento</th><th>Antes</th><th>Ahora</th><th>Coincidencia</th></tr></thead>
+               <thead><tr><th></th><th>Contraparte</th><th>Documento</th><th>Antes</th><th>Ahora</th><th>Coincidencia</th><th></th></tr></thead>
                <tbody>${cambios
                  .sort((a, b) => Number(b.nuevo) - Number(a.nuevo))
                  .map(
@@ -226,7 +236,10 @@ function pintarResultado(revision, cambios) {
                      <td>${esc(c.nombre) || '—'}</td>
                      <td class="numero">${esc(c.documento) || '—'}</td>
                      <td><span class="tenue">${esc(ROTULOS[c.antes] || c.antes)}</span><br><span class="tenue">${esc(fechaHora(c.fechaAnterior))}</span></td>
-                     <td><span class="etiqueta ${c.ahora}">${esc(ROTULOS[c.ahora] || c.ahora)}</span></td>
+                     <td>
+                       <span class="etiqueta ${c.ahora}">${esc(ROTULOS[c.ahora] || c.ahora)}</span>
+                       <br><span data-chip="${esc(c.id)}"></span>
+                     </td>
                      <td>${
                        c.coincidencia
                          ? `${esc(c.coincidencia.registro.n)}<br><span class="tenue">${
@@ -236,6 +249,9 @@ function pintarResultado(revision, cambios) {
                            } · ${esc(c.coincidencia.lista.nombre)}</span>`
                          : '—'
                      }</td>
+                     <td class="acciones-fila">
+                       ${requiereDesenlace(c) ? `<button type="button" class="accion no-imprimir" data-analizar="${esc(c.id)}" data-rotulo="Decidir">Decidir</button>` : ''}
+                     </td>
                    </tr>`,
                  )
                  .join('')}</tbody>
