@@ -11,7 +11,7 @@ commit e interfaz. Mantén esa convención.
 ## Comandos
 
 ```bash
-node --test                                  # todas las pruebas (146)
+node --test                                  # todas las pruebas (148)
 node --test scripts/test/scoring.test.mjs    # un solo archivo
 node --test --test-name-pattern="tildes"     # filtrar por nombre de prueba
 
@@ -135,6 +135,21 @@ El cruce masivo (`app/ui/cruce.js`) tiene dos entradas —pegar la lista y carga
 un CSV— que confluyen en `ejecutarCruce(contrapartes)`. Lo que cambia es de
 dónde salen las contrapartes, no lo que se hace con ellas: duplicar el bucle
 haría que un camino guardara en el expediente algo distinto del otro.
+
+Ese bucle **consulta el expediente antes de guardar nada**, con la misma
+`planDeRegistro()` que usa el barrido periódico. La escuela pega la misma lista
+de alumnos todos los meses: sin eso, cada cruce crearía otra consulta por
+contraparte, la decisión de septiembre no se vería en octubre y el contador de
+pendientes crecería para siempre. Se guarda fila nueva solo si la contraparte
+no estaba en el expediente o si apareció algo que antes no estaba; si sigue
+igual, la fila reutiliza el id de la consulta existente y el desplegable abre
+la decisión ya tomada. La constancia de que se cruzaron las 300 la da la
+entrada de `cruces`, no una fila por alumno y por mes.
+
+`ultimaPorContraparte()` vive en `app/registro/contrapartes.js` y no en la
+vista que la usa porque **la usan el cruce y la revisión**. Si cada una
+agrupara por su cuenta, una contraparte podría contar como conocida en una
+pantalla y como nueva en la otra.
 
 `app/lib/pegado.js` interpreta lo que llega del portapapeles. Excel copia las
 columnas separadas por tabulador, así que cuál es el nombre y cuál el

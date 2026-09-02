@@ -24,6 +24,28 @@ export function claveDe(registro) {
   return '';
 }
 
+/**
+ * La última consulta de cada contraparte, que es contra la que hay que
+ * comparar para saber si algo cambió desde la vez pasada.
+ *
+ * Vive aquí y no en la vista que la usa porque la usan dos: el barrido
+ * periódico y el cruce masivo. Si cada una agrupara por su cuenta, una
+ * contraparte podría contar como conocida en un sitio y como nueva en el
+ * otro, y entonces el cruce volvería a pedir una decisión ya tomada.
+ */
+export function ultimaPorContraparte(consultas = []) {
+  const porClave = new Map();
+  for (const c of consultas) {
+    // Una constancia de antecedentes no cruzó listas: no sirve de referencia.
+    if (c.tipo === 'antecedentes') continue;
+    const clave = c.documentoNormalizado || c.nombreNormalizado;
+    if (!clave) continue;
+    const previa = porClave.get(clave);
+    if (!previa || (c.fecha || '') > (previa.fecha || '')) porClave.set(clave, c);
+  }
+  return porClave;
+}
+
 function fichaVacia(clave) {
   return {
     clave,

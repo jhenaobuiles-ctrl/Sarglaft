@@ -28,6 +28,7 @@ import { marcarCumplida } from './obligaciones.js';
 import { requiereDesenlace, conectarDecisiones, planDeRegistro } from './desenlace.js';
 import { esc, ROTULOS, porcentaje, fechaHora, descargar, marcaArchivo } from './formato.js';
 import { escribirCSV } from '../lib/csv.js';
+import { ultimaPorContraparte } from '../registro/contrapartes.js';
 
 const POR_TANDA = 200;
 
@@ -51,18 +52,7 @@ export function montarRevision() {
  * hay que comparar para saber si algo cambió.
  */
 export async function contrapartesDelExpediente() {
-  const consultas = await todos(ALMACENES.consultas);
-  const porClave = new Map();
-
-  for (const c of consultas) {
-    // Una constancia de antecedentes no cruzó listas: no sirve de referencia.
-    if (c.tipo === 'antecedentes') continue;
-    const clave = c.documentoNormalizado || c.nombreNormalizado;
-    if (!clave) continue;
-    const previa = porClave.get(clave);
-    if (!previa || (c.fecha || '') > (previa.fecha || '')) porClave.set(clave, c);
-  }
-  return [...porClave.values()];
+  return [...ultimaPorContraparte(await todos(ALMACENES.consultas)).values()];
 }
 
 async function pintar() {

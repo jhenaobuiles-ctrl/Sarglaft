@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { construirFichas, claveDe, filtrarFichas } from '../../app/registro/contrapartes.js';
+import { ultimaPorContraparte, construirFichas, claveDe, filtrarFichas } from '../../app/registro/contrapartes.js';
 
 const consulta = (extra) => ({
   id: 'c',
@@ -191,4 +191,25 @@ test('dos registros del mismo segundo se ordenan igual siempre', () => {
   const otro = construirFichas(entrada());
   assert.equal(uno[0].nombre, otro[0].nombre);
   assert.equal(uno[0].nombre, 'Segundo', 'desempata por identificador, el mayor primero');
+});
+
+test('la última consulta de cada contraparte se agrupa por documento', () => {
+  const porClave = ultimaPorContraparte([
+    { id: 'c1', fecha: '2026-01-01', documentoNormalizado: '123', resultado: 'ALERTA' },
+    { id: 'c2', fecha: '2026-06-01', documentoNormalizado: '123', resultado: 'EN_REVISION' },
+    { id: 'c3', fecha: '2026-03-01', nombreNormalizado: 'ANA GOMEZ', resultado: 'SIN_HALLAZGOS' },
+  ]);
+  assert.equal(porClave.size, 2);
+  assert.equal(porClave.get('123').id, 'c2');
+  assert.equal(porClave.get('ANA GOMEZ').id, 'c3');
+});
+
+test('una constancia de antecedentes no sirve de referencia', () => {
+  // No cruzó listas: tomarla como «la última consulta» haría creer que la
+  // contraparte quedó limpia contra las listas cuando nadie la cruzó.
+  const porClave = ultimaPorContraparte([
+    { id: 'c1', fecha: '2026-01-01', documentoNormalizado: '123', resultado: 'ALERTA' },
+    { id: 'a1', fecha: '2026-08-01', documentoNormalizado: '123', tipo: 'antecedentes' },
+  ]);
+  assert.equal(porClave.get('123').id, 'c1');
 });

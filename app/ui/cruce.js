@@ -8,12 +8,13 @@
 // lo que ahorraría.
 
 import { estado, registroCambio } from './app.js';
-import { guardar, guardarVarios, ALMACENES, nuevoId } from '../registro/db.js';
+import { todos, guardar, guardarVarios, ALMACENES, nuevoId } from '../registro/db.js';
 import { leerCSV, detectarSeparador, filasAObjetos, escribirCSV } from '../lib/csv.js';
 import { interpretarPegado, resumirPegado } from '../lib/pegado.js';
 import { normalizarNombre, normalizarDocumento } from '../motor/normalizar.js';
 import { marcarCumplida } from './obligaciones.js';
-import { requiereDesenlace, conectarDecisiones } from './desenlace.js';
+import { requiereDesenlace, conectarDecisiones, planDeRegistro } from './desenlace.js';
+import { ultimaPorContraparte } from '../registro/contrapartes.js';
 import { esc, ROTULOS, porcentaje, descargar, marcaArchivo, fechaHora } from './formato.js';
 
 const FILAS_POR_TANDA = 200;
@@ -208,29 +209,62 @@ async function ejecutarCruce(contrapartes) {
   const resultados = [];
   const registros = [];
 
+  // La misma lista de alumnos se pega mes tras mes. Sin mirar lo que ya está
+  // en el expediente, cada cruce crearía otra consulta para cada contraparte:
+  // la decisión de septiembre («es homónimo, nuestro alumno tiene 19 años»)
+  // no se vería en octubre y habría que volver a escribirla, mientras el
+  // contador de pendientes crece para siempre. Es la misma regla que ya sigue
+  // el barrido periódico, y tiene que ser la misma o «una alerta abierta»
+  // significaría una cosa en una pantalla y otra en la otra.
+  const previas = ultimaPorContraparte(await todos(ALMACENES.consultas));
+  let reutilizadas = 0;
+
   for (let i = 0; i < contrapartes.length; i++) {
     const { linea, nombre, documento, tipoDocumento = '', vinculo = '' } = contrapartes[i];
 
     const resultado = estado.motor.consultar({ nombre, documento, tipoDocumento });
+    const nombreNormalizado = normalizarNombre(nombre);
+    const documentoNormalizado = normalizarDocumento(documento);
+    const previa = previas.get(documentoNormalizado || nombreNormalizado);
+    const plan = previa ? planDeRegistro(previa, resultado.resultado) : null;
+    // Se guarda fila nueva si la contraparte no estaba en el expediente o si
+    // apareció algo que no estaba antes. Si sigue igual, se reutiliza la que
+    // ya existe: así el desplegable de esta fila abre la decisión ya tomada
+    // en vez de una copia en blanco.
+    const guardarFila = !plan || plan.empeoro;
+    if (!guardarFila) reutilizadas++;
+
     // El identificador se comparte entre lo que se guarda y lo que se pinta:
     // sin él, la tabla de resultados no podría abrir la decisión de la fila.
-    const idConsulta = nuevoId('c');
-    resultados.push({ linea, nombre, documento, tipoDocumento, vinculo, id: idConsulta, ...resultado });
+    const idConsulta = guardarFila ? nuevoId('c') : previa.id;
+    resultados.push({
+      linea, nombre, documento, tipoDocumento, vinculo,
+      id: idConsulta,
+      yaConocida: !guardarFila,
+      ...resultado,
+    });
 
-    registros.push({
+    if (guardarFila) registros.push({
       id: idConsulta,
       fecha: resultado.fecha,
       tipo: 'cruce',
       cruceId,
-      vinculo,
+      vinculo: vinculo || previa?.vinculo || '',
       consulta: resultado.consulta,
-      nombreNormalizado: normalizarNombre(nombre),
-      documentoNormalizado: normalizarDocumento(documento),
+      nombreNormalizado,
+      documentoNormalizado,
       resultado: resultado.resultado,
       coincidencias: resultado.coincidencias,
       // Las listas no se repiten en cada fila: viven una sola vez en el cruce.
       listas: [],
       responsable: estado.config.responsable || '',
+      ...(previa
+        ? {
+            pep: Boolean(previa.pep),
+            pepDetalle: previa.pepDetalle || '',
+            observaciones: `En el cruce del ${fechaHora(inicio)} apareció una coincidencia que no estaba en la consulta anterior (${fechaHora(previa.fecha)}), cuyo resultado era «${ROTULOS[previa.resultado] || previa.resultado}».`,
+          }
+        : {}),
     });
 
     if (i % FILAS_POR_TANDA === 0) {
@@ -254,6 +288,10 @@ async function ejecutarCruce(contrapartes) {
     alertas: conteo('ALERTA'),
     revisiones: conteo('EN_REVISION'),
     limpias: conteo('SIN_HALLAZGOS'),
+    // Cuántas ya venían del expediente. El total sigue siendo el de la lista
+    // cruzada —que es lo que prueba la obligación mensual—; esto solo explica
+    // por qué el expediente no creció en la misma cifra.
+    reutilizadas,
     listas,
     responsable: estado.config.responsable || '',
   };
@@ -284,7 +322,10 @@ function pintarResultados(cruce, resultados) {
       <h2>Requieren atención</h2>
       ${
         revisar.length
-          ? `<p class="tenue">Ordenadas por similitud. El resto de contrapartes salió sin hallazgos y quedó registrado en el expediente.</p>
+          ? `<p class="tenue">
+               Ordenadas por similitud. El resto de contrapartes salió sin hallazgos y quedó registrado en el expediente.
+               ${cruce.reutilizadas ? `Las marcadas «ya en el expediente» (${cruce.reutilizadas.toLocaleString('es-CO')} de ${cruce.total.toLocaleString('es-CO')}) traen la decisión que ya se tomó sobre ellas: no hay que volver a decidirlas si nada cambió.` : ''}
+             </p>
              <div class="envoltura-tabla"><table>
                <thead><tr><th>Línea</th><th>Contraparte</th><th>Documento</th><th>Resultado</th><th>Coincidencia más fuerte</th><th>Lista</th><th></th></tr></thead>
                <tbody>${revisar
@@ -292,7 +333,7 @@ function pintarResultados(cruce, resultados) {
                    const c = r.coincidencias[0];
                    return `<tr>
                      <td class="numero">${r.linea}</td>
-                     <td>${esc(r.nombre) || '—'}</td>
+                     <td>${esc(r.nombre) || '—'}${r.yaConocida ? '<br><span class="tenue">ya en el expediente</span>' : ''}</td>
                      <td class="numero">${esc(r.documento) || '—'}</td>
                      <td>
                        <span class="etiqueta ${r.resultado}">${esc(ROTULOS[r.resultado])}</span>
@@ -320,12 +361,13 @@ function pintarResultados(cruce, resultados) {
 
   document.getElementById('exportar-cruce').addEventListener('click', () => {
     const filas = [
-      ['Línea', 'Nombre', 'Tipo documento', 'Documento', 'Tipo contraparte', 'Resultado', 'Coincidencias', 'Mejor coincidencia', 'Lista', 'Similitud', 'Motivo'],
+      ['Línea', 'Nombre', 'Tipo documento', 'Documento', 'Tipo contraparte', 'Resultado', 'Ya en el expediente', 'Coincidencias', 'Mejor coincidencia', 'Lista', 'Similitud', 'Motivo'],
       ...resultados.map((r) => {
         const c = r.coincidencias[0];
         return [
           r.linea, r.nombre, r.tipoDocumento, r.documento, r.vinculo,
           ROTULOS[r.resultado] || r.resultado,
+          r.yaConocida ? 'Sí' : 'No',
           r.coincidencias.length,
           c ? c.registro.n : '',
           c ? c.lista.nombre : '',
