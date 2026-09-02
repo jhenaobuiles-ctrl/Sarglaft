@@ -16,6 +16,7 @@ import { PLANTILLAS, POR_ID, GRUPOS, valoresIniciales, faltantes } from '../docu
 import { documentoHTML } from '../documentos/impreso.js';
 import { imprimirHoja } from './certificado.js';
 import { marcarCumplida } from './obligaciones.js';
+import { citadasEnDocumentos, resumenDesenlaces, redactarDesenlaces } from './desenlace.js';
 import { esc, fechaHora } from './formato.js';
 
 let documentos = [];
@@ -100,8 +101,11 @@ async function rellenarCalculados(plantilla, valores) {
   const necesita = [...plantilla.secciones.flatMap((s) => s.campos)].some((c) => c.calculado);
   if (!necesita) return;
 
-  const consultas = await todos(ALMACENES.consultas);
-  const cruces = await todos(ALMACENES.cruces);
+  const [consultas, cruces, guardados] = await Promise.all([
+    todos(ALMACENES.consultas),
+    todos(ALMACENES.cruces),
+    todos(ALMACENES.documentos),
+  ]);
   const cuentas = {
     consultas: consultas.length,
     alertas: consultas.filter((c) => c.resultado === 'ALERTA').length,
@@ -109,11 +113,16 @@ async function rellenarCalculados(plantilla, valores) {
     pep: consultas.filter((c) => c.pep).length,
     cruces: cruces.length,
   };
+  // El desenlace de las alertas no es una cifra sino un párrafo, y el panel lo
+  // sabe redactar: contarlas a mano es pedir que alguien se equivoque.
+  const textos = {
+    desenlaces: redactarDesenlaces(resumenDesenlaces(consultas, citadasEnDocumentos(guardados))),
+  };
   for (const seccion of plantilla.secciones) {
     for (const campo of seccion.campos) {
-      if (campo.calculado && cuentas[campo.calculado] !== undefined) {
-        valores[campo.id] = String(cuentas[campo.calculado]);
-      }
+      if (!campo.calculado) continue;
+      if (cuentas[campo.calculado] !== undefined) valores[campo.id] = String(cuentas[campo.calculado]);
+      else if (textos[campo.calculado] !== undefined) valores[campo.id] = textos[campo.calculado];
     }
   }
 }

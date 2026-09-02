@@ -104,6 +104,12 @@ resumen la cuenta como pendiente, el expediente la marca en rojo y el
 certificado la imprime como *decisión pendiente*. Es la respuesta a la
 pregunta que sigue a todo hallazgo: «¿y qué hicieron con esto?».
 
+**Reunir el expediente de una persona.** Sus consultas, sus decisiones, sus
+formatos y sus evidencias en una sola pantalla, aunque el nombre se haya
+escrito de tres formas distintas y una consulta se hiciera solo por cédula.
+Se imprime de una pieza, y la hoja enumera también lo que falta: es lo que se
+entrega cuando piden «el expediente de este alumno».
+
 **Respaldar.** La copia de seguridad va en ZIP e incluye las evidencias
 binarias —los PDF de la Procuraduría, las capturas—, más el expediente en CSV
 legible sin el panel y un LEEME con las instrucciones de restauración. El

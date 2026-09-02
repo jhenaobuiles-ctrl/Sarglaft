@@ -11,7 +11,7 @@ commit e interfaz. Mantén esa convención.
 ## Comandos
 
 ```bash
-node --test                                  # todas las pruebas (111)
+node --test                                  # todas las pruebas (126)
 node --test scripts/test/scoring.test.mjs    # un solo archivo
 node --test --test-name-pattern="tildes"     # filtrar por nombre de prueba
 
@@ -144,6 +144,17 @@ revisión— mediante `alternarFila()` y `conectarDecisiones()`. Ese conector se
 registra **al montar la vista y no al pintar los resultados**: pintar ocurre
 una vez por cruce, y engancharlo ahí apila un manejador por cada uno hasta que
 el desplegable se abre y se cierra en el mismo clic.
+
+`app/registro/contrapartes.js` agrupa consultas, documentos y evidencias por
+persona. La clave es el documento cuando lo hay y el nombre normalizado cuando
+no; después une el grupo que solo tiene nombre con el del documento que lleve
+ese mismo nombre, **pero solo si es uno**: dos personas pueden llamarse igual
+y fundirlas diría que una sola tiene los papeles de dos. Es lo que por fin usa
+los índices `documentoNormalizado` y `nombreNormalizado` de los dos almacenes.
+
+La hoja imprimible de `app/ui/contrapartes.js` enumera además lo que **falta**
+—sin consulta en listas, sin antecedentes, sin formatos, con alertas sin
+decidir—. Un expediente impreso que calla sus vacíos induce a creerlo completo.
 
 `planDeRegistro()` decide qué guarda un barrido. Vive en `desenlace.js` y no
 en `revision.js` porque de esa regla depende que «una alerta abierta» siga

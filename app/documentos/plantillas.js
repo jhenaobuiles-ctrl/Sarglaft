@@ -693,7 +693,7 @@ export const PLANTILLAS = [
         titulo: 'Contenido',
         campos: [
           { id: 'gestion', etiqueta: 'Gestión del período', tipo: 'area', ancho: 'completo', requerido: true },
-          { id: 'alertas', etiqueta: 'Alertas atendidas y su desenlace', tipo: 'area', ancho: 'completo' },
+          { id: 'alertas', etiqueta: 'Alertas atendidas y su desenlace', tipo: 'area', ancho: 'completo', calculado: 'desenlaces' },
           { id: 'capacitaciones', etiqueta: 'Capacitaciones realizadas', tipo: 'area', ancho: 'completo' },
           { id: 'dificultades', etiqueta: 'Dificultades y recursos requeridos', tipo: 'area', ancho: 'completo' },
           { id: 'recomendaciones', etiqueta: 'Recomendaciones', tipo: 'area', ancho: 'completo' },

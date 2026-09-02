@@ -11,6 +11,7 @@ import { montarCruce } from './cruce.js';
 import { montarRevision } from './revision.js';
 import { montarAntecedentes } from './antecedentes.js';
 import { montarDocumentos } from './documentos.js';
+import { montarContrapartes } from './contrapartes.js';
 import { montarExpediente } from './expediente.js';
 import { montarListas } from './listas.js';
 
@@ -83,6 +84,7 @@ async function arrancar() {
   montarRevision();
   montarAntecedentes();
   montarDocumentos();
+  montarContrapartes();
   montarExpediente();
   montarListas();
   montarAjustes();

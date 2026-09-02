@@ -111,6 +111,30 @@ export function chipHTML(consulta) {
   return '<span class="sin-decidir">Sin decidir</span>';
 }
 
+/**
+ * Redacta el resumen de alertas para el informe del oficial de cumplimiento.
+ *
+ * El panel ya sabe cuántas alertas hubo y en qué acabaron; obligar a contarlas
+ * a mano es pedir que alguien se equivoque escribiendo lo que el sistema tiene
+ * delante. El texto se propone como borrador y se edita antes de firmar.
+ */
+export function redactarDesenlaces(resumen) {
+  if (!resumen.total) {
+    return 'En el período no se registraron coincidencias que requirieran decisión.';
+  }
+  const partes = DESENLACES.filter((d) => resumen[d.id]).map(
+    (d) => `${resumen[d.id]} ${d.rotulo.toLowerCase()}`,
+  );
+  const frases = [`En el período se registraron ${resumen.total} coincidencia(s) que requerían decisión.`];
+  if (partes.length) frases.push(`Desenlaces: ${partes.join('; ')}.`);
+  frases.push(
+    resumen.sinCerrar
+      ? `Quedan ${resumen.sinCerrar} sin decisión registrada a la fecha de este informe.`
+      : 'Todas cuentan con su decisión y su sustento registrados.',
+  );
+  return frases.join(' ');
+}
+
 /* ---------- una alerta abierta por contraparte ---------- */
 
 const GRAVEDAD = { SIN_HALLAZGOS: 0, EN_REVISION: 1, ALERTA: 2 };

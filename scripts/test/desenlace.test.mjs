@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   DESENLACES, requiereDesenlace, estaCerrada, citadasEnDocumentos,
-  resumenDesenlaces, etiquetaDesenlace, claseDesenlace, planDeRegistro, gravedad,
+  resumenDesenlaces, etiquetaDesenlace, claseDesenlace, planDeRegistro, gravedad, redactarDesenlaces,
 } from '../../app/ui/desenlace.js';
 
 const consulta = (extra = {}) => ({ id: 'c_1', resultado: 'ALERTA', ...extra });
@@ -113,4 +113,25 @@ test('la gravedad ordena los tres veredictos', () => {
   assert.ok(gravedad('ALERTA') > gravedad('EN_REVISION'));
   assert.ok(gravedad('EN_REVISION') > gravedad('SIN_HALLAZGOS'));
   assert.equal(gravedad('lo que sea'), 0);
+});
+
+test('el informe redacta solo el resumen de las alertas', () => {
+  const texto = redactarDesenlaces({
+    total: 5, homonimo: 3, seguimiento: 1, rechazada: 0, reportada: 1, sinCerrar: 0,
+  });
+  assert.match(texto, /5 coincidencia\(s\)/);
+  assert.match(texto, /3 descartada/);
+  assert.match(texto, /1 se reporta a la uiaf/i);
+  assert.doesNotMatch(texto, /0 no se vincula/, 'no enumera los desenlaces sin casos');
+  assert.match(texto, /Todas cuentan con su decisión/);
+});
+
+test('el informe dice cuántas quedan sin decidir', () => {
+  const texto = redactarDesenlaces({ total: 2, homonimo: 1, seguimiento: 0, rechazada: 0, reportada: 0, sinCerrar: 1 });
+  assert.match(texto, /Queda[n]? 1 sin decisión registrada/);
+});
+
+test('sin alertas el informe no inventa un párrafo de desenlaces', () => {
+  const texto = redactarDesenlaces({ total: 0, sinCerrar: 0 });
+  assert.match(texto, /no se registraron coincidencias/);
 });

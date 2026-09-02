@@ -25,6 +25,7 @@
       <span class="grupo">Documentación</span>
       <button type="button" data-seccion="documentos">Documentos del sistema</button>
       <span class="grupo">Registro</span>
+      <button type="button" data-seccion="contrapartes">Contrapartes</button>
       <button type="button" data-seccion="expediente">Expediente de consultas</button>
       <button type="button" data-seccion="listas">Estado de las listas</button>
       <button type="button" data-seccion="ajustes">Ajustes</button>
@@ -216,6 +217,24 @@
         </div>
         <div id="lista-documentos"></div>
       </div>
+    </section>
+
+    <!-- ---------------- Contrapartes ---------------- -->
+    <section class="seccion" id="seccion-contrapartes" hidden>
+      <div class="encabezado-seccion">
+        <h1>Contrapartes</h1>
+        <p>
+          Todo lo que hay de cada persona o empresa reunido en un sitio: sus consultas, sus
+          decisiones, sus formatos y sus evidencias. Es lo que se entrega cuando piden
+          «el expediente de este alumno».
+        </p>
+      </div>
+      <div class="tarjeta no-imprimir">
+        <label for="f-contraparte">Buscar por nombre o documento</label>
+        <input type="search" id="f-contraparte" autocomplete="off">
+      </div>
+      <div id="ficha-contraparte"></div>
+      <div id="lista-contrapartes"></div>
     </section>
 
     <!-- ---------------- Expediente ---------------- -->

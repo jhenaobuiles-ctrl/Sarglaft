@@ -348,3 +348,14 @@ body.imprimiendo #hoja-certificado { display: block; padding: 0; }
   text-transform: uppercase;
   color: var(--alerta);
 }
+
+/* ---------- expediente de la contraparte ---------- */
+
+#ficha-contraparte:empty { display: none; }
+#ficha-contraparte h3 { font-size: .95rem; color: var(--tinta-suave); }
+#ficha-contraparte .encabezado-editor { margin-bottom: 14px; }
+#ficha-contraparte .encabezado-editor h2 { margin: 0 0 2px; }
+
+/* Lista impresa de vacíos del expediente */
+#hoja-certificado ul { margin: 0 0 .8em; padding-left: 1.2em; }
+#hoja-certificado li { margin-bottom: .25em; }
