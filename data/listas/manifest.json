@@ -1,5 +1,5 @@
 {
-  "generado": "2026-09-02T23:00:34.657Z",
+  "generado": "2026-09-02T23:05:51.832Z",
   "listas": [
     {
       "id": "onu",
@@ -9,11 +9,11 @@
       "vinculante": true,
       "toleranciaDias": 30,
       "archivo": "onu.json",
-      "fechaPublicacion": "2026-09-01",
+      "fechaPublicacion": "2026-09-02",
       "registros": 1011,
       "bytes": 480418,
-      "sha256": "43f8fee15cedf18123411c5b8c80c406b1f1a411accd644eec00e909f50aad03",
-      "actualizado": "2026-09-02T22:59:57.389Z",
+      "sha256": "17b4ca3fde8eaf79475bc114b49a3a18bf9cef1a5e90b830d84859d90b3127a8",
+      "actualizado": "2026-09-02T23:05:24.992Z",
       "estado": "ok"
     },
     {
@@ -27,8 +27,8 @@
       "fechaPublicacion": "2026-08-28",
       "registros": 19321,
       "bytes": 6620415,
-      "sha256": "fc87019381559c19607de78dc414f3277bf6f56c379c00c9c3fda47e483529e7",
-      "actualizado": "2026-09-02T22:59:59.940Z",
+      "sha256": "22bb2af7949b57d06c2fce0a4dc3d75d5dde8ed4b95a5d61be68ab4368f15b14",
+      "actualizado": "2026-09-02T23:05:27.399Z",
       "estado": "ok"
     },
     {
@@ -42,8 +42,8 @@
       "fechaPublicacion": "2026-07-27",
       "registros": 481,
       "bytes": 340562,
-      "sha256": "7b446a7387f45b9a500b4f96b9e8bfaf44f72f9fad15f466da94abc91249981a",
-      "actualizado": "2026-09-02T23:00:00.236Z",
+      "sha256": "bf43cf003b670ce05b9b36216f8e0127fabd557084d1967cf2edde9a308989fe",
+      "actualizado": "2026-09-02T23:05:27.623Z",
       "estado": "ok"
     },
     {
@@ -57,8 +57,8 @@
       "fechaPublicacion": "2026-08-05",
       "registros": 6234,
       "bytes": 1958227,
-      "sha256": "da98cb1f41e12ae72242d2ab093cf95b02ef95d72aeec6164c2814b1942eeafe",
-      "actualizado": "2026-09-02T23:00:07.416Z",
+      "sha256": "4725ec33728870b8cede1c00ecbdaf7311af28eb0a3223d9395f523fd7611560",
+      "actualizado": "2026-09-02T23:05:32.050Z",
       "estado": "ok"
     },
     {
@@ -72,8 +72,8 @@
       "fechaPublicacion": "2026-09-02",
       "registros": 6334,
       "bytes": 4187085,
-      "sha256": "f1b4bffe47565eda53057ef6f41e228bdce91deee447fce39cd04f186404419a",
-      "actualizado": "2026-09-02T23:00:34.657Z",
+      "sha256": "ceae7f4d1c83c8c3f071639db5d882ac7b43990b6d1fc4e4356181c6107484bd",
+      "actualizado": "2026-09-02T23:05:51.831Z",
       "estado": "ok"
     }
   ]
