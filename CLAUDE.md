@@ -11,7 +11,7 @@ commit e interfaz. Mantén esa convención.
 ## Comandos
 
 ```bash
-node --test                                  # todas las pruebas (93)
+node --test                                  # todas las pruebas (106)
 node --test scripts/test/scoring.test.mjs    # un solo archivo
 node --test --test-name-pattern="tildes"     # filtrar por nombre de prueba
 
@@ -114,8 +114,19 @@ vistas se refrescan vía `alCambiarRegistro` / `registroCambio()`.
   (`equipoSinConfigurar`): sin eso, restaurar en una máquina recién puesta
   devolvía los documentos pero no quién los firma.
 
-El cruce masivo (`app/ui/cruce.js`) corre en el hilo principal cediendo cada 200
-filas. **No lo muevas a un Web Worker**: el motor resuelve mil consultas en
+El cruce masivo (`app/ui/cruce.js`) tiene dos entradas —pegar la lista y cargar
+un CSV— que confluyen en `ejecutarCruce(contrapartes)`. Lo que cambia es de
+dónde salen las contrapartes, no lo que se hace con ellas: duplicar el bucle
+haría que un camino guardara en el expediente algo distinto del otro.
+
+`app/lib/pegado.js` interpreta lo que llega del portapapeles. Excel copia las
+columnas separadas por tabulador, así que cuál es el nombre y cuál el
+documento se deduce del **contenido** y no de la posición. La coma es el
+último separador que se prueba: «PEREZ, JUAN» es un nombre, no dos columnas.
+El tipo de documento se aplica a toda la lista pegada y solo cambia algo en
+los NIT, a los que hay que buscar también sin su dígito de verificación.
+
+Ese bucle corre en el hilo principal cediendo cada 200 filas. **No lo muevas a un Web Worker**: el motor resuelve mil consultas en
 ~40 ms y clonar decenas de MB a otro hilo costaría más de lo que ahorra.
 
 `app/ui/desenlace.js` cierra las alertas. Una coincidencia exige una de cuatro

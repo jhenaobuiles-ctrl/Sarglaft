@@ -74,6 +74,11 @@ resultado se guarda con la versión exacta —fecha de publicación y `sha256`�
 cada archivo usado, y de ahí sale un certificado imprimible. Eso es lo que
 pide un auditor: no que se consultara, sino contra qué se consultó.
 
+**Cruzar la lista entera.** Se pega la columna copiada de Excel —la de
+cédulas, la de nombres o las dos a la vez— y el panel deduce cuál es cuál,
+descarta el encabezado y omite las repetidas. Para listas con más columnas
+sigue estando la carga del CSV con su mapeo.
+
 **Revisar de nuevo.** Una consulta prueba que esa persona estaba limpia ese
 día, y nada más; las designaciones se publican a diario. La *revisión
 periódica* vuelve a pasar por las listas de hoy a todas las contrapartes que ya

@@ -124,10 +124,48 @@
       </div>
 
       <div class="tarjeta">
-        <h2>1. Cargar el archivo</h2>
+        <h2>Pegar la lista</h2>
+        <p class="tenue">
+          En Excel selecciona la columna de cédulas —o la de nombres, o las dos a la vez— cópiala
+          y pégala aquí. No hace falta guardar ningún archivo. El panel deduce solo cuál columna
+          es cuál y descarta el encabezado si viene arrastrado.
+        </p>
+        <textarea id="pegado-cruce" rows="7" spellcheck="false"
+          placeholder="79.123.456&#10;1.144.087.221&#10;María Fernanda Gómez&#9;1020304050"></textarea>
+        <div class="campos" style="margin-top:14px">
+          <div>
+            <label for="p-tipo-doc">Tipo de documento de la lista</label>
+            <select id="p-tipo-doc">
+              <option value="Cédula de ciudadanía">Cédula de ciudadanía</option>
+              <option value="Cédula de extranjería">Cédula de extranjería</option>
+              <option value="NIT">NIT (empresas)</option>
+              <option value="Pasaporte">Pasaporte</option>
+            </select>
+          </div>
+          <div>
+            <label for="p-vinculo">Tipo de contraparte</label>
+            <select id="p-vinculo">
+              <option>Aspirante / alumno</option>
+              <option>Empleado</option>
+              <option>Proveedor</option>
+              <option>Socio o accionista</option>
+              <option>Cliente empresarial</option>
+              <option>Otro</option>
+            </select>
+          </div>
+        </div>
+        <p class="tenue" id="resumen-pegado">Pega la lista para empezar.</p>
+        <div class="acciones">
+          <button type="button" class="accion" id="cruzar-pegado" disabled>Cruzar la lista</button>
+        </div>
+      </div>
+
+      <div class="tarjeta">
+        <h2>O cargar un archivo</h2>
         <p class="tenue">
           Un archivo CSV con una fila por contraparte. Desde Excel: <em>Archivo → Guardar como → CSV UTF-8</em>.
-          La primera fila debe tener los nombres de las columnas.
+          La primera fila debe tener los nombres de las columnas. Sirve cuando la lista trae más
+          datos que el nombre y el documento.
         </p>
         <input type="file" id="archivo-cruce" accept=".csv,.txt">
         <div id="mapeo-cruce"></div>

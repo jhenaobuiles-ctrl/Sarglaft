@@ -10,6 +10,7 @@
 import { estado, registroCambio } from './app.js';
 import { guardar, guardarVarios, ALMACENES, nuevoId } from '../registro/db.js';
 import { leerCSV, detectarSeparador, filasAObjetos, escribirCSV } from '../lib/csv.js';
+import { interpretarPegado, resumirPegado } from '../lib/pegado.js';
 import { normalizarNombre, normalizarDocumento } from '../motor/normalizar.js';
 import { marcarCumplida } from './obligaciones.js';
 import { esc, ROTULOS, porcentaje, descargar, marcaArchivo, fechaHora } from './formato.js';
@@ -28,6 +29,8 @@ let filasCargadas = [];
 let encabezadoCargado = [];
 
 export function montarCruce() {
+  montarPegado();
+
   document.getElementById('archivo-cruce').addEventListener('change', async (evento) => {
     const archivo = evento.target.files[0];
     if (!archivo) return;
@@ -43,6 +46,51 @@ export function montarCruce() {
     encabezadoCargado = encabezado;
     filasCargadas = objetos;
     pintarMapeo(archivo.name);
+  });
+}
+
+/**
+ * El camino corto: pegar la columna copiada de Excel.
+ *
+ * Sin selector de columnas ni archivo intermedio. El resumen se actualiza
+ * mientras se escribe para que se vea qué entendió el panel antes de lanzar
+ * el cruce, no después.
+ */
+function montarPegado() {
+  const area = document.getElementById('pegado-cruce');
+  const resumen = document.getElementById('resumen-pegado');
+  const boton = document.getElementById('cruzar-pegado');
+  let leido = { filas: [] };
+
+  const revisar = () => {
+    leido = interpretarPegado(area.value);
+    boton.disabled = leido.filas.length === 0;
+    boton.textContent = leido.filas.length
+      ? `Cruzar ${leido.filas.length.toLocaleString('es-CO')} contraparte(s)`
+      : 'Cruzar la lista';
+    resumen.textContent = area.value.trim()
+      ? resumirPegado(leido)
+      : 'Pega la lista para empezar.';
+  };
+
+  area.addEventListener('input', revisar);
+  revisar();
+
+  boton.addEventListener('click', async () => {
+    const tipoDocumento = document.getElementById('p-tipo-doc').value;
+    const vinculo = document.getElementById('p-vinculo').value;
+    await ejecutarCruce(
+      leido.filas.map((f) => ({
+        linea: f.linea,
+        nombre: f.nombre,
+        documento: f.documento,
+        // El tipo se aplica a toda la lista: es lo que se puede saber de un
+        // pegado suelto, y solo cambia el resultado en los NIT, a los que hay
+        // que buscar también sin su dígito de verificación.
+        tipoDocumento: f.documento ? tipoDocumento : '',
+        vinculo,
+      })),
+    );
   });
 }
 
@@ -71,7 +119,7 @@ function pintarMapeo(nombreArchivo) {
       .join('');
 
   document.getElementById('mapeo-cruce').innerHTML = `
-    <h3 style="margin-top:20px">2. Indicar qué columna es cuál</h3>
+    <h3 style="margin-top:20px">Indicar qué columna es cuál</h3>
     <p class="tenue">
       ${filasCargadas.length.toLocaleString('es-CO')} filas leídas de <strong>${esc(nombreArchivo)}</strong>.
     </p>
@@ -100,14 +148,49 @@ async function ejecutar() {
     return;
   }
 
+  const contrapartes = [];
+  for (let i = 0; i < filasCargadas.length; i++) {
+    const fila = filasCargadas[i];
+    const valor = (columna) => (columna ? String(fila[columna] || '').trim() : '');
+    const nombre = valor(columnas.nombre);
+    const documento = valor(columnas.documento);
+    if (!nombre && !documento) continue;
+    contrapartes.push({
+      // +2: la primera fila del archivo es el encabezado y las hojas de
+      // cálculo cuentan desde uno, así que este es el número que ve quien
+      // abra el archivo para revisar una alerta.
+      linea: i + 2,
+      nombre,
+      documento,
+      tipoDocumento: valor(columnas.tipoDocumento),
+      vinculo: valor(columnas.vinculo),
+    });
+  }
+  await ejecutarCruce(contrapartes);
+}
+
+/**
+ * Cruza una lista de contrapartes contra las listas cargadas.
+ *
+ * Es el camino común del archivo CSV y del pegado: cambia de dónde salen las
+ * contrapartes, no lo que se hace con ellas ni lo que queda registrado.
+ *
+ * @param {Array<{linea:number,nombre:string,documento:string,tipoDocumento?:string,vinculo?:string}>} contrapartes
+ */
+async function ejecutarCruce(contrapartes) {
+  if (!contrapartes.length) {
+    alert('No hay contrapartes que cruzar.');
+    return;
+  }
+
   const progreso = document.getElementById('progreso-cruce');
   const salida = document.getElementById('resultado-cruce');
   salida.innerHTML = '';
   progreso.innerHTML = `
     <div class="tarjeta">
       <h3 style="margin-top:0">Cruzando contra las listas…</h3>
-      <progress id="barra-cruce" max="${filasCargadas.length}" value="0"></progress>
-      <p class="tenue" id="texto-cruce">0 de ${filasCargadas.length.toLocaleString('es-CO')}</p>
+      <progress id="barra-cruce" max="${contrapartes.length}" value="0"></progress>
+      <p class="tenue" id="texto-cruce">0 de ${contrapartes.length.toLocaleString('es-CO')}</p>
     </div>`;
   const barra = document.getElementById('barra-cruce');
   const texto = document.getElementById('texto-cruce');
@@ -117,17 +200,11 @@ async function ejecutar() {
   const resultados = [];
   const registros = [];
 
-  for (let i = 0; i < filasCargadas.length; i++) {
-    const fila = filasCargadas[i];
-    const nombre = columnas.nombre ? String(fila[columnas.nombre] || '').trim() : '';
-    const documento = columnas.documento ? String(fila[columnas.documento] || '').trim() : '';
-    const tipoDocumento = columnas.tipoDocumento ? String(fila[columnas.tipoDocumento] || '').trim() : '';
-    const vinculo = columnas.vinculo ? String(fila[columnas.vinculo] || '').trim() : '';
-
-    if (!nombre && !documento) continue;
+  for (let i = 0; i < contrapartes.length; i++) {
+    const { linea, nombre, documento, tipoDocumento = '', vinculo = '' } = contrapartes[i];
 
     const resultado = estado.motor.consultar({ nombre, documento, tipoDocumento });
-    resultados.push({ fila: i + 2, nombre, documento, tipoDocumento, vinculo, ...resultado });
+    resultados.push({ linea, nombre, documento, tipoDocumento, vinculo, ...resultado });
 
     registros.push({
       id: nuevoId('c'),
@@ -147,12 +224,12 @@ async function ejecutar() {
 
     if (i % FILAS_POR_TANDA === 0) {
       barra.value = i;
-      texto.textContent = `${i.toLocaleString('es-CO')} de ${filasCargadas.length.toLocaleString('es-CO')}`;
+      texto.textContent = `${i.toLocaleString('es-CO')} de ${contrapartes.length.toLocaleString('es-CO')}`;
       await new Promise((r) => setTimeout(r, 0));
     }
   }
 
-  barra.value = filasCargadas.length;
+  barra.value = contrapartes.length;
   const listas = resultados[0]?.listas || estado.listas.map((l) => ({
     id: l.id, nombre: l.nombre, fechaPublicacion: l.fechaPublicacion,
     sha256: l.sha256, registros: l.registros.length, autoridad: l.autoridad,
@@ -198,12 +275,12 @@ function pintarResultados(cruce, resultados) {
         revisar.length
           ? `<p class="tenue">Ordenadas por similitud. El resto de contrapartes salió sin hallazgos y quedó registrado en el expediente.</p>
              <div class="envoltura-tabla"><table>
-               <thead><tr><th>Fila</th><th>Contraparte</th><th>Documento</th><th>Resultado</th><th>Coincidencia más fuerte</th><th>Lista</th></tr></thead>
+               <thead><tr><th>Línea</th><th>Contraparte</th><th>Documento</th><th>Resultado</th><th>Coincidencia más fuerte</th><th>Lista</th></tr></thead>
                <tbody>${revisar
                  .map((r) => {
                    const c = r.coincidencias[0];
                    return `<tr>
-                     <td class="numero">${r.fila}</td>
+                     <td class="numero">${r.linea}</td>
                      <td>${esc(r.nombre) || '—'}</td>
                      <td class="numero">${esc(r.documento) || '—'}</td>
                      <td><span class="etiqueta ${r.resultado}">${esc(ROTULOS[r.resultado])}</span></td>
@@ -226,11 +303,11 @@ function pintarResultados(cruce, resultados) {
 
   document.getElementById('exportar-cruce').addEventListener('click', () => {
     const filas = [
-      ['Fila', 'Nombre', 'Tipo documento', 'Documento', 'Tipo contraparte', 'Resultado', 'Coincidencias', 'Mejor coincidencia', 'Lista', 'Similitud', 'Motivo'],
+      ['Línea', 'Nombre', 'Tipo documento', 'Documento', 'Tipo contraparte', 'Resultado', 'Coincidencias', 'Mejor coincidencia', 'Lista', 'Similitud', 'Motivo'],
       ...resultados.map((r) => {
         const c = r.coincidencias[0];
         return [
-          r.fila, r.nombre, r.tipoDocumento, r.documento, r.vinculo,
+          r.linea, r.nombre, r.tipoDocumento, r.documento, r.vinculo,
           ROTULOS[r.resultado] || r.resultado,
           r.coincidencias.length,
           c ? c.registro.n : '',
