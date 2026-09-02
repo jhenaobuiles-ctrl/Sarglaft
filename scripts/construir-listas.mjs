@@ -22,6 +22,11 @@ import * as onu from './fuentes/onu.mjs';
 import { sdn, noSdn } from './fuentes/ofac.mjs';
 import * as ue from './fuentes/ue.mjs';
 import * as uk from './fuentes/uk.mjs';
+// El mismo criterio de frescura que aplica el navegador: si el build usara
+// otro, el log y el panel dirían cosas distintas del mismo dato.
+import {
+  frescuraDe, explicarFrescura, TOLERANCIA_POR_OMISION,
+} from '../app/datos/frescura.js';
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DESTINO = join(RAIZ, 'data', 'listas');
@@ -48,6 +53,7 @@ async function principal() {
   const anterior = leerManifiestoAnterior();
   const entradas = [];
   let fallos = 0;
+  let atrasadas = 0;
 
   for (const fuente of FUENTES) {
     const previa = anterior.listas?.find((l) => l.id === fuente.id) || null;
@@ -56,6 +62,13 @@ async function principal() {
       const entrada = await procesar(fuente, previa);
       entradas.push(entrada);
       console.log(`    ✓ ${entrada.registros} registros · publicada ${entrada.fechaPublicacion || 'sin fecha'} · ${(entrada.bytes / 1048576).toFixed(2)} MB`);
+      // Una fuente que descarga bien pero dejó de publicar no falla por
+      // ninguna parte: si nadie lo dice aquí, nadie se entera.
+      const frescura = frescuraDe(entrada);
+      if (frescura.problema) {
+        console.log(`    ⚠ ${frescura.rotulo}: ${explicarFrescura(entrada)}`);
+        atrasadas++;
+      }
     } catch (error) {
       fallos++;
       console.error(`    ✗ ${error.message}`);
@@ -70,6 +83,14 @@ async function principal() {
   writeFileSync(MANIFIESTO, `${JSON.stringify(manifiesto, null, 2)}\n`);
 
   resumen(entradas);
+  if (atrasadas) {
+    // No es un fallo: la descarga funcionó. Pero tiene que quedar dicho en el
+    // log, que es donde se depura esta mitad del sistema.
+    console.log(
+      `\n${atrasadas} lista(s) llevan más tiempo del previsto sin publicar. ` +
+        'Comprueba en el sitio oficial si la fuente cambió de dirección o de formato.',
+    );
+  }
   if (fallos) {
     console.error(`\n${fallos} de ${FUENTES.length} fuentes fallaron.`);
     process.exitCode = 1;
@@ -128,6 +149,9 @@ async function procesar(fuente, previa) {
     fuente: url,
     autoridad: fuente.autoridad,
     vinculante: Boolean(fuente.vinculante),
+    // Viaja al navegador para que el panel pueda decir si el dato está
+    // atrasado, no solo si la descarga salió bien.
+    toleranciaDias: fuente.toleranciaDias || TOLERANCIA_POR_OMISION,
     archivo,
     fechaPublicacion,
     registros: registros.length,
@@ -155,6 +179,7 @@ function conservarAnterior(fuente, previa, error) {
     fuente: fuente.fuente,
     autoridad: fuente.autoridad,
     vinculante: Boolean(fuente.vinculante),
+    toleranciaDias: fuente.toleranciaDias || TOLERANCIA_POR_OMISION,
     archivo: `${fuente.id}.json`,
     fechaPublicacion: '',
     registros: 0,

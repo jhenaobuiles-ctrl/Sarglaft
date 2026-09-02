@@ -11,7 +11,7 @@ commit e interfaz. Mantén esa convención.
 ## Comandos
 
 ```bash
-node --test                                  # todas las pruebas (130)
+node --test                                  # todas las pruebas (141)
 node --test scripts/test/scoring.test.mjs    # un solo archivo
 node --test --test-name-pattern="tildes"     # filtrar por nombre de prueba
 
@@ -201,6 +201,15 @@ que va a firmar un tercero es peor que un campo vacío.
 resultados y evidencias viven solo en el IndexedDB del navegador (Ley 1581 de
 2012). Al repositorio suben únicamente código y listas de sanciones, que ya son
 información pública oficial.
+
+**«Al día» mira la publicación, no la descarga.** El guardrail de encogimiento
+no ve el fallo contrario: una fuente que se descarga sin problema pero deja de
+publicar nuevo. El conteo no cambia, el sha256 no cambia y el estado dice
+`ok`. `app/datos/frescura.js` —compartido por el build y el navegador, como el
+normalizador— compara la fecha de publicación contra la **tolerancia que cada
+fuente declara** en su `meta`. Un umbral único no sirve: la OFAC mueve su
+lista de designados casi cada semana y la consolidada unas veces al año.
+Avisar no es descartar: una lista atrasada se sigue consultando.
 
 **Nunca publicar una lista encogida.** El guardrail (`CAIDA_MAXIMA = 0.6`)
 rechaza una lista que pierda más del 40% de sus registros y conserva la versión

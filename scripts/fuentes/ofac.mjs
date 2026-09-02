@@ -17,7 +17,10 @@ const TIPOS = {
   aircraft: 'B',
 };
 
-function construir(id, nombre, url) {
+// La tolerancia va por lista y no por fuente: la OFAC mueve la de designados
+// casi cada semana y la consolidada apenas unas veces al año. Un mismo umbral
+// gritaría en falso sobre la segunda o se quedaría callado sobre la primera.
+function construir(id, nombre, url, toleranciaDias) {
   return {
     meta: {
       id,
@@ -25,6 +28,7 @@ function construir(id, nombre, url) {
       fuente: url,
       autoridad: 'OFAC — Departamento del Tesoro de Estados Unidos',
       vinculante: false,
+      toleranciaDias,
       formato: 'xml',
     },
     parsear: (contenido) => parsearOFAC(contenido, id),
@@ -35,12 +39,14 @@ export const sdn = construir(
   'ofac_sdn',
   'OFAC — Specially Designated Nationals (lista Clinton)',
   'https://sanctionslistservice.ofac.treas.gov/api/PublicationPreview/exports/SDN.XML',
+  30,
 );
 
 export const noSdn = construir(
   'ofac_nosdn',
   'OFAC — Consolidated Sanctions List (no SDN)',
   'https://sanctionslistservice.ofac.treas.gov/api/PublicationPreview/exports/CONSOLIDATED.XML',
+  120,
 );
 
 function parsearOFAC(contenido, prefijo) {

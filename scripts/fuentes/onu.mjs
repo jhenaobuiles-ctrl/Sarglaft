@@ -12,6 +12,9 @@ export const meta = {
   fuente: 'https://scsanctions.un.org/resources/xml/en/consolidated.xml',
   autoridad: 'Organización de las Naciones Unidas',
   vinculante: true,
+  // El Consejo de Seguridad no publica a diario, pero un mes entero sin
+  // movimiento en la única lista vinculante en Colombia merece una mirada.
+  toleranciaDias: 30,
   formato: 'xml',
 };
 

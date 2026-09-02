@@ -153,6 +153,11 @@ Dos reglas gobiernan esa actualización:
 - **Aislamiento por fuente.** Si una lista cambia de formato, las demás se
   actualizan igual; la afectada conserva su última versión buena y queda
   marcada como obsoleta en el manifiesto y en el panel.
+- **Avisar cuando una lista deja de publicar.** Cada fuente declara cuánto
+  puede pasar sin novedades antes de que valga la pena mirar. Una lista que se
+  descarga bien pero lleva meses congelada no falla por ningún lado, y sin ese
+  aviso el panel diría «Al día» de un dato viejo. Se sigue consultando: el
+  aviso advierte, no descarta.
 - **Nunca publicar una lista encogida.** Si una lista pierde más del 40% de sus
   registros se asume descarga incompleta y no se publica. Una lista truncada
   produciría un "sin hallazgos" falso, que es el peor resultado posible aquí.

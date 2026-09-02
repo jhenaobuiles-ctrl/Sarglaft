@@ -3,6 +3,7 @@
 import { cargarManifiesto, cargarListas, limpiarCache } from '../datos/cargador.js';
 import { crearMotor } from '../motor/consulta.js';
 import { leerConfig, escribirConfig, borrarTodo } from '../registro/db.js';
+import { listasConProblema } from '../datos/frescura.js';
 import { esc } from './formato.js';
 
 import { montarPanel } from './panel.js';
@@ -109,6 +110,21 @@ function mostrarEstadoCarga(aviso) {
       `${obsoletas.length} lista(s) no se pudieron actualizar y están desactualizadas: ${obsoletas
         .map((l) => l.nombre)
         .join(', ')}.`,
+    );
+    clase = 'aviso atencion';
+  }
+
+  // Una lista que se descarga bien pero dejó de publicar no falla por ningún
+  // lado. Si el aviso no sale aquí, hay que entrar a mirarlo a propósito, y
+  // nadie entra a mirar lo que el panel dice que está al día.
+  const atrasadas = listasConProblema(estado.manifiesto?.listas || []).filter(
+    ({ frescura }) => frescura.nivel === 'atrasada',
+  );
+  if (atrasadas.length) {
+    partes.push(
+      `${atrasadas.length} lista(s) llevan más tiempo del previsto sin publicar: ${atrasadas
+        .map(({ entrada, frescura }) => `${entrada.nombre} (${frescura.dias} días)`)
+        .join(', ')}. Compruébalo en Estado de las listas.`,
     );
     clase = 'aviso atencion';
   }

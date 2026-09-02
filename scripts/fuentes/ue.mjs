@@ -15,6 +15,9 @@ export const meta = {
     'https://webgate.ec.europa.eu/fsd/fsf/public/files/xmlFullSanctionsList_1_1/content?token=dG9rZW4tMjAxNw',
   autoridad: 'Comisión Europea',
   vinculante: false,
+  // La Comisión reedita la lista cada pocas semanas; dos meses sin publicar
+  // apunta a que la descarga se quedó fija en una copia.
+  toleranciaDias: 60,
   formato: 'xml',
 };
 

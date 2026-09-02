@@ -1,6 +1,7 @@
 // Estado de las listas cargadas: qué versión se está usando y desde cuándo.
 
 import { estado } from './app.js';
+import { frescuraDe, explicarFrescura } from '../datos/frescura.js';
 import { esc, fechaCorta, fechaHora } from './formato.js';
 
 export function montarListas() {
@@ -10,20 +11,27 @@ export function montarListas() {
 
   const filas = (manifiesto.listas || []).map((entrada) => {
     const cargada = porId.get(entrada.id);
-    const problema = entrada.estado !== 'ok';
+    // El estado que importa no es si la descarga salió bien sino cuán viejo
+    // es el dato: una fuente puede descargar sin problema y llevar meses sin
+    // publicar nada nuevo.
+    const frescura = frescuraDe(entrada);
     return `<tr>
       <td>
         <strong>${esc(entrada.nombre)}</strong>
         ${entrada.vinculante ? '<br><span class="etiqueta ALERTA">Vinculante</span>' : ''}
         <br><span class="tenue">${esc(entrada.autoridad || '')}</span>
       </td>
-      <td>${esc(fechaCorta(entrada.fechaPublicacion))}</td>
+      <td>
+        ${esc(fechaCorta(entrada.fechaPublicacion))}
+        ${frescura.dias === null ? '' : `<br><span class="tenue">hace ${frescura.dias} día(s)</span>`}
+      </td>
       <td class="numero">${(entrada.registros || 0).toLocaleString('es-CO')}</td>
       <td class="numero">${esc(fechaHora(entrada.actualizado))}</td>
       <td>
-        <span class="etiqueta ${problema ? 'EN_REVISION' : 'SIN_HALLAZGOS'}">
-          ${problema ? (entrada.estado === 'obsoleto' ? 'Desactualizada' : 'Sin datos') : 'Al día'}
+        <span class="etiqueta ${frescura.problema ? 'EN_REVISION' : 'SIN_HALLAZGOS'}">
+          ${esc(frescura.rotulo)}
         </span>
+        ${frescura.problema ? `<br><span class="tenue">${esc(explicarFrescura(entrada))}</span>` : ''}
         ${entrada.error ? `<br><span class="tenue">${esc(entrada.error)}</span>` : ''}
         ${cargada ? '' : '<br><span class="tenue">no cargada en esta sesión</span>'}
       </td>
@@ -35,6 +43,8 @@ export function montarListas() {
     <p class="tenue">
       Las listas se actualizan solas todos los días a las 6:00 de la mañana. El sha256 identifica
       el archivo exacto contra el que se consulta y es lo que aparece en cada certificado.
+      «Al día» mira la fecha de publicación, no la de descarga: una fuente puede descargarse
+      sin problema y llevar meses sin publicar nada nuevo, y eso es lo que hay que notar.
       ${estado.desdeCache ? '<br><strong>Ahora mismo se está usando una copia guardada, sin conexión.</strong>' : ''}
     </p>
     <div class="envoltura-tabla"><table>

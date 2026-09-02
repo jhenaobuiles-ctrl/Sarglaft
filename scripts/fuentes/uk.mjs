@@ -21,6 +21,9 @@ export const meta = {
     'https://www.gov.uk/api/content/government/publications/the-uk-sanctions-list',
   autoridad: 'Office of Financial Sanctions Implementation, HM Treasury',
   vinculante: false,
+  // OFSI publica a menudo, y el adjunto se resuelve por la API de gov.uk:
+  // si dejara de rotar, la fecha se congelaría sin que fallara nada.
+  toleranciaDias: 45,
   formato: 'csv',
 };
 
