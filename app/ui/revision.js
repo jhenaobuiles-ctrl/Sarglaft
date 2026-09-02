@@ -175,6 +175,7 @@ async function ejecutar() {
     alertas: cambios.filter((c) => c.ahora === 'ALERTA').length,
     revisiones: cambios.filter((c) => c.ahora === 'EN_REVISION').length,
     limpias: contrapartes.length - cambios.length,
+    ausentes: estado.ausentes || [],
     listas: estado.listas.map((l) => ({
       id: l.id,
       nombre: l.nombre,

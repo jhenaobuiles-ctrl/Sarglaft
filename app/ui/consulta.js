@@ -93,6 +93,20 @@ export function vistaResultado(consulta) {
     <div class="veredicto ${resultado}">
       <h2>${esc(ROTULOS[resultado] || resultado)}</h2>
       <p>${esc(explicacionDe(consulta))}</p>
+      ${
+        // Un «sin hallazgos» al que le faltó una lista no significa lo mismo.
+        // Va pegado al veredicto y no en un aviso arriba, que es donde nadie
+        // vuelve a mirar después de escribir el nombre.
+        (consulta.ausentes || []).length
+          ? `<p class="veredicto-nota">
+               No se pudo consultar ${esc(consulta.ausentes.map((a) => a.nombre).join(', '))}${
+                 consulta.ausentes.some((a) => a.vinculante)
+                   ? ', de aplicación obligatoria. Conviene repetir la consulta cuando vuelva a estar disponible.'
+                   : '. El alcance fue menor que el habitual.'
+               }
+             </p>`
+          : ''
+      }
     </div>
 
     <div class="tarjeta no-imprimir">

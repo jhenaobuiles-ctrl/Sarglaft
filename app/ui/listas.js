@@ -35,7 +35,14 @@ export function montarListas() {
         ${entrada.error ? `<br><span class="tenue">${esc(entrada.error)}</span>` : ''}
         ${cargada ? '' : '<br><span class="tenue">no cargada en esta sesión</span>'}
       </td>
-      <td class="mono">${esc((entrada.sha256 || '').slice(0, 16))}${entrada.sha256 ? '…' : ''}</td>
+      <td class="mono">
+        ${esc((entrada.sha256 || '').slice(0, 16))}${entrada.sha256 ? '…' : ''}
+        ${
+          cargada
+            ? `<br><span class="tenue">${cargada.huellaVerificada ? 'comprobada contra el archivo' : 'sin comprobar'}</span>`
+            : ''
+        }
+      </td>
     </tr>`;
   });
 
@@ -45,12 +52,26 @@ export function montarListas() {
       el archivo exacto contra el que se consulta y es lo que aparece en cada certificado.
       «Al día» mira la fecha de publicación, no la de descarga: una fuente puede descargarse
       sin problema y llevar meses sin publicar nada nuevo, y eso es lo que hay que notar.
+      Al cargar cada lista se compara esa huella contra el archivo descargado: una copia servida
+      a medias no se consulta, porque media lista devuelve «sin hallazgos» sobre los designados
+      que quedaron fuera.
       ${estado.desdeCache ? '<br><strong>Ahora mismo se está usando una copia guardada, sin conexión.</strong>' : ''}
     </p>
     <div class="envoltura-tabla"><table>
       <thead><tr><th>Lista</th><th>Publicada</th><th>Registros</th><th>Descargada</th><th>Estado</th><th>sha256</th></tr></thead>
       <tbody>${filas.join('')}</tbody>
     </table></div>
+    ${
+      estado.fallos.length
+        ? `<div class="aviso atencion" style="margin-top:14px">
+             <strong>No se están consultando todas las listas.</strong>
+             ${estado.fallos
+               .map((f) => `${esc(f.nombre)}: ${esc(f.error)}`)
+               .join('<br>')}
+             <br>Vuelve a cargar la página para reintentar la descarga.
+           </div>`
+        : ''
+    }
     <p class="tenue" style="margin-top:14px">
       Generado el ${esc(fechaHora(manifiesto.generado))}.
       Ante cualquier duda prima la consulta en el sitio oficial de la lista: lo que hay aquí es

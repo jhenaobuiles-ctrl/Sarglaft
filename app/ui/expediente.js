@@ -52,10 +52,14 @@ export function montarExpediente() {
     if (!boton) return;
     const consulta = await obtener(ALMACENES.consultas, boton.dataset.certificado);
     if (!consulta) return;
-    // Las filas de un cruce no repiten las listas: se toman del cruce.
+    // Las filas de un cruce no repiten las listas: se toman del cruce. Y con
+    // ellas lo que faltó ese día, que es la otra mitad de la verdad.
     if (!consulta.listas?.length && consulta.cruceId) {
       const cruce = await obtener(ALMACENES.cruces, consulta.cruceId);
-      if (cruce) consulta.listas = cruce.listas;
+      if (cruce) {
+        consulta.listas = cruce.listas;
+        if (!consulta.ausentes?.length) consulta.ausentes = cruce.ausentes || [];
+      }
     }
     abrirCertificado(consulta, estado.config);
   });

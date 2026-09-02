@@ -23,6 +23,8 @@ export const estado = {
   motor: null,
   desdeCache: false,
   fallos: [],
+  sinVerificar: [],
+  ausentes: [],
   config: {},
   // Las vistas se suscriben para refrescarse cuando cambia el registro.
   oyentes: new Set(),
@@ -57,19 +59,39 @@ async function arrancar() {
     estado.desdeCache = desdeCache;
 
     const total = (manifiesto.listas || []).filter((l) => l.estado !== 'sin_datos').length;
-    const { listas, fallos } = await cargarListas(manifiesto, {
+    const { listas, fallos, sinVerificar } = await cargarListas(manifiesto, {
       alProgresar: (hecho) => {
         aviso.textContent = `Cargando listas restrictivas… ${hecho} de ${total}`;
       },
     });
     estado.listas = listas;
     estado.fallos = fallos;
+    estado.sinVerificar = sinVerificar;
 
     aviso.textContent = 'Preparando el índice de búsqueda…';
     // Un respiro para que el navegador pinte el aviso antes de bloquear el
     // hilo construyendo el índice.
     await new Promise((r) => setTimeout(r, 0));
-    estado.motor = crearMotor(listas);
+    // Lo que debía consultarse y no está. Se calcula una sola vez y se
+    // comparte: el motor lo pone en cada resultado y el barrido lo guarda con
+    // su entrada, de modo que las dos pantallas digan lo mismo.
+    estado.ausentes = [
+      ...fallos.map((f) => ({
+        id: f.id,
+        nombre: f.nombre,
+        vinculante: vinculanteEnManifiesto(manifiesto, f.id),
+        motivo: f.error,
+      })),
+      ...(manifiesto.listas || [])
+        .filter((l) => l.estado === 'sin_datos')
+        .map((l) => ({
+          id: l.id,
+          nombre: l.nombre,
+          vinculante: Boolean(l.vinculante),
+          motivo: 'Nunca se ha podido descargar esta lista.',
+        })),
+    ];
+    estado.motor = crearMotor(listas, { ausentes: estado.ausentes });
 
     limpiarCache(manifiesto).catch(() => {});
     mostrarEstadoCarga(aviso);
@@ -91,6 +113,10 @@ async function arrancar() {
   montarAjustes();
 
   mostrarSeccion(location.hash.replace('#', '') || 'panel');
+}
+
+function vinculanteEnManifiesto(manifiesto, id) {
+  return Boolean((manifiesto.listas || []).find((l) => l.id === id)?.vinculante);
 }
 
 function mostrarEstadoCarga(aviso) {
@@ -129,7 +155,24 @@ function mostrarEstadoCarga(aviso) {
     clase = 'aviso atencion';
   }
   if (estado.fallos.length) {
-    partes.push(`No se pudieron cargar: ${estado.fallos.map((f) => f.nombre).join(', ')}.`);
+    partes.push(
+      `No se pudieron cargar: ${estado.fallos
+        .map((f) => `${f.nombre} (${f.error})`)
+        .join('; ')}. Lo que se consulte mientras tanto no las incluye.`,
+    );
+    clase = 'aviso atencion';
+  }
+
+  // Se cargaron, pero sin poder comprobar que el archivo sea el que el
+  // manifiesto dice. Se consulta igual —una lista sin verificar es mejor que
+  // ninguna— pero el certificado no podrá afirmar que la huella se comprobó,
+  // así que conviene saberlo antes de firmarlo y no después.
+  if (estado.sinVerificar?.length) {
+    partes.push(
+      `No se pudo comprobar la huella de: ${estado.sinVerificar
+        .map((l) => l.nombre)
+        .join(', ')}. Se consultan igual, pero el certificado lo dirá.`,
+    );
     clase = 'aviso atencion';
   }
   aviso.className = clase;

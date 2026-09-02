@@ -239,7 +239,13 @@ progress { width: 100%; height: 8px; }
 .cert-datos { display: grid; grid-template-columns: max-content 1fr; gap: 4px 18px; margin: 0; }
 .cert-datos dt { font-weight: 600; color: var(--tinta-suave); }
 .cert-datos dd { margin: 0; }
+.veredicto-nota { margin-top: 8px; font-size: .9rem; font-weight: 600; }
 .cert-nota { font-size: .85rem; color: var(--tinta-suave); }
+/* La hoja se imprime en blanco y negro: la marca no puede ser solo el color. */
+.huella-ok::before { content: '\2713\00a0'; }
+.huella-falta { font-style: italic; }
+.huella-falta::before { content: '\2014\00a0'; }
+.cert-aviso { font-size: .85rem; border-left: 3px solid var(--tinta-suave); padding-left: 10px; margin-top: 10px; }
 .cert-firma { margin-top: 34px; }
 .cert-firma span { display: block; width: 260px; border-top: 1px solid var(--tinta); margin-bottom: 5px; }
 .cert-firma p { margin: 0; font-size: .85rem; }

@@ -5,6 +5,8 @@
 // caché. Mientras el hash no cambie, el navegador no vuelve a descargar la
 // lista; cuando cambia, la entrada vieja se descarta sola.
 
+import { revisarHuella, sePuedeVerificar } from './huella.js';
+
 const BASE = new URL('../../data/listas/', import.meta.url);
 const CACHE = 'sarglaft-listas-v1';
 
@@ -55,11 +57,12 @@ export async function cargarListas(manifiesto, opciones = {}) {
 
   const listas = [];
   const fallos = [];
+  const sinVerificar = [];
   let hecho = 0;
 
   for (const entrada of seleccionadas) {
     try {
-      const datos = await cargarLista(entrada);
+      const { datos, verificada } = await cargarLista(entrada);
       listas.push({
         ...datos,
         // El manifiesto manda sobre el archivo: es lo que se cita en el
@@ -67,7 +70,12 @@ export async function cargarListas(manifiesto, opciones = {}) {
         sha256: entrada.sha256,
         estado: entrada.estado,
         actualizado: entrada.actualizado,
+        // Y ahora se sabe que el archivo es realmente ese, en vez de darlo
+        // por supuesto. Viaja hasta el certificado: una huella citada sin
+        // comprobar no prueba nada.
+        huellaVerificada: verificada,
       });
+      if (!verificada) sinVerificar.push({ id: entrada.id, nombre: entrada.nombre });
     } catch (error) {
       fallos.push({ id: entrada.id, nombre: entrada.nombre, error: error.message });
     }
@@ -75,7 +83,7 @@ export async function cargarListas(manifiesto, opciones = {}) {
     if (opciones.alProgresar) opciones.alProgresar(hecho, seleccionadas.length, entrada.id);
   }
 
-  return { listas, fallos };
+  return { listas, fallos, sinVerificar, sePuedeVerificar: sePuedeVerificar() };
 }
 
 async function cargarLista(entrada) {
@@ -86,14 +94,31 @@ async function cargarLista(entrada) {
   // seguiría sirviendo para siempre.
   const clave = claveCache(entrada);
 
-  const guardado = await leerDeCache(clave);
-  if (guardado) return guardado;
+  // Se trabaja con los bytes y no con el objeto ya interpretado porque la
+  // huella del manifiesto es la del archivo tal cual se publicó: volver a
+  // serializar el JSON daría otro hash aunque el contenido fuera el mismo.
+  const guardado = await leerBytesDeCache(clave);
+  if (guardado) {
+    const revision = await revisarHuella(entrada.sha256, guardado);
+    if (revision.ok) return { datos: interpretar(guardado), verificada: revision.verificada };
+    // La copia local no es la que dice ser. Se descarta en vez de servirla:
+    // es exactamente el «sin hallazgos» falso que hay que evitar.
+    await borrarDeCache(clave);
+  }
 
   const respuesta = await fetch(url);
   if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status} al cargar ${entrada.archivo}`);
-  const datos = await respuesta.json();
-  await guardarEnCache(clave, datos);
-  return datos;
+  const bytes = await respuesta.arrayBuffer();
+
+  const revision = await revisarHuella(entrada.sha256, bytes);
+  if (!revision.ok) throw new Error(revision.motivo);
+
+  await guardarBytesEnCache(clave, bytes);
+  return { datos: interpretar(bytes), verificada: revision.verificada };
+}
+
+function interpretar(bytes) {
+  return JSON.parse(new TextDecoder().decode(bytes));
 }
 
 /* ---------- caché ----------
@@ -118,6 +143,40 @@ async function leerDeCache(clave) {
     return respuesta ? await respuesta.json() : null;
   } catch {
     return null;
+  }
+}
+
+async function leerBytesDeCache(clave) {
+  const cache = await abrirCache();
+  if (!cache) return null;
+  try {
+    const respuesta = await cache.match(clave);
+    return respuesta ? await respuesta.arrayBuffer() : null;
+  } catch {
+    return null;
+  }
+}
+
+async function guardarBytesEnCache(clave, bytes) {
+  const cache = await abrirCache();
+  if (!cache) return;
+  try {
+    await cache.put(
+      clave,
+      new Response(bytes, { headers: { 'Content-Type': 'application/json' } }),
+    );
+  } catch {
+    // Cuota llena o modo privado: no es motivo para interrumpir la consulta.
+  }
+}
+
+async function borrarDeCache(clave) {
+  const cache = await abrirCache();
+  if (!cache) return;
+  try {
+    await cache.delete(clave);
+  } catch {
+    // Si no se puede borrar, la próxima descarga la volverá a rechazar.
   }
 }
 

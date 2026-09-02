@@ -293,6 +293,10 @@ async function ejecutarCruce(contrapartes) {
     // por qué el expediente no creció en la misma cifra.
     reutilizadas,
     listas,
+    // Lo que no se pudo consultar ese día. Vive junto a las listas por el
+    // mismo motivo: es lo que el certificado necesita para no afirmar un
+    // cruce completo que no lo fue.
+    ausentes: resultados[0]?.ausentes || [],
     responsable: estado.config.responsable || '',
   };
 

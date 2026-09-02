@@ -11,7 +11,7 @@ commit e interfaz. Mantén esa convención.
 ## Comandos
 
 ```bash
-node --test                                  # todas las pruebas (148)
+node --test                                  # todas las pruebas (155)
 node --test scripts/test/scoring.test.mjs    # un solo archivo
 node --test --test-name-pattern="tildes"     # filtrar por nombre de prueba
 
@@ -102,7 +102,19 @@ vistas se refrescan vía `alCambiarRegistro` / `registroCambio()`.
 
 - `app/datos/cargador.js` cachea cada lista con la **Cache API usando el sha256
   en la cadena de consulta**, no en un fragmento: la Cache API descarta los
-  fragmentos y todas las versiones colapsarían en la misma entrada.
+  fragmentos y todas las versiones colapsarían en la misma entrada. Trabaja
+  con los **bytes** y no con el JSON ya interpretado, porque la huella del
+  manifiesto es la del archivo tal como se publicó: reserializar daría otro
+  hash con el mismo contenido.
+- `app/datos/huella.js` compara ese sha256 contra el archivo descargado. Es el
+  guardrail que le faltaba al navegador: el build rechaza una lista que encoge,
+  pero **un JSON truncado sigue siendo un JSON válido**, así que `JSON.parse`
+  no detecta una descarga cortada ni una copia intermedia vieja, y media lista
+  devuelve «sin hallazgos» sobre los designados que quedaron fuera. Lo que no
+  cuadra no se carga; se verifica también lo que sale de la caché, que es
+  justo donde puede quedarse una copia mala para siempre. Cuesta unos 45 ms
+  sobre los 13 MB. Sin `crypto.subtle` (contexto no seguro) se consulta igual
+  pero marcando `huellaVerificada: false`: avisar no es descartar.
 - `app/motor/indice.js` construye un índice invertido por token en memoria
   (~750 ms sobre 33 000 registros); sin él cada consulta compararía contra todo.
 - `app/motor/scoring.js` puntúa con **F1 simétrico de cobertura de tokens**, no
@@ -254,6 +266,14 @@ adapta título, explicación del veredicto y alcance a lo realmente verificado, 
 declara de forma explícita qué **no** cubre. Una constancia de antecedentes no
 cruzó listas y no debe decir que sí, y una alerta sin desenlace registrado se
 imprime como pendiente en vez de callarlo.
+
+Por eso `ausentes` viaja con cada resultado del motor y se **guarda** con la
+consulta, el cruce y el barrido: omitir de la tabla la lista que no se cargó no
+basta, porque quien lee el certificado no sabe cuántas debía haber, y si la que
+faltó es la de la ONU —la única estrictamente vinculante— un «sin hallazgos»
+significa otra cosa. El mismo motivo hace que la huella se imprima como
+«comprobada» o «sin comprobar» en vez de citar el sha256 a secas: un hash que
+nadie verificó no prueba nada.
 
 **Nada de scraping de las entidades colombianas.** Procuraduría, Contraloría,
 Policía y Rama Judicial usan CAPTCHA y sus términos prohíben el acceso

@@ -36,6 +36,16 @@ export const UMBRALES = {
 export function crearMotor(listas, opciones = {}) {
   const indice = construirIndice(listas);
   const umbrales = { ...UMBRALES, ...(opciones.umbrales || {}) };
+  // Las listas que debían estar y no se pudieron cargar. Viajan con cada
+  // resultado y se guardan con él: meses después, quien lea el certificado no
+  // tiene otra forma de saber que ese «sin hallazgos» se dio sin la lista de
+  // la ONU. Callarlo es dejar que el certificado afirme lo que no hizo.
+  const ausentes = (opciones.ausentes || []).map((a) => ({
+    id: a.id,
+    nombre: a.nombre,
+    vinculante: Boolean(a.vinculante),
+    motivo: a.error || a.motivo || '',
+  }));
 
   function consultar({ nombre = '', documento = '', tipoDocumento = '' } = {}) {
     const preparada = prepararConsulta(nombre);
@@ -124,6 +134,7 @@ export function crearMotor(listas, opciones = {}) {
       // La huella de las listas es lo que hace auditable la consulta: permite
       // demostrar contra qué versión exacta se consultó.
       listas: indice.listas.map(resumenLista),
+      ausentes,
       umbrales: { alerta: topeAlerta, revision: topeRevision },
       coincidencias,
       resultado,
@@ -142,6 +153,12 @@ function resumenLista(lista) {
     vinculante: Boolean(lista.vinculante),
     fechaPublicacion: lista.fechaPublicacion,
     sha256: lista.sha256,
+    // Si el sha256 se llegó a comprobar contra el archivo descargado. Va en
+    // el resumen y no solo en el arranque porque quien lee el certificado
+    // meses después no tiene forma de saberlo de otro modo. Se copia tal
+    // cual, sin dar por buena la ausencia: una consulta guardada antes de que
+    // esto existiera no comprobó nada, y el certificado no puede decir que sí.
+    huellaVerificada: lista.huellaVerificada,
     registros: lista.registros ? lista.registros.length : lista.total,
   };
 }

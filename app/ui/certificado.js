@@ -143,6 +143,7 @@ function decisionHTML(consulta) {
 function fuentesHTML(consulta) {
   const partes = [];
   if ((consulta.listas || []).length) partes.push(listasHTML(consulta.listas));
+  if ((consulta.ausentes || []).length) partes.push(ausentesHTML(consulta.ausentes));
   if ((consulta.revisiones || []).length) partes.push(revisionesHTML(consulta.revisiones));
 
   if (!partes.length) {
@@ -154,15 +155,72 @@ function fuentesHTML(consulta) {
   return partes.join('\n');
 }
 
+/**
+ * Lo que no se consultó.
+ *
+ * No basta con omitir la lista de la tabla de arriba: quien lee el
+ * certificado no sabe cuántas listas debía haber. Y si la que faltó es la de
+ * la ONU —la única estrictamente vinculante en Colombia— un «sin hallazgos»
+ * significa una cosa muy distinta. Se dice aquí, en el mismo papel que se
+ * firma, y no en un aviso de pantalla que ya nadie puede ver.
+ */
+function ausentesHTML(ausentes) {
+  const vinculantes = ausentes.filter((a) => a.vinculante);
+  return `<section>
+    <h2>Listas que no se pudieron consultar</h2>
+    <p class="cert-aviso">
+      <strong>Este cruce no cubrió ${ausentes.length === 1 ? 'una lista' : `${ausentes.length} listas`}.</strong>
+      ${
+        vinculantes.length
+          ? `Entre ellas ${vinculantes.length === 1 ? 'una de obligatorio cumplimiento' : 'varias de obligatorio cumplimiento'}
+             (${esc(vinculantes.map((a) => a.nombre).join(', '))}), así que este resultado no equivale a
+             una consulta completa y conviene repetirlo cuando la lista vuelva a estar disponible.`
+          : 'Ninguna de ellas es de obligatorio cumplimiento en Colombia, pero el alcance de la consulta fue menor que el habitual.'
+      }
+    </p>
+    <table>
+      <thead><tr><th>Lista</th><th>Motivo</th></tr></thead>
+      <tbody>
+        ${ausentes
+          .map(
+            (a) => `<tr>
+              <td>${esc(a.nombre || a.id)}${a.vinculante ? ' <strong>(vinculante)</strong>' : ''}</td>
+              <td>${esc(a.motivo || 'No se pudo cargar.')}</td>
+            </tr>`,
+          )
+          .join('')}
+      </tbody>
+    </table>
+  </section>`;
+}
+
+/**
+ * La huella tiene tres estados y no dos.
+ *
+ * «Sin comprobar» no es «no cuadra»: una lista que no cuadraba no se llegó a
+ * cargar, así que no puede estar aquí. Lo que sí puede es que la comprobación
+ * no se hiciera —una consulta guardada antes de que el panel comprobara, o un
+ * navegador sin SHA-256—, y eso hay que decirlo en vez de imprimir el hash
+ * como si alguien lo hubiera verificado.
+ */
+function marcaHuella(lista) {
+  return lista.huellaVerificada === true
+    ? '<span class="huella-ok">comprobada</span>'
+    : '<span class="huella-falta">sin comprobar</span>';
+}
+
 function listasHTML(listas) {
+  const sinComprobar = listas.filter((l) => l.huellaVerificada !== true);
   return `<section>
     <h2>Listas consultadas y su versión</h2>
     <p class="tenue">
       El sha256 identifica el archivo exacto contra el que se hizo el cruce. Permite verificar
       esta consulta contra el repositorio público sin depender de este panel.
+      El panel compara la huella del manifiesto contra el archivo que descargó, de modo que una
+      lista servida a medias o desactualizada no se llega a consultar.
     </p>
     <table>
-      <thead><tr><th>Lista</th><th>Autoridad</th><th>Publicada</th><th>Registros</th><th>sha256</th></tr></thead>
+      <thead><tr><th>Lista</th><th>Autoridad</th><th>Publicada</th><th>Registros</th><th>sha256</th><th>Huella</th></tr></thead>
       <tbody>
         ${listas
           .map(
@@ -172,11 +230,22 @@ function listasHTML(listas) {
               <td>${esc(fechaCorta(l.fechaPublicacion))}</td>
               <td class="numero">${(l.registros || 0).toLocaleString('es-CO')}</td>
               <td class="mono">${esc((l.sha256 || '').slice(0, 16))}…</td>
+              <td>${marcaHuella(l)}</td>
             </tr>`,
           )
           .join('')}
       </tbody>
     </table>
+    ${
+      sinComprobar.length
+        ? `<p class="cert-aviso">
+             De ${sinComprobar.length === listas.length ? 'estas listas' : `${sinComprobar.length} de estas listas`}
+             se cita el sha256 que publicó el manifiesto, pero el panel no llegó a compararlo contra el
+             archivo descargado: ${esc(sinComprobar.map((l) => l.nombre).join(', '))}.
+             El cruce se hizo; lo que no consta es que el archivo usado fuera exactamente el de esa huella.
+           </p>`
+        : ''
+    }
   </section>`;
 }
 
@@ -214,6 +283,8 @@ function alcanceHTML(consulta) {
   const hayListas = (consulta.listas || []).length > 0;
   const hayRevisiones = (consulta.revisiones || []).length > 0;
 
+  const faltanVinculantes = (consulta.ausentes || []).some((a) => a.vinculante);
+
   const parrafos = [];
   if (hayListas) {
     parrafos.push(
@@ -221,6 +292,15 @@ function alcanceHTML(consulta) {
         'la fecha indicada. La Lista Consolidada del Consejo de Seguridad de las Naciones Unidas ' +
         'es de aplicación obligatoria; las demás se consultan como práctica de debida diligencia.',
     );
+    // El párrafo anterior nombra la lista obligatoria. Si justo esa faltó,
+    // dejarlo solo haría creer que se consultó.
+    if (faltanVinculantes) {
+      parrafos.push(
+        'Una de las listas de aplicación obligatoria no se pudo consultar en esta ocasión, como ' +
+          'se detalla arriba. Este resultado no equivale a una consulta completa y debe repetirse ' +
+          'cuando la lista vuelva a estar disponible.',
+      );
+    }
   }
   if (hayRevisiones) {
     parrafos.push(
