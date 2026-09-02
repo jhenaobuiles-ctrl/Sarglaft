@@ -4,6 +4,7 @@ import { estado, registroCambio } from './app.js';
 import { guardar, ALMACENES, nuevoId } from '../registro/db.js';
 import { normalizarNombre, normalizarDocumento } from '../motor/normalizar.js';
 import { abrirCertificado } from './certificado.js';
+import { formularioHTML as desenlaceHTML, conectar as conectarDesenlace, requiereDesenlace } from './desenlace.js';
 import {
   esc, fechaHora, fechaCorta, ROTULOS, TIPOS_REGISTRO, porcentaje, etiquetaPEP, explicacionDe,
 } from './formato.js';
@@ -78,6 +79,8 @@ export function vistaResultado(consulta) {
         <span class="mono">${esc(consulta.id)}</span>
       </p>
     </div>
+
+    ${requiereDesenlace(consulta) ? `<div class="tarjeta no-imprimir">${desenlaceHTML(consulta)}</div>` : ''}
 
     ${bloqueCoincidencias(consulta)}
     ${bloqueListas(consulta)}
@@ -163,7 +166,16 @@ function bloqueListas(consulta) {
 }
 
 export function conectarAcciones(contenedor, consulta) {
+  // La observación es el primer textarea; el sustento del desenlace tiene el
+  // suyo propio y lo maneja su módulo.
   const area = contenedor.querySelector('textarea');
+
+  if (requiereDesenlace(consulta)) {
+    conectarDesenlace(contenedor, consulta, {
+      responsable: estado.config.responsable || '',
+      alGuardar: () => registroCambio(),
+    });
+  }
 
   contenedor.addEventListener('click', async (evento) => {
     const boton = evento.target.closest('button[data-accion]');

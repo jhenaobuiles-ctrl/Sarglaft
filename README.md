@@ -67,7 +67,7 @@ datos—. Queda como consulta manual. **INTERPOL** no permite descargar el
 listado; el panel intenta su API pública desde el navegador y, si la política
 de origen cruzado la bloquea, lo dice y ofrece el enlace.
 
-## Las cuatro cosas que hace el panel
+## Lo que hace el panel
 
 **Consultar.** Un nombre o un documento contra las listas cargadas. El
 resultado se guarda con la versión exacta —fecha de publicación y `sha256`— de
@@ -89,6 +89,13 @@ capacitación, informe del oficial, matriz de riesgo y manual del sistema. El
 manual y la matriz vienen con contenido ajustado a una escuela de conducción,
 para editar en vez de empezar en blanco. Los formatos que corresponden a una
 obligación periódica la marcan cumplida al guardarse.
+
+**Cerrar la alerta.** Una coincidencia obliga a registrar el desenlace
+—homónimo descartado, se vincula con seguimiento, no se vincula, se reporta a
+la UIAF— con su sustento escrito, que es obligatorio. Hasta que eso ocurra, el
+resumen la cuenta como pendiente, el expediente la marca en rojo y el
+certificado la imprime como *decisión pendiente*. Es la respuesta a la
+pregunta que sigue a todo hallazgo: «¿y qué hicieron con esto?».
 
 **Respaldar.** La copia de seguridad va en ZIP e incluye las evidencias
 binarias —los PDF de la Procuraduría, las capturas—, más el expediente en CSV

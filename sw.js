@@ -5,7 +5,7 @@
 // protocolo. El modo sin conexión se consigue así: visitando el panel una vez
 // con conexión y volviendo a abrirlo después, ya sin ella.
 
-const CACHE = 'sarglaft-app-v2';
+const CACHE = 'sarglaft-app-v3';
 
 // Las listas no se precargan aquí: pesan decenas de MB y las gestiona el
 // cargador con su propia caché por sha256.
@@ -25,6 +25,7 @@ const ARMAZON = [
   './app/ui/listas.js',
   './app/ui/obligaciones.js',
   './app/ui/certificado.js',
+  './app/ui/desenlace.js',
   './app/motor/normalizar.js',
   './app/motor/scoring.js',
   './app/motor/indice.js',

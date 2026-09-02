@@ -10,11 +10,19 @@ import {
 } from '../registro/respaldo.js';
 import { escribirCSV } from '../lib/csv.js';
 import { abrirCertificado } from './certificado.js';
+import {
+  formularioHTML as desenlaceHTML, conectar as conectarDesenlace,
+  requiereDesenlace, etiquetaDesenlace, claseDesenlace, estaCerrada, citadasEnDocumentos,
+} from './desenlace.js';
 import { esc, fechaHora, ROTULOS, porcentaje, descargar, marcaArchivo } from './formato.js';
 
 let consultas = [];
 // Cuántos adjuntos tiene cada consulta, para no ir a la base por cada fila.
 let evidenciasPorConsulta = new Map();
+// Consultas citadas por un formato de debida diligencia: también cierran la
+// alerta, y sin esto el expediente las seguiría mostrando como pendientes
+// mientras el resumen ya no las contaba.
+let cerradasPorDocumento = new Set();
 
 export function montarExpediente() {
   const contenedor = document.getElementById('tabla-expediente');
@@ -33,6 +41,11 @@ export function montarExpediente() {
     const verEvidencias = evento.target.closest('button[data-evidencias]');
     if (verEvidencias) {
       await mostrarEvidencias(verEvidencias);
+      return;
+    }
+    const analizar = evento.target.closest('button[data-analizar]');
+    if (analizar) {
+      await mostrarDesenlace(analizar);
       return;
     }
     const boton = evento.target.closest('button[data-certificado]');
@@ -60,6 +73,7 @@ async function recargar() {
     const previas = evidenciasPorConsulta.get(evidencia.consultaId) || 0;
     evidenciasPorConsulta.set(evidencia.consultaId, previas + 1);
   }
+  cerradasPorDocumento = citadasEnDocumentos(await todos(ALMACENES.documentos));
   pintar();
 }
 
@@ -107,6 +121,42 @@ async function mostrarEvidencias(boton) {
   boton.textContent = 'Ocultar';
 }
 
+/**
+ * Despliega la decisión de una alerta debajo de su fila.
+ *
+ * Va en una fila propia y no dentro de la celda porque el formulario necesita
+ * el ancho de la tabla: encajado en la columna de acciones queda ilegible.
+ */
+async function mostrarDesenlace(boton) {
+  const fila = boton.closest('tr');
+  const abierta = fila.nextElementSibling;
+  if (abierta?.classList.contains('fila-desenlace')) {
+    abierta.remove();
+    boton.textContent = boton.dataset.rotulo;
+    return;
+  }
+
+  const consulta = await obtener(ALMACENES.consultas, boton.dataset.analizar);
+  if (!consulta) return;
+
+  const nueva = document.createElement('tr');
+  nueva.className = 'fila-desenlace';
+  const celda = document.createElement('td');
+  celda.colSpan = fila.cells.length;
+  celda.innerHTML = desenlaceHTML(consulta);
+  nueva.appendChild(celda);
+  fila.after(nueva);
+
+  conectarDesenlace(celda, consulta, {
+    responsable: estado.config.responsable || '',
+    // Al guardar se repinta todo: la fila pasa a mostrar el desenlace y el
+    // resumen deja de contar esta alerta como pendiente.
+    alGuardar: () => registroCambio(),
+  });
+  boton.textContent = 'Ocultar';
+  nueva.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
 function filtradas() {
   const texto = document.getElementById('f-texto').value.trim().toLowerCase();
   const resultado = document.getElementById('f-resultado').value;
@@ -114,7 +164,13 @@ function filtradas() {
   const hasta = document.getElementById('f-hasta').value;
 
   return consultas.filter((c) => {
-    if (resultado && c.resultado !== resultado) return false;
+    // "Pendientes de decidir" no es un veredicto sino lo que queda por hacer:
+    // es el filtro con el que se trabaja después de un cruce masivo.
+    if (resultado === 'SIN_DECIDIR') {
+      if (estaCerrada(c, cerradasPorDocumento)) return false;
+    } else if (resultado && c.resultado !== resultado) {
+      return false;
+    }
     const dia = (c.fecha || '').slice(0, 10);
     if (desde && dia < desde) return false;
     if (hasta && dia > hasta) return false;
@@ -156,10 +212,14 @@ function pintar() {
             <td>${esc(c.consulta?.nombre) || '—'}</td>
             <td class="numero">${esc(c.consulta?.documento) || '—'}</td>
             <td>${origen(c)}</td>
-            <td><span class="etiqueta ${c.resultado}">${esc(ROTULOS[c.resultado] || c.resultado)}</span></td>
+            <td>
+              <span class="etiqueta ${c.resultado}">${esc(ROTULOS[c.resultado] || c.resultado)}</span>
+              ${desenlaceHTMLFila(c)}
+            </td>
             <td>${resumenCoincidencias(c)}</td>
             <td class="acciones-fila">
               <button type="button" class="accion secundaria no-imprimir" data-certificado="${esc(c.id)}">Certificado</button>
+              ${analisisHTML(c)}
               ${adjuntosHTML(c)}
             </td>
           </tr>`,
@@ -169,11 +229,31 @@ function pintar() {
   `;
 }
 
+/** El desenlace bajo el veredicto, o el aviso de que falta decidirlo. */
+function desenlaceHTMLFila(c) {
+  if (!requiereDesenlace(c)) return '';
+  const elegido = c.decision?.desenlace;
+  if (elegido) {
+    return `<br><span class="etiqueta ${claseDesenlace(elegido)} menuda">${esc(etiquetaDesenlace(elegido))}</span>`;
+  }
+  if (cerradasPorDocumento.has(c.id)) {
+    return '<br><span class="tenue">Analizada en un formato de debida diligencia</span>';
+  }
+  return '<br><span class="sin-decidir">Sin decidir</span>';
+}
+
 function adjuntosHTML(c) {
   const cuantas = evidenciasPorConsulta.get(c.id) || 0;
   if (!cuantas) return '';
   const rotulo = `Evidencias (${cuantas})`;
   return `<button type="button" class="accion secundaria no-imprimir" data-evidencias="${esc(c.id)}" data-rotulo="${esc(rotulo)}">${esc(rotulo)}</button>`;
+}
+
+function analisisHTML(c) {
+  if (!requiereDesenlace(c)) return '';
+  const rotulo = estaCerrada(c, cerradasPorDocumento) ? 'Ver decisión' : 'Analizar';
+  const urgente = estaCerrada(c, cerradasPorDocumento) ? 'secundaria' : '';
+  return `<button type="button" class="accion ${urgente} no-imprimir" data-analizar="${esc(c.id)}" data-rotulo="${rotulo}">${rotulo}</button>`;
 }
 
 function origen(c) {
@@ -201,7 +281,7 @@ function resumenCoincidencias(c) {
 function exportarCSV() {
   const lista = filtradas();
   const filas = [
-    ['Fecha', 'Contraparte', 'Tipo documento', 'Documento', 'Tipo contraparte', 'Condición PEP', 'Origen', 'Resultado', 'Coincidencias', 'Mejor coincidencia', 'Lista', 'Similitud', 'Responsable', 'Observaciones', 'Identificador'],
+    ['Fecha', 'Contraparte', 'Tipo documento', 'Documento', 'Tipo contraparte', 'Condición PEP', 'Origen', 'Resultado', 'Desenlace', 'Sustento de la decisión', 'Fecha de la decisión', 'Coincidencias', 'Mejor coincidencia', 'Lista', 'Similitud', 'Responsable', 'Observaciones', 'Identificador'],
     ...lista.map((c) => {
       const m = c.coincidencias?.[0];
       return [
@@ -213,6 +293,9 @@ function exportarCSV() {
         c.pepDetalle || '',
         origen(c),
         ROTULOS[c.resultado] || c.resultado,
+        etiquetaDesenlace(c.decision?.desenlace),
+        c.decision?.sustento || '',
+        c.decision?.fecha ? fechaHora(c.decision.fecha) : '',
         c.coincidencias?.length || 0,
         m ? m.registro.n : '',
         m ? m.lista.nombre : '',

@@ -13,6 +13,7 @@ import {
   esc, fechaHora, fechaCorta, ROTULOS, TIPOS_REGISTRO, porcentaje,
   TITULOS_CERTIFICADO, explicacionDe,
 } from './formato.js';
+import { requiereDesenlace, etiquetaDesenlace } from './desenlace.js';
 
 export function abrirCertificado(consulta, perfil) {
   imprimirHoja(certificadoHTML(consulta, perfil));
@@ -80,6 +81,8 @@ export function certificadoHTML(consulta, perfil = {}) {
       ${consulta.tipo === 'antecedentes' ? '' : coincidenciasHTML(consulta.coincidencias || [])}
     </section>
 
+    ${decisionHTML(consulta)}
+
     ${fuentesHTML(consulta)}
 
     ${consulta.observaciones ? `<section><h2>Observaciones del responsable</h2><p>${esc(consulta.observaciones)}</p></section>` : ''}
@@ -96,6 +99,36 @@ export function certificadoHTML(consulta, perfil = {}) {
       </div>
     </section>
   `;
+}
+
+/**
+ * La decisión sobre la coincidencia.
+ *
+ * Es la pregunta que sigue a un hallazgo, y el certificado la responde o dice
+ * que todavía no está respondida. Imprimir una alerta sin decisión como si el
+ * expediente estuviera completo sería afirmar lo que no ocurrió.
+ */
+function decisionHTML(consulta) {
+  if (!requiereDesenlace(consulta)) return '';
+  const decision = consulta.decision;
+
+  if (!decision?.desenlace) {
+    return `<section>
+      <h2>Decisión sobre la coincidencia</h2>
+      <p><strong>Pendiente.</strong> A la fecha de impresión de este documento no se había
+      registrado la decisión del responsable de cumplimiento sobre esta coincidencia.</p>
+    </section>`;
+  }
+
+  return `<section>
+    <h2>Decisión sobre la coincidencia</h2>
+    <dl class="cert-datos">
+      <dt>Desenlace</dt><dd><strong>${esc(etiquetaDesenlace(decision.desenlace))}</strong></dd>
+      <dt>Sustento</dt><dd>${esc(decision.sustento || '—')}</dd>
+      <dt>Fecha de la decisión</dt><dd>${esc(fechaHora(decision.fecha))}</dd>
+      <dt>Adoptada por</dt><dd>${esc(decision.responsable || '—')}</dd>
+    </dl>
+  </section>`;
 }
 
 /**

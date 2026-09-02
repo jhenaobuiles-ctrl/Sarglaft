@@ -11,7 +11,7 @@ commit e interfaz. Mantén esa convención.
 ## Comandos
 
 ```bash
-node --test                                  # todas las pruebas (84)
+node --test                                  # todas las pruebas (93)
 node --test scripts/test/scoring.test.mjs    # un solo archivo
 node --test --test-name-pattern="tildes"     # filtrar por nombre de prueba
 
@@ -118,6 +118,20 @@ El cruce masivo (`app/ui/cruce.js`) corre en el hilo principal cediendo cada 200
 filas. **No lo muevas a un Web Worker**: el motor resuelve mil consultas en
 ~40 ms y clonar decenas de MB a otro hilo costaría más de lo que ahorra.
 
+`app/ui/desenlace.js` cierra las alertas. Una coincidencia exige una de cuatro
+salidas —homónimo, seguimiento reforzado, no vincular, reportar a la UIAF— con
+su sustento escrito, que es **obligatorio**: una decisión sin razones es el
+vacío que el módulo existe para llenar. `estaCerrada()` es la única definición
+de «alerta atendida» y la usan el resumen, el filtro del expediente y el
+certificado; si se duplica esa regla en otro sitio, el panel y el expediente
+acaban contando cosas distintas. Un formato de debida diligencia que cite la
+consulta cierra la alerta igual que el desenlace.
+
+El mismo formulario se monta en la consulta recién hecha y en una fila
+desplegable del expediente, porque la mayoría de las alertas no nacen de una
+consulta puntual sino de un cruce masivo y allí la única puerta es el
+expediente.
+
 `app/ui/revision.js` vuelve a consultar a las contrapartes que ya están en el
 expediente. Guarda **una** entrada de `cruces` con el barrido completo y filas
 de `consultas` solo para las que cambiaron o no salieron limpias: una fila por
@@ -166,7 +180,8 @@ superintendencia que vigila a esta escuela, no: la escribe quien la conoce.
 **El certificado no puede afirmar lo que no hizo.** `app/ui/certificado.js`
 adapta título, explicación del veredicto y alcance a lo realmente verificado, y
 declara de forma explícita qué **no** cubre. Una constancia de antecedentes no
-cruzó listas y no debe decir que sí.
+cruzó listas y no debe decir que sí, y una alerta sin desenlace registrado se
+imprime como pendiente en vez de callarlo.
 
 **Nada de scraping de las entidades colombianas.** Procuraduría, Contraloría,
 Policía y Rama Judicial usan CAPTCHA y sus términos prohíben el acceso

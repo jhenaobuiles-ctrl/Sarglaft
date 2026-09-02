@@ -4,6 +4,7 @@ import { alCambiarRegistro, mostrarSeccion } from './app.js';
 import { todos, leerConfig, ALMACENES } from '../registro/db.js';
 import { diasDesde } from '../registro/respaldo.js';
 import { listar, estadoDe, claseEstado, ESTADOS, marcarCumplida } from './obligaciones.js';
+import { estaCerrada, citadasEnDocumentos, requiereDesenlace } from './desenlace.js';
 import { esc, fechaHora, ROTULOS } from './formato.js';
 
 // A partir de aquí, la copia de seguridad se considera vieja. Un mes es el
@@ -56,8 +57,9 @@ function pintarAvisos(consultas, documentos, ultimaCopia) {
   if (sinCerrar.length) {
     avisos.push(`<div class="aviso atencion">
       <strong>${sinCerrar.length} alerta(s) sin analizar.</strong>
-      Una coincidencia sin decisión escrita deja el expediente incompleto: registra la
-      observación en la consulta o diligencia el formato de debida diligencia intensificada.
+      Una coincidencia sin decisión escrita deja el expediente incompleto. Ábrelas en el
+      expediente y registra el desenlace: homónimo descartado, vinculada con seguimiento,
+      no vinculada o reportada a la UIAF.
       <button type="button" class="accion secundaria no-imprimir" style="margin-left:8px" data-ir="expediente">Ver el expediente</button>
     </div>`);
   }
@@ -77,22 +79,16 @@ function pintarAvisos(consultas, documentos, ultimaCopia) {
 }
 
 /**
- * Una alerta está atendida cuando quedó por escrito qué se decidió: la
- * observación del responsable en la propia consulta, o un formato de debida
- * diligencia intensificada que la cite.
+ * Alertas que todavía no tienen decidido su desenlace.
+ *
+ * Antes bastaba con haber escrito cualquier cosa en el campo de
+ * observaciones. Un texto suelto no dice si la contraparte se vinculó o no,
+ * que es lo primero que pregunta quien revisa el expediente.
  */
 export function alertasSinCerrar(consultas, documentos) {
-  const analizadas = new Set(
-    documentos
-      .filter((d) => d.plantilla === 'debida-diligencia')
-      .map((d) => (d.valores?.consultaId || '').trim())
-      .filter(Boolean),
-  );
+  const conDebidaDiligencia = citadasEnDocumentos(documentos);
   return consultas.filter(
-    (c) =>
-      (c.resultado === 'ALERTA' || c.resultado === 'EN_REVISION') &&
-      !String(c.observaciones || '').trim() &&
-      !analizadas.has(c.id),
+    (c) => requiereDesenlace(c) && !estaCerrada(c, conDebidaDiligencia),
   );
 }
 
