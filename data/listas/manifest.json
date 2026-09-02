@@ -1,5 +1,5 @@
 {
-  "generado": "2026-09-02T22:29:48.987Z",
+  "generado": "2026-09-02T22:38:10.821Z",
   "listas": [
     {
       "id": "onu",
@@ -12,8 +12,8 @@
       "fechaPublicacion": "2026-09-01",
       "registros": 1011,
       "bytes": 480418,
-      "sha256": "fa4046ae5cda11ad621f1d0599e76edd877108b19825c9a28c04a10f7bd54230",
-      "actualizado": "2026-09-02T22:29:08.706Z",
+      "sha256": "ca313de4b3727c3e639d8ece77cec872075d4a3ebdbb0f7f6c2a68e54cbe42e3",
+      "actualizado": "2026-09-02T22:37:25.309Z",
       "estado": "ok"
     },
     {
@@ -27,8 +27,8 @@
       "fechaPublicacion": "2026-08-28",
       "registros": 19321,
       "bytes": 6620415,
-      "sha256": "bb04ae0a42e18711ad2625d700c285a7ca20b602a784c8209c809c3afefba997",
-      "actualizado": "2026-09-02T22:29:10.620Z",
+      "sha256": "89834c5cafeba61588efd965e2113f07619cee93763382dbc07e2297c7f9b104",
+      "actualizado": "2026-09-02T22:37:28.266Z",
       "estado": "ok"
     },
     {
@@ -42,8 +42,8 @@
       "fechaPublicacion": "2026-07-27",
       "registros": 481,
       "bytes": 340562,
-      "sha256": "45d34cafffaa9e90b007b9791db61e65d13e686cc2389f278139398b414b0c37",
-      "actualizado": "2026-09-02T22:29:10.891Z",
+      "sha256": "084ca6725e64b8f859ee193a51a3d6059f29ea5f110f3eada694d3f4291d828f",
+      "actualizado": "2026-09-02T22:37:28.521Z",
       "estado": "ok"
     },
     {
@@ -57,8 +57,8 @@
       "fechaPublicacion": "2026-08-05",
       "registros": 6234,
       "bytes": 1958227,
-      "sha256": "6eb7e8dba6d9fdb343327aefc0ef94a4dc3220b963c39240f88eafd0a1cffe7d",
-      "actualizado": "2026-09-02T22:29:16.273Z",
+      "sha256": "32ca23f1e76a5e2370ccf7d58402a4111322ba5edab0bca906c5d08a80d3beb1",
+      "actualizado": "2026-09-02T22:37:44.104Z",
       "estado": "ok"
     },
     {
@@ -72,8 +72,8 @@
       "fechaPublicacion": "2026-09-02",
       "registros": 6334,
       "bytes": 4187085,
-      "sha256": "e7d8fb3e5bb41c521753ee089604a6793c9fc3fc4e65b498623ae843c07678cf",
-      "actualizado": "2026-09-02T22:29:48.986Z",
+      "sha256": "082fa48b8f2b49469bb851b280ded104464a165f18e39e8634e694f810befd27",
+      "actualizado": "2026-09-02T22:38:10.821Z",
       "estado": "ok"
     }
   ]
