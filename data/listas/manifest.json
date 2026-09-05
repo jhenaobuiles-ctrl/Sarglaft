@@ -1,5 +1,5 @@
 {
-  "generado": "2026-09-04T14:52:06.327Z",
+  "generado": "2026-09-05T13:44:30.810Z",
   "listas": [
     {
       "id": "onu",
@@ -9,11 +9,11 @@
       "vinculante": true,
       "toleranciaDias": 30,
       "archivo": "onu.json",
-      "fechaPublicacion": "2026-09-03",
+      "fechaPublicacion": "2026-09-04",
       "registros": 1011,
-      "bytes": 480418,
-      "sha256": "ae4fa3688df03e9296c4e0f27416246c45f53ae01130706a0b447c8283e22199",
-      "actualizado": "2026-09-04T14:51:28.650Z",
+      "bytes": 480487,
+      "sha256": "1860070f2908f3519c0f6cb8225e7754c33ecb755dddd200172a6f501aa13c8e",
+      "actualizado": "2026-09-05T13:43:40.013Z",
       "estado": "ok"
     },
     {
@@ -27,8 +27,8 @@
       "fechaPublicacion": "2026-09-04",
       "registros": 19329,
       "bytes": 6623058,
-      "sha256": "bf6deafe2f48edb49d463889a707d160ce4e24e36230431d06336d7833516e16",
-      "actualizado": "2026-09-04T14:51:32.301Z",
+      "sha256": "63b39687f549f927b3e03a942bb20ffe77b579d9d07597027ada56275f456d2e",
+      "actualizado": "2026-09-05T13:43:42.912Z",
       "estado": "ok"
     },
     {
@@ -42,8 +42,8 @@
       "fechaPublicacion": "2026-07-27",
       "registros": 481,
       "bytes": 340562,
-      "sha256": "1d4924ea2e5cec27a9d84d92aca86bbc7ee60fb4fd7f3a196899412a06afcd60",
-      "actualizado": "2026-09-04T14:51:32.597Z",
+      "sha256": "679536990106ac127231bd93fc392438718fe7765ee043b80f028d3af34c5a84",
+      "actualizado": "2026-09-05T13:43:43.152Z",
       "estado": "ok"
     },
     {
@@ -59,7 +59,9 @@
       "bytes": 1958227,
       "sha256": "6d735770818bfa84af1910ca30c0400e6c82367409d42c72ccae6d08a4ef9849",
       "actualizado": "2026-09-04T14:51:36.389Z",
-      "estado": "ok"
+      "estado": "obsoleto",
+      "error": "no se pudo descargar https://webgate.ec.europa.eu/fsd/fsf/public/files/xmlFullSanctionsList_1_1/content?token=dG9rZW4tMjAxNw: HTTP 500 Internal Server Error",
+      "ultimoIntento": "2026-09-05T13:43:59.327Z"
     },
     {
       "id": "uk",
@@ -72,8 +74,8 @@
       "fechaPublicacion": "2026-09-03",
       "registros": 6334,
       "bytes": 4187073,
-      "sha256": "aad5acff5fb646ac7923dc869383c570d11afd91051290c686d70fabe12f2c3d",
-      "actualizado": "2026-09-04T14:52:06.327Z",
+      "sha256": "fec5b608eac63c1619a926046fc9b297e8ae4257a5820494f20352edeaecae96",
+      "actualizado": "2026-09-05T13:44:30.809Z",
       "estado": "ok"
     }
   ]
