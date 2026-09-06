@@ -1,5 +1,5 @@
 {
-  "generado": "2026-09-05T13:44:30.810Z",
+  "generado": "2026-09-06T14:00:50.879Z",
   "listas": [
     {
       "id": "onu",
@@ -9,11 +9,11 @@
       "vinculante": true,
       "toleranciaDias": 30,
       "archivo": "onu.json",
-      "fechaPublicacion": "2026-09-04",
+      "fechaPublicacion": "2026-09-05",
       "registros": 1011,
       "bytes": 480487,
-      "sha256": "1860070f2908f3519c0f6cb8225e7754c33ecb755dddd200172a6f501aa13c8e",
-      "actualizado": "2026-09-05T13:43:40.013Z",
+      "sha256": "f552a5d3ae54cfc26fae16a7d8248ac52aca2b967453e56567b6732ea9acc546",
+      "actualizado": "2026-09-06T14:00:01.186Z",
       "estado": "ok"
     },
     {
@@ -27,8 +27,8 @@
       "fechaPublicacion": "2026-09-04",
       "registros": 19329,
       "bytes": 6623058,
-      "sha256": "63b39687f549f927b3e03a942bb20ffe77b579d9d07597027ada56275f456d2e",
-      "actualizado": "2026-09-05T13:43:42.912Z",
+      "sha256": "4413bacc0583f1348941f5d5952401c5726d3b7adf0c449a790cf4552ff8c70a",
+      "actualizado": "2026-09-06T14:00:04.381Z",
       "estado": "ok"
     },
     {
@@ -42,8 +42,8 @@
       "fechaPublicacion": "2026-07-27",
       "registros": 481,
       "bytes": 340562,
-      "sha256": "679536990106ac127231bd93fc392438718fe7765ee043b80f028d3af34c5a84",
-      "actualizado": "2026-09-05T13:43:43.152Z",
+      "sha256": "4516386e54cd4802619fc1ed46c9a5b53032c30f94bf2138088dea624bba6bb1",
+      "actualizado": "2026-09-06T14:00:04.921Z",
       "estado": "ok"
     },
     {
@@ -61,7 +61,7 @@
       "actualizado": "2026-09-04T14:51:36.389Z",
       "estado": "obsoleto",
       "error": "no se pudo descargar https://webgate.ec.europa.eu/fsd/fsf/public/files/xmlFullSanctionsList_1_1/content?token=dG9rZW4tMjAxNw: HTTP 500 Internal Server Error",
-      "ultimoIntento": "2026-09-05T13:43:59.327Z"
+      "ultimoIntento": "2026-09-06T14:00:20.901Z"
     },
     {
       "id": "uk",
@@ -74,8 +74,8 @@
       "fechaPublicacion": "2026-09-03",
       "registros": 6334,
       "bytes": 4187073,
-      "sha256": "fec5b608eac63c1619a926046fc9b297e8ae4257a5820494f20352edeaecae96",
-      "actualizado": "2026-09-05T13:44:30.809Z",
+      "sha256": "a468d68f31f07af57d3fa37d287bb5e1ec5d74c4b6f598fa29c373259d981b66",
+      "actualizado": "2026-09-06T14:00:50.879Z",
       "estado": "ok"
     }
   ]
