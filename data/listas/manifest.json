@@ -1,5 +1,5 @@
 {
-  "generado": "2026-09-06T14:00:50.879Z",
+  "generado": "2026-09-07T16:19:26.185Z",
   "listas": [
     {
       "id": "onu",
@@ -12,8 +12,8 @@
       "fechaPublicacion": "2026-09-05",
       "registros": 1011,
       "bytes": 480487,
-      "sha256": "f552a5d3ae54cfc26fae16a7d8248ac52aca2b967453e56567b6732ea9acc546",
-      "actualizado": "2026-09-06T14:00:01.186Z",
+      "sha256": "cfa00e8a28dd1c8b14d5bb4291a44e0d6d50204d14f6b9dd644ce80b5827cabf",
+      "actualizado": "2026-09-07T16:18:49.641Z",
       "estado": "ok"
     },
     {
@@ -27,8 +27,8 @@
       "fechaPublicacion": "2026-09-04",
       "registros": 19329,
       "bytes": 6623058,
-      "sha256": "4413bacc0583f1348941f5d5952401c5726d3b7adf0c449a790cf4552ff8c70a",
-      "actualizado": "2026-09-06T14:00:04.381Z",
+      "sha256": "0adbacfee7b91c4be0098fcd32caf92c650b0616605b5577dcb64f7374379fcd",
+      "actualizado": "2026-09-07T16:18:52.662Z",
       "estado": "ok"
     },
     {
@@ -42,8 +42,8 @@
       "fechaPublicacion": "2026-07-27",
       "registros": 481,
       "bytes": 340562,
-      "sha256": "4516386e54cd4802619fc1ed46c9a5b53032c30f94bf2138088dea624bba6bb1",
-      "actualizado": "2026-09-06T14:00:04.921Z",
+      "sha256": "05f22167399fa2a4dd5047a91fad868d9f87adbecc48f9b6edeaa5684d5ae61d",
+      "actualizado": "2026-09-07T16:18:52.918Z",
       "estado": "ok"
     },
     {
@@ -57,11 +57,9 @@
       "fechaPublicacion": "2026-08-05",
       "registros": 6234,
       "bytes": 1958227,
-      "sha256": "6d735770818bfa84af1910ca30c0400e6c82367409d42c72ccae6d08a4ef9849",
-      "actualizado": "2026-09-04T14:51:36.389Z",
-      "estado": "obsoleto",
-      "error": "no se pudo descargar https://webgate.ec.europa.eu/fsd/fsf/public/files/xmlFullSanctionsList_1_1/content?token=dG9rZW4tMjAxNw: HTTP 500 Internal Server Error",
-      "ultimoIntento": "2026-09-06T14:00:20.901Z"
+      "sha256": "ef156e59ab3a517f46ebe726c357d1ab2b4a4af79e22fa1e406647a38df7e609",
+      "actualizado": "2026-09-07T16:18:56.758Z",
+      "estado": "ok"
     },
     {
       "id": "uk",
@@ -71,11 +69,11 @@
       "vinculante": false,
       "toleranciaDias": 45,
       "archivo": "uk.json",
-      "fechaPublicacion": "2026-09-03",
+      "fechaPublicacion": "2026-09-07",
       "registros": 6334,
-      "bytes": 4187073,
-      "sha256": "a468d68f31f07af57d3fa37d287bb5e1ec5d74c4b6f598fa29c373259d981b66",
-      "actualizado": "2026-09-06T14:00:50.879Z",
+      "bytes": 4187120,
+      "sha256": "985c561945b639bedd48eec852b9c05517b13edff5d31448e0c3c27796550301",
+      "actualizado": "2026-09-07T16:19:26.185Z",
       "estado": "ok"
     }
   ]
