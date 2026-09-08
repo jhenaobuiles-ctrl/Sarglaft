@@ -1,5 +1,67 @@
 {
-  "generado": "2026-09-08T14:58:37.932Z",
+  "generado": "2026-09-08T16:24:02.611Z",
+  "normalizacion": {
+    "version": 1,
+    "casos": [
+      {
+        "entrada": "José Peña-Gómez, Jr.",
+        "nombre": "JOSE PENA GOMEZ JR"
+      },
+      {
+        "entrada": "Peña",
+        "nombre": "PENA"
+      },
+      {
+        "entrada": "Pena",
+        "nombre": "PENA"
+      },
+      {
+        "entrada": "  María   de los Ángeles  Restrepo ",
+        "nombre": "MARIA DE LOS ANGELES RESTREPO"
+      },
+      {
+        "entrada": "Comercializadora Andina S.A.S.",
+        "razonSocial": "COMERCIALIZADORA ANDINA"
+      },
+      {
+        "entrada": "COMERCIALIZADORA ANDINA S A S",
+        "razonSocial": "COMERCIALIZADORA ANDINA"
+      },
+      {
+        "entrada": "Inversiones Lopez y Cia Ltda",
+        "razonSocial": "INVERSIONES LOPEZ"
+      },
+      {
+        "entrada": "SAS",
+        "razonSocial": "SAS"
+      },
+      {
+        "entrada": "0079.123.456",
+        "documento": "79123456"
+      },
+      {
+        "entrada": "79 123 456",
+        "documento": "79123456"
+      },
+      {
+        "entrada": "AB-123 456",
+        "documento": "AB123456"
+      },
+      {
+        "entrada": "900228328-7",
+        "variantesNit": [
+          "9002283287",
+          "900228328"
+        ]
+      },
+      {
+        "entrada": "1144087221",
+        "variantesCedula": [
+          "1144087221"
+        ]
+      }
+    ]
+  },
   "listas": [
     {
       "id": "onu",
@@ -12,8 +74,8 @@
       "fechaPublicacion": "2026-09-07",
       "registros": 1011,
       "bytes": 480487,
-      "sha256": "0888fdbd7ea21b0f522af2246a5ed62838413568e2f1b3ca7b7214433055314f",
-      "actualizado": "2026-09-08T14:58:00.498Z",
+      "sha256": "08a5af766f5be4f6d276ed27a887af2d2a6fc3e2f7d51a77329b8019616e6e81",
+      "actualizado": "2026-09-08T16:22:39.652Z",
       "estado": "ok"
     },
     {
@@ -27,8 +89,8 @@
       "fechaPublicacion": "2026-09-08",
       "registros": 19365,
       "bytes": 6637412,
-      "sha256": "dc16bfbed73393c3090baf6bcf086c5b9a5b136e6f0f7429530c55fb442ddecb",
-      "actualizado": "2026-09-08T14:58:03.431Z",
+      "sha256": "de6043d4c2c1724b805acbfc85df03df00ee227ebf67c3ba57d497f699005a6a",
+      "actualizado": "2026-09-08T16:22:54.813Z",
       "estado": "ok"
     },
     {
@@ -42,8 +104,8 @@
       "fechaPublicacion": "2026-07-27",
       "registros": 481,
       "bytes": 340562,
-      "sha256": "8337de680925c6555ea73f788aba3466b759f74ebb9df9a8cf040cf992f132f9",
-      "actualizado": "2026-09-08T14:58:03.664Z",
+      "sha256": "bea6e2dc859219dca4cba2c04934590f1cad5da97ae9dbf7e399ab7c167f8005",
+      "actualizado": "2026-09-08T16:22:55.941Z",
       "estado": "ok"
     },
     {
@@ -57,8 +119,8 @@
       "fechaPublicacion": "2026-08-05",
       "registros": 6234,
       "bytes": 1958227,
-      "sha256": "6b2d4977c007c8d402fe17816e37e5911ae81f2eb3650937f40952b915a19122",
-      "actualizado": "2026-09-08T14:58:09.519Z",
+      "sha256": "bbc9443665fc167907aa5b60db5ebfbd4bfa26fb37ba4ff3eae89dbbefef9848",
+      "actualizado": "2026-09-08T16:23:04.636Z",
       "estado": "ok"
     },
     {
@@ -72,8 +134,8 @@
       "fechaPublicacion": "2026-09-08",
       "registros": 6340,
       "bytes": 4191063,
-      "sha256": "f3254de32da5b421127f745e2ada730c6a34c436eb02bb10fcb873eba3e0138d",
-      "actualizado": "2026-09-08T14:58:37.932Z",
+      "sha256": "63a4325cd66365802d17aacc6430cebfccd9a23416c8273be3419c19fbb46047",
+      "actualizado": "2026-09-08T16:24:02.611Z",
       "estado": "ok"
     }
   ]

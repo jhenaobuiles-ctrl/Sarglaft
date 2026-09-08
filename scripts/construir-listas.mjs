@@ -27,6 +27,9 @@ import * as uk from './fuentes/uk.mjs';
 import {
   frescuraDe, explicarFrescura, TOLERANCIA_POR_OMISION,
 } from '../app/datos/frescura.js';
+// El contrato que permite a quien consulta comprobar que su normalización es
+// la misma con la que se construyó este índice. Ver el módulo.
+import { contratoDeNormalizacion } from './contrato-normalizacion.mjs';
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DESTINO = join(RAIZ, 'data', 'listas');
@@ -78,6 +81,7 @@ async function principal() {
 
   const manifiesto = {
     generado: new Date().toISOString(),
+    normalizacion: contratoDeNormalizacion(),
     listas: entradas,
   };
   writeFileSync(MANIFIESTO, `${JSON.stringify(manifiesto, null, 2)}\n`);

@@ -1,42 +1,33 @@
-# SARLAFT — Escuela AC de Conducción SAS
+# Listas restrictivas — constructor y publicación
 
-Panel de cumplimiento SARLAFT con motor de consulta en listas restrictivas.
-Sin dependencias, sin servidor y sin costo de operación.
+Descarga cada día las listas de sanciones oficiales, las normaliza a un índice
+consultable y las publica con su huella. Sin dependencias, sin servidor y sin
+costo de operación.
 
-## Qué resuelve
+**El panel SARLAFT ya no vive aquí.** Se integró en el sistema de gestión de
+recursos humanos de la empresa, que es donde ahora se consulta, se decide sobre
+cada coincidencia y se guarda el expediente. Este repositorio conserva la mitad
+que tiene sentido pública: los datos.
 
-Permite consultar un nombre o un número de documento contra las listas de
-sanciones oficiales, dejar constancia auditable de esa consulta, y correr el
-cruce masivo mensual de todas las contrapartes. También diligencia e imprime
-los formatos documentales del sistema —manual, matriz de riesgo, declaración
-PEP, origen de fondos, actas— y guarda todo, evidencias incluidas, en una
-copia de seguridad en ZIP.
+Los servicios comerciales de *screening* cobran por la comodidad de una API, no
+por el dato: las listas vinculantes son información pública y se descargan
+gratis de la fuente original.
 
-Los servicios comerciales de *screening* cobran por la comodidad de una API,
-no por el dato: las listas vinculantes son información pública y se descargan
-gratis de la fuente original. Aquí se descargan una vez al día con GitHub
-Actions, se normalizan a un índice consultable y el navegador hace el cruce en
-local.
-
-## Cómo está montado
+## Qué hay aquí
 
 ```
 data/listas/     Listas normalizadas + manifest.json (generado, no editar a mano)
 scripts/         Descarga y normalización — corre en GitHub Actions
   fuentes/       Un parser por lista
 app/motor/       Normalización, índice invertido y puntuación
-app/documentos/  Catálogo de formatos y su versión imprimible
-app/             Interfaz, registro de consultas y exportaciones
+app/lib/csv.js   Lectura de CSV, que necesita la fuente del Reino Unido
+app/datos/       El criterio de frescura, compartido con el log del build
 ```
 
-Ninguna dependencia de terceros: ni en el navegador ni en los scripts, y nada
-de CDN.
-
-**Sobre el uso sin conexión:** el panel se sirve desde una dirección web y un
-service worker guarda una copia, así que después de abrirlo una vez con
-conexión sigue funcionando sin ella. Lo que *no* funciona es abrir el
-`index.html` con doble clic: en el protocolo `file://` el navegador bloquea
-los módulos ES y `fetch`, así que no hay forma de que cargue las listas.
+`app/motor/` se queda porque el constructor lo usa: la fuente del Reino Unido
+normaliza al parsear, y `scripts/evaluar-motor.mjs` mide el motor contra las
+listas reales, que es de donde salieron los umbrales que hoy usa el sistema de
+gestión.
 
 ## Listas cubiertas
 
@@ -55,71 +46,58 @@ los módulos ES y `fetch`, así que no hay forma de que cargue las listas.
 demás se consultan como buena práctica de debida diligencia.
 
 Los antecedentes colombianos **no se automatizan**: tienen CAPTCHA y sus
-términos de uso prohíben el acceso automatizado. El panel genera el enlace a
-cada consulta y archiva el PDF del resultado con sello de tiempo; el clic lo da
-una persona.
+términos de uso prohíben el acceso automatizado. Al **Banco Mundial** le pasa
+algo parecido por otro motivo: el endpoint que usa su propio sitio dejó de
+aceptar peticiones anónimas. **INTERPOL** no permite descargar el listado.
 
-Al **Banco Mundial** le pasa algo parecido por otro motivo: estaba prevista
-como consulta automática, pero el endpoint que usa su propio sitio dejó de
-aceptar peticiones anónimas (responde 401) y su listado no aparece en ningún
-portal abierto —el dominio de datos financieros no expone ni un conjunto de
-datos—. Queda como consulta manual. **INTERPOL** no permite descargar el
-listado; el panel intenta su API pública desde el navegador y, si la política
-de origen cruzado la bloquea, lo dice y ofrece el enlace.
+## Cómo se construye
 
-## Lo que hace el panel
+```bash
+node --test                          # pruebas
+node scripts/construir-listas.mjs    # descarga y normaliza (necesita salida a internet)
+node scripts/evaluar-motor.mjs       # mide el motor contra las listas publicadas
+```
 
-**Consultar.** Un nombre o un documento contra las listas cargadas. El
-resultado se guarda con la versión exacta —fecha de publicación y `sha256`— de
-cada archivo usado, y de ahí sale un certificado imprimible. Eso es lo que
-pide un auditor: no que se consultara, sino contra qué se consultó.
+La actualización real corre sola todos los días a las 06:00 de Bogotá
+(`.github/workflows/actualizar-listas.yml`). También se puede lanzar a mano
+desde la pestaña Actions.
 
-**Cruzar la lista entera.** Se pega la columna copiada de Excel —la de
-cédulas, la de nombres o las dos a la vez— y el panel deduce cuál es cuál,
-descarta el encabezado y omite las repetidas. Para listas con más columnas
-sigue estando la carga del CSV con su mapeo.
+Tres reglas gobiernan esa actualización:
 
-**Revisar de nuevo.** Una consulta prueba que esa persona estaba limpia ese
-día, y nada más; las designaciones se publican a diario. La *revisión
-periódica* vuelve a pasar por las listas de hoy a todas las contrapartes que ya
-están en el expediente —sin cargar ningún archivo— y señala cuáles empeoraron
-desde la última vez. Con eso queda cubierta la obligación mensual de cruce.
+- **Aislamiento por fuente.** Si una lista cambia de formato, las demás se
+  actualizan igual; la afectada conserva su última versión buena y queda
+  marcada como obsoleta en el manifiesto.
+- **Avisar cuando una lista deja de publicar.** Cada fuente declara cuánto puede
+  pasar sin novedades antes de que valga la pena mirar. Una lista que se
+  descarga bien pero lleva meses congelada no falla por ningún lado, y sin ese
+  aviso el sistema diría «al día» de un dato viejo. Se sigue consultando: el
+  aviso advierte, no descarta.
+- **Nunca publicar una lista encogida.** Si una lista pierde más del 40 % de sus
+  registros se asume descarga incompleta y no se publica. Una lista truncada
+  produciría un «sin hallazgos» falso, que es el peor resultado posible aquí.
 
-**Documentar.** Catorce formatos que se diligencian, se guardan con fecha e
-identificador y se imprimen: conocimiento de contraparte (natural y jurídica),
-declaración PEP, origen de fondos, autorización de tratamiento de datos,
-debida diligencia intensificada, análisis de operación inusual, constancias de
-ROS y de ausencia de reportes, designación del oficial de cumplimiento, acta de
-capacitación, informe del oficial, matriz de riesgo y manual del sistema. El
-manual y la matriz vienen con contenido ajustado a una escuela de conducción,
-para editar en vez de empezar en blanco. Los formatos que corresponden a una
-obligación periódica la marcan cumplida al guardarse.
+Cuando algo falla, el trabajo abre un issue con la lista afectada y el motivo.
 
-**Cerrar la alerta.** Se decide donde aparece —en la consulta, en el
-resultado del cruce, en el de la revisión o en el expediente— sin tener que ir
-a buscarla a otra pantalla. Una coincidencia obliga a registrar el desenlace
-—homónimo descartado, se vincula con seguimiento, no se vincula, se reporta a
-la UIAF— con su sustento escrito, que es obligatorio. Hasta que eso ocurra, el
-resumen la cuenta como pendiente, el expediente la marca en rojo y el
-certificado la imprime como *decisión pendiente*. Es la respuesta a la
-pregunta que sigue a todo hallazgo: «¿y qué hicieron con esto?».
+## El contrato de normalización
 
-**Reunir el expediente de una persona.** Sus consultas, sus decisiones, sus
-formatos y sus evidencias en una sola pantalla, aunque el nombre se haya
-escrito de tres formas distintas y una consulta se hiciera solo por cédula.
-Se imprime de una pieza, y la hoja enumera también lo que falta: es lo que se
-entrega cuando piden «el expediente de este alumno».
+El índice de nombres y documentos se construye normalizando con
+`app/motor/normalizar.js`. Quien consulta normaliza por su cuenta, con su propio
+puerto de ese módulo. **Si las dos normalizaciones dejan de coincidir, el cruce
+devuelve «sin hallazgos» sobre alguien que sí está designado y no falla nada**:
+ni excepción, ni fila rechazada, ni una línea en ningún log.
 
-**Respaldar.** La copia de seguridad va en ZIP e incluye las evidencias
-binarias —los PDF de la Procuraduría, las capturas—, más el expediente en CSV
-legible sin el panel y un LEEME con las instrucciones de restauración. El
-resumen avisa cuando la última copia pasa de un mes, y también cuando queda
-una alerta sin analizar.
+Hay además un desfase que ninguna reorganización evita: lo que se sirve hoy se
+indexó con la normalización de ayer.
 
-Sobre el **marco normativo**: el panel no supone qué superintendencia vigila a
-la empresa ni cita ninguna circular por su cuenta. Ese dato se escribe en
-Ajustes y se imprime al pie de cada documento. Poner una cita inventada en un
-formato que va a firmar un tercero es peor que dejar el campo vacío.
+Por eso el manifiesto publica un bloque `normalizacion` con un puñado de casos
+—la Ñ que se iguala a la N, los ceros a la izquierda de una cédula, el recorte
+de la forma societaria, el dígito de verificación del NIT— y el resultado que
+esta normalización les da. Quien consulta pasa su propio normalizador por las
+mismas entradas y compara; si no cuadran, no puede afirmar que su consulta
+valga, y lo dice.
+
+Los casos están en `scripts/contrato-normalizacion.mjs`. Al cambiar la
+normalización hay que revisarlos, y subir `version` si se añaden o se quitan.
 
 ## Privacidad
 
@@ -127,74 +105,26 @@ Este repositorio es público y **no contiene ni puede contener datos
 personales**. Solo sube código y listas de sanciones, que ya son información
 pública oficial.
 
-Los nombres consultados, los documentos, los resultados y las evidencias viven
-únicamente en el navegador de quien usa el panel (IndexedDB), con exportación e
-importación manual. Es lo que exige la Ley 1581 de 2012.
-
-El precio de esa decisión es que **no hay nada que respalde el expediente
-salvo la copia que se exporte**. El ZIP contiene datos personales: se guarda
-donde solo pueda abrirlo quien deba, nunca en un repositorio ni en una carpeta
-compartida abierta.
-
-## Operación
-
-```bash
-node --test                          # pruebas
-node scripts/construir-listas.mjs    # descarga y normaliza (necesita salida a internet)
-python3 -m http.server 8000          # ver el panel en http://localhost:8000
-```
-
-La actualización real corre sola todos los días a las 06:00 de Bogotá
-(`.github/workflows/actualizar-listas.yml`). También se puede lanzar a mano
-desde la pestaña Actions.
-
-Dos reglas gobiernan esa actualización:
-
-- **Aislamiento por fuente.** Si una lista cambia de formato, las demás se
-  actualizan igual; la afectada conserva su última versión buena y queda
-  marcada como obsoleta en el manifiesto y en el panel.
-- **Avisar cuando una lista deja de publicar.** Cada fuente declara cuánto
-  puede pasar sin novedades antes de que valga la pena mirar. Una lista que se
-  descarga bien pero lleva meses congelada no falla por ningún lado, y sin ese
-  aviso el panel diría «Al día» de un dato viejo. Se sigue consultando: el
-  aviso advierte, no descarta.
-- **Nunca publicar una lista encogida.** Si una lista pierde más del 40% de sus
-  registros se asume descarga incompleta y no se publica. Una lista truncada
-  produciría un "sin hallazgos" falso, que es el peor resultado posible aquí.
-
-Cuando algo falla, el trabajo abre un issue con la lista afectada y el motivo.
+Lo consultado —nombres, documentos, resultados, decisiones y evidencias— vive en
+el sistema de gestión, en una base con control de acceso por fila y copia de
+seguridad. Antes vivía únicamente en el IndexedDB de un navegador, y el precio
+de aquello era que no había nada que respaldara el expediente salvo la copia que
+alguien se acordara de exportar.
 
 ## Publicación
 
-El panel se sirve desde GitHub Pages en:
+El sitio se sirve desde GitHub Pages en:
 
 **https://jhenaobuiles-ctrl.github.io/Sarglaft/**
 
-Activar Pages es un paso manual que solo se hace una vez y que requiere
-permisos de administrador del repositorio. Ni el `GITHUB_TOKEN` de Actions
-puede crear el sitio (`Resource not accessible by integration`), ni se puede
-hacer desde una sesión de Claude Code, cuyo proxy veta la ruta `/pages` de la
-API.
-
-1. Abrir <https://github.com/jhenaobuiles-ctrl/Sarglaft/settings/pages>
-2. En **Source**, elegir **GitHub Actions**.
-
-Con eso, `.github/workflows/publicar-pages.yml` publica el panel en cada
-cambio de código y cada vez que se actualizan las listas. Si en su lugar se
-elige *Deploy from a branch*, Pages también funciona —hay un `.nojekyll` en la
-raíz para ello— y el flujo se aparta solo sin marcar error.
+De ahí baja las listas el sistema de gestión —Pages responde con
+`Access-Control-Allow-Origin: *`— y por eso este repositorio sigue vivo aunque
+su panel se haya retirado. `.github/workflows/publicar-pages.yml` publica en
+cada cambio de código y cada vez que se actualizan las listas.
 
 ## Límites
 
-- Esto documenta y sistematiza la debida diligencia; **no sustituye el criterio
-  del oficial de cumplimiento**. Ante una coincidencia, la decisión y su
-  sustento son de la persona responsable.
-- Ante duda, prima la consulta en el sitio oficial de la lista. Lo que hay aquí
-  es una copia fechada, no la fuente de verdad.
-- Las listas se actualizan una vez al día. Si se necesita certeza al minuto
-  para una operación crítica, hay que ir a la fuente.
-- El puntaje de nombres compara conjuntos de palabras: reconoce el cambio de
-  orden entre nombres y apellidos, pero por lo mismo no distingue "María de
-  los Ángeles Cruz" de "María de la Cruz Ángeles". En cruce de listas eso se
-  prefiere así —mejor una revisión de más que un hallazgo perdido—, pero
-  conviene saberlo al leer la banda de revisión.
+- Lo que hay aquí es una copia fechada, no la fuente de verdad. Ante duda, prima
+  la consulta en el sitio oficial de la lista.
+- Las listas se actualizan una vez al día. Si se necesita certeza al minuto para
+  una operación crítica, hay que ir a la fuente.
