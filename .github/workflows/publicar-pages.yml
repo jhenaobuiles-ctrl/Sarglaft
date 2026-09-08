@@ -1,4 +1,4 @@
-name: Publicar el panel
+name: Publicar las listas
 
 on:
   push:
@@ -36,8 +36,11 @@ jobs:
       - name: Preparar el sitio
         run: |
           mkdir -p sitio
-          cp index.html sw.js sitio/
-          cp -r app data sitio/
+          # Solo lo que alguien descarga: la portada y los datos. `app/` se
+          # queda fuera desde que el panel se retiró — es código que usa el
+          # constructor, no algo que sirva un navegador.
+          cp index.html sitio/
+          cp -r data sitio/
           # Con despliegue por Actions no corre Jekyll, pero el archivo no
           # cuesta nada y evita sorpresas si algún día se sirve desde la rama.
           touch sitio/.nojekyll
