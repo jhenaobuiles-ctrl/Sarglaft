@@ -1,5 +1,5 @@
 {
-  "generado": "2026-09-10T14:55:22.307Z",
+  "generado": "2026-09-11T14:53:34.525Z",
   "normalizacion": {
     "version": 1,
     "casos": [
@@ -71,11 +71,11 @@
       "vinculante": true,
       "toleranciaDias": 30,
       "archivo": "onu.json",
-      "fechaPublicacion": "2026-09-09",
+      "fechaPublicacion": "2026-09-10",
       "registros": 1011,
       "bytes": 480487,
-      "sha256": "c4be00727b3059a596177400870798b431431db94d9c8a34f7abd3e976cec87c",
-      "actualizado": "2026-09-10T14:54:48.228Z",
+      "sha256": "84b63ac4c98fba1500c33c70529f937e8ad43b61373ac988769d763ba915ecc6",
+      "actualizado": "2026-09-11T14:52:53.564Z",
       "estado": "ok"
     },
     {
@@ -86,11 +86,11 @@
       "vinculante": false,
       "toleranciaDias": 30,
       "archivo": "ofac_sdn.json",
-      "fechaPublicacion": "2026-09-09",
-      "registros": 19369,
-      "bytes": 6642771,
-      "sha256": "4099ffae5b8ece91876ebcd71d5a29842803bede8918aa050c2bdcdadcaf3b3b",
-      "actualizado": "2026-09-10T14:54:50.358Z",
+      "fechaPublicacion": "2026-09-10",
+      "registros": 19388,
+      "bytes": 6651342,
+      "sha256": "0c9bfc5ae60eb3a4615cce9b235eee5f70f0fbfb978490f327097a11ca7eb652",
+      "actualizado": "2026-09-11T14:52:56.388Z",
       "estado": "ok"
     },
     {
@@ -104,8 +104,8 @@
       "fechaPublicacion": "2026-07-27",
       "registros": 481,
       "bytes": 340562,
-      "sha256": "72f1d0c6e9d6e99207300c2ac32fb3a6b7803fddf669f7561dc864ede70a259b",
-      "actualizado": "2026-09-10T14:54:50.670Z",
+      "sha256": "89fc97058767964593fa2eb7158daa31bf7a9ce9385a5ae7bd250e8d253d12ca",
+      "actualizado": "2026-09-11T14:52:56.664Z",
       "estado": "ok"
     },
     {
@@ -119,8 +119,8 @@
       "fechaPublicacion": "2026-08-05",
       "registros": 6234,
       "bytes": 1958227,
-      "sha256": "6fa1297e3383311792bebf13690ca451e7457abbf41231bea8082880806b1810",
-      "actualizado": "2026-09-10T14:54:55.947Z",
+      "sha256": "c1854de89ac7273787669bbe3da4bc28844ff4fa6bbd563450b867c147b95977",
+      "actualizado": "2026-09-11T14:53:02.381Z",
       "estado": "ok"
     },
     {
@@ -131,11 +131,11 @@
       "vinculante": false,
       "toleranciaDias": 45,
       "archivo": "uk.json",
-      "fechaPublicacion": "2026-09-10",
+      "fechaPublicacion": "2026-09-11",
       "registros": 6340,
-      "bytes": 4191635,
-      "sha256": "8709574aa8a2984f56e9cb3d61301475fa68086a9979d2c6d17c38bccbe5a5a1",
-      "actualizado": "2026-09-10T14:55:22.307Z",
+      "bytes": 4191729,
+      "sha256": "66364eefcbb343f32740f31419843af5e4557f3b68cffb50220fd1807ea19c05",
+      "actualizado": "2026-09-11T14:53:34.525Z",
       "estado": "ok"
     }
   ]
