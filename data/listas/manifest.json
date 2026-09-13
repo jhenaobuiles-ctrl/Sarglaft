@@ -1,5 +1,5 @@
 {
-  "generado": "2026-09-12T13:55:16.297Z",
+  "generado": "2026-09-13T14:50:21.210Z",
   "normalizacion": {
     "version": 1,
     "casos": [
@@ -71,11 +71,11 @@
       "vinculante": true,
       "toleranciaDias": 30,
       "archivo": "onu.json",
-      "fechaPublicacion": "2026-09-11",
+      "fechaPublicacion": "2026-09-12",
       "registros": 1011,
       "bytes": 480487,
-      "sha256": "8391434e3eb0e98dd3614387d89da93f6885e7a1c8aae2ffe0dfa2480f6f32f4",
-      "actualizado": "2026-09-12T13:54:36.074Z",
+      "sha256": "1353e1dc6c5f3b603685127668bf366d4eb82097a75224cd760ca3f4c534a1aa",
+      "actualizado": "2026-09-13T14:49:54.350Z",
       "estado": "ok"
     },
     {
@@ -89,8 +89,8 @@
       "fechaPublicacion": "2026-09-10",
       "registros": 19388,
       "bytes": 6651342,
-      "sha256": "7946aff6e29400649191ce0ab18f07e9a47c5708e47e0a21c6715aa1b6afc979",
-      "actualizado": "2026-09-12T13:54:38.148Z",
+      "sha256": "22d9ece202fdb6247daa62349ad00e1ed0483febef207815a5874cad8bcc7666",
+      "actualizado": "2026-09-13T14:49:56.974Z",
       "estado": "ok"
     },
     {
@@ -104,8 +104,8 @@
       "fechaPublicacion": "2026-07-27",
       "registros": 481,
       "bytes": 340562,
-      "sha256": "0e119b5440d1f71c1214c3a342894004319df262369a879de8231848125bdf70",
-      "actualizado": "2026-09-12T13:54:38.391Z",
+      "sha256": "f6605ef73f8fa50e98b4d13c80b1f7fd20ac921271e7efe81c38a4a74c1ed034",
+      "actualizado": "2026-09-13T14:49:57.288Z",
       "estado": "ok"
     },
     {
@@ -119,8 +119,8 @@
       "fechaPublicacion": "2026-08-05",
       "registros": 6234,
       "bytes": 1958227,
-      "sha256": "b98aa0c10b157eb24f7847032f5dd96d8a7117baf50253a51c86ded0c42fe306",
-      "actualizado": "2026-09-12T13:54:43.706Z",
+      "sha256": "cef6b4d5607dd980d755026083fddc47c27ce336827c1ab1b18fabcbcc330e5b",
+      "actualizado": "2026-09-13T14:50:02.451Z",
       "estado": "ok"
     },
     {
@@ -134,8 +134,8 @@
       "fechaPublicacion": "2026-09-11",
       "registros": 6340,
       "bytes": 4191729,
-      "sha256": "b47081dc2fdf4782d49f4ed00179c9630d4cc3b417bb88478dd4e8f361b9aee8",
-      "actualizado": "2026-09-12T13:55:16.297Z",
+      "sha256": "fce6355a0c7c95c7622c71b193262d79acad3a05f0a4cc7a38e745cace36c32d",
+      "actualizado": "2026-09-13T14:50:21.210Z",
       "estado": "ok"
     }
   ]
