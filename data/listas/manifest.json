@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-01T17:18:48.787Z",
+  "generado": "2026-10-02T16:33:09.478Z",
   "normalizacion": {
     "version": 1,
     "casos": [
@@ -71,11 +71,11 @@
       "vinculante": true,
       "toleranciaDias": 30,
       "archivo": "onu.json",
-      "fechaPublicacion": "2026-09-30",
+      "fechaPublicacion": "2026-10-01",
       "registros": 1011,
       "bytes": 482440,
-      "sha256": "98d7dc8c436b597f75c8785e9b8d3eb97eca4309cd04055321a3c29401ddee25",
-      "actualizado": "2026-10-01T17:17:51.767Z",
+      "sha256": "21cdae64c05227a3d4c35a77ae3d4a35f530490ca02d2a8fb2d67b333048fd6b",
+      "actualizado": "2026-10-02T16:32:33.051Z",
       "estado": "ok"
     },
     {
@@ -86,11 +86,11 @@
       "vinculante": false,
       "toleranciaDias": 30,
       "archivo": "ofac_sdn.json",
-      "fechaPublicacion": "2026-10-01",
-      "registros": 19483,
-      "bytes": 6693042,
-      "sha256": "ff8a5bd4022a8c016293e94a1676c6873d48ae93ef6b18400f84ffd833550c3a",
-      "actualizado": "2026-10-01T17:17:53.809Z",
+      "fechaPublicacion": "2026-10-02",
+      "registros": 19488,
+      "bytes": 6695168,
+      "sha256": "6f6cb31023acae851a1a6ed584a530651f61718128cabe69cc223a1bfbee5e31",
+      "actualizado": "2026-10-02T16:32:34.874Z",
       "estado": "ok"
     },
     {
@@ -104,8 +104,8 @@
       "fechaPublicacion": "2026-09-14",
       "registros": 481,
       "bytes": 340656,
-      "sha256": "bcc50306c011cd9cd57f395e813aeccd301278a9d3ed2184b6e162a021b6772f",
-      "actualizado": "2026-10-01T17:17:54.053Z",
+      "sha256": "0c43f10cdc66122a1c2de5e2f315a81c61eba5bdf8263ee23783fe3ea4c64346",
+      "actualizado": "2026-10-02T16:32:35.107Z",
       "estado": "ok"
     },
     {
@@ -119,11 +119,9 @@
       "fechaPublicacion": "2026-09-22",
       "registros": 6241,
       "bytes": 1959424,
-      "sha256": "d1bc17f7d05d3739872b97dd0f28709927dd69c5c30dd1ee22c05db9a330351c",
-      "actualizado": "2026-09-30T16:43:13.935Z",
-      "estado": "obsoleto",
-      "error": "no se pudo descargar https://webgate.ec.europa.eu/fsd/fsf/public/files/xmlFullSanctionsList_1_1/content?token=dG9rZW4tMjAxNw: fetch failed",
-      "ultimoIntento": "2026-10-01T17:18:25.186Z"
+      "sha256": "b1449fb40310c90407a90887ad7360fd762f68efbe3d8aba0dce3ec628595e78",
+      "actualizado": "2026-10-02T16:32:40.897Z",
+      "estado": "ok"
     },
     {
       "id": "uk",
@@ -133,11 +131,11 @@
       "vinculante": false,
       "toleranciaDias": 45,
       "archivo": "uk.json",
-      "fechaPublicacion": "2026-10-01",
+      "fechaPublicacion": "2026-10-02",
       "registros": 6370,
-      "bytes": 4214253,
-      "sha256": "fcd30c76312b23c6957a5d4c1614906e153a10e1a1372fcc2ba7c29a0d5b042c",
-      "actualizado": "2026-10-01T17:18:48.786Z",
+      "bytes": 4214045,
+      "sha256": "d3f5c98fab58296c361907cadee14c1976837c0f8ee18a673349436ba2d08ebd",
+      "actualizado": "2026-10-02T16:33:09.478Z",
       "estado": "ok"
     }
   ]
