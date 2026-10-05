@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-04T15:42:25.509Z",
+  "generado": "2026-10-05T19:42:23.287Z",
   "normalizacion": {
     "version": 1,
     "casos": [
@@ -74,8 +74,8 @@
       "fechaPublicacion": "2026-10-03",
       "registros": 1011,
       "bytes": 482440,
-      "sha256": "a8ce18b3e4c0554c80f304e89d7892fad1dfb97be8badf25fe93c0f5e27265ee",
-      "actualizado": "2026-10-04T15:41:46.047Z",
+      "sha256": "fe09cbfce49b532a83438baae50f348795ae3fde6c5a9ebfa38d8efa2ab4cbf2",
+      "actualizado": "2026-10-05T19:41:51.409Z",
       "estado": "ok"
     },
     {
@@ -86,11 +86,11 @@
       "vinculante": false,
       "toleranciaDias": 30,
       "archivo": "ofac_sdn.json",
-      "fechaPublicacion": "2026-10-02",
-      "registros": 19488,
-      "bytes": 6695168,
-      "sha256": "942b2a582197012ce13627cd408ecc64a9f6981026812814ff05043ef7342048",
-      "actualizado": "2026-10-04T15:41:49.258Z",
+      "fechaPublicacion": "2026-10-05",
+      "registros": 19363,
+      "bytes": 6678048,
+      "sha256": "6bcc0b589827c34f595e83818161250f4fffe98051682ba5dba548509c717cf2",
+      "actualizado": "2026-10-05T19:41:53.957Z",
       "estado": "ok"
     },
     {
@@ -104,8 +104,8 @@
       "fechaPublicacion": "2026-09-14",
       "registros": 481,
       "bytes": 340656,
-      "sha256": "1217a8168b6b148419bc6f0ada2b56af250425f158fff79c3853730b5acef3e0",
-      "actualizado": "2026-10-04T15:41:49.498Z",
+      "sha256": "4a4dfca78c38769b5dfe59606c8d14284b7b638e5bd614d4b48099f2f88949f6",
+      "actualizado": "2026-10-05T19:41:54.192Z",
       "estado": "ok"
     },
     {
@@ -119,8 +119,8 @@
       "fechaPublicacion": "2026-09-22",
       "registros": 6241,
       "bytes": 1959424,
-      "sha256": "6dfd1b8353b13a0f7edc8be6f0c8fbb6771b3c956fdfd7d7a906bc9f15311e23",
-      "actualizado": "2026-10-04T15:41:53.686Z",
+      "sha256": "f269e6774aa7e7a47e9e10578b19b508cbdfbde0f6aefd0cb98f6ea1188b9b54",
+      "actualizado": "2026-10-05T19:42:00.707Z",
       "estado": "ok"
     },
     {
@@ -134,8 +134,8 @@
       "fechaPublicacion": "2026-10-02",
       "registros": 6370,
       "bytes": 4214045,
-      "sha256": "87e4510582f3a9ec961bcb36afef40394d93ec40816cd0aa9a1b12534652a46e",
-      "actualizado": "2026-10-04T15:42:25.509Z",
+      "sha256": "c69d195113d7e7f275a29957e56a6f11d793e5770539fbedd49447d255e704c0",
+      "actualizado": "2026-10-05T19:42:23.287Z",
       "estado": "ok"
     }
   ]
