@@ -1,5 +1,5 @@
 {
-  "generado": "2026-10-08T17:46:40.697Z",
+  "generado": "2026-10-09T17:22:38.769Z",
   "normalizacion": {
     "version": 1,
     "casos": [
@@ -71,11 +71,11 @@
       "vinculante": true,
       "toleranciaDias": 30,
       "archivo": "onu.json",
-      "fechaPublicacion": "2026-10-07",
+      "fechaPublicacion": "2026-10-08",
       "registros": 1010,
       "bytes": 482286,
-      "sha256": "cc3360b5763e5c21a4091e40b0d1144c0b33bd7a58c0367a7b194be2fc7d2b0a",
-      "actualizado": "2026-10-08T17:46:16.769Z",
+      "sha256": "9e54addd64049be1544b7f9f19e87cb3e7d47cd8df6e7dcbdcbee353bf2eab6d",
+      "actualizado": "2026-10-09T17:22:06.411Z",
       "estado": "ok"
     },
     {
@@ -86,11 +86,11 @@
       "vinculante": false,
       "toleranciaDias": 30,
       "archivo": "ofac_sdn.json",
-      "fechaPublicacion": "2026-10-08",
+      "fechaPublicacion": "2026-10-09",
       "registros": 19416,
-      "bytes": 6693475,
-      "sha256": "71f97c7a8a49d922e2d3d20b40e58801c40032f1fc70befc47d7dff86ef0b827",
-      "actualizado": "2026-10-08T17:46:18.851Z",
+      "bytes": 6693443,
+      "sha256": "ec135a46660d5902ee03b001a6879ee9db4b7085f3769234fbecf759dc4ac8c6",
+      "actualizado": "2026-10-09T17:22:08.118Z",
       "estado": "ok"
     },
     {
@@ -104,8 +104,8 @@
       "fechaPublicacion": "2026-09-14",
       "registros": 481,
       "bytes": 340656,
-      "sha256": "e7491a0b6a5388770180d4ef209d4cc9f9bd5c9c114e5ade8dad155c958cc208",
-      "actualizado": "2026-10-08T17:46:19.104Z",
+      "sha256": "3271ef320c2c470d273992edcf061de205c1428b0203bc6a65ede64f0574cca2",
+      "actualizado": "2026-10-09T17:22:11.696Z",
       "estado": "ok"
     },
     {
@@ -119,8 +119,8 @@
       "fechaPublicacion": "2026-09-22",
       "registros": 6241,
       "bytes": 1959424,
-      "sha256": "872453963412ccbdef3afe2fa1cf08f36a9088958272374c09e5dc9f24e3066b",
-      "actualizado": "2026-10-08T17:46:25.955Z",
+      "sha256": "fe05ff6397cb89bd9204ab10be73f797d15a921ac87fcfacae4712f1f6ba9655",
+      "actualizado": "2026-10-09T17:22:16.936Z",
       "estado": "ok"
     },
     {
@@ -134,8 +134,8 @@
       "fechaPublicacion": "2026-10-08",
       "registros": 6406,
       "bytes": 4240561,
-      "sha256": "0c5dce59ee98fa029942f36c6ad7e4221e51e595333fb0565873f84d73868f22",
-      "actualizado": "2026-10-08T17:46:40.697Z",
+      "sha256": "53a1404cfd502155915f4a210a95ad3e29aa783cd6b290d3ae8331dfc4f8349a",
+      "actualizado": "2026-10-09T17:22:38.769Z",
       "estado": "ok"
     }
   ]
