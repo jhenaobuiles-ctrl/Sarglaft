@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-02T20:39:30.118Z",
+  "generado": "2026-11-03T18:15:56.846Z",
   "normalizacion": {
     "version": 1,
     "casos": [
@@ -71,11 +71,11 @@
       "vinculante": true,
       "toleranciaDias": 30,
       "archivo": "onu.json",
-      "fechaPublicacion": "2026-10-31",
+      "fechaPublicacion": "2026-11-02",
       "registros": 1007,
       "bytes": 480207,
-      "sha256": "9b24d8950b3ad966f7d6b60c776039079261572804a52dce55386e7ee8b6d554",
-      "actualizado": "2026-11-02T20:38:48.380Z",
+      "sha256": "24c069de2135c9b21cf2d0a8968eaeee7f255c544821f89b3b53620c0cd9749b",
+      "actualizado": "2026-11-03T18:15:29.008Z",
       "estado": "ok"
     },
     {
@@ -89,8 +89,8 @@
       "fechaPublicacion": "2026-10-28",
       "registros": 19484,
       "bytes": 6719459,
-      "sha256": "ba0f978e15c363e96d0711bfe82f9c3fb11d3d19421eb664cd286575cee85cd8",
-      "actualizado": "2026-11-02T20:38:50.899Z",
+      "sha256": "5c112dffc4af289e4c3a48f7bb833bd3dec02f1d4dcd2f22dd8a41e374f6d61f",
+      "actualizado": "2026-11-03T18:15:31.372Z",
       "estado": "ok"
     },
     {
@@ -104,8 +104,8 @@
       "fechaPublicacion": "2026-10-19",
       "registros": 486,
       "bytes": 349460,
-      "sha256": "af17688c1c584898516e1b3b1ca86dec675d920c8de24d5963f9afbf8db87103",
-      "actualizado": "2026-11-02T20:38:51.134Z",
+      "sha256": "ef2558ed49930a0f1d458ffd7329866cbf1c8c4ffdd159ae33a0903b9a77dc4d",
+      "actualizado": "2026-11-03T18:15:31.605Z",
       "estado": "ok"
     },
     {
@@ -119,8 +119,8 @@
       "fechaPublicacion": "2026-10-23",
       "registros": 6269,
       "bytes": 1966907,
-      "sha256": "40e9d081d2c5da213377cda53ca75baf706f5504b9bb93c942285067f4ad5c50",
-      "actualizado": "2026-11-02T20:38:57.609Z",
+      "sha256": "04196af8f0ab399f3ee1eb128aa63811a053505dc1952ebdc37e9cc6e845e68d",
+      "actualizado": "2026-11-03T18:15:37.160Z",
       "estado": "ok"
     },
     {
@@ -131,11 +131,11 @@
       "vinculante": false,
       "toleranciaDias": 45,
       "archivo": "uk.json",
-      "fechaPublicacion": "2026-10-30",
+      "fechaPublicacion": "2026-11-03",
       "registros": 6420,
       "bytes": 4250902,
-      "sha256": "ef1828fe09ab4c5ee441251136bfc8c25411057bdc9e171137ab14c5614a24eb",
-      "actualizado": "2026-11-02T20:39:30.118Z",
+      "sha256": "66cecc13ab5a9cc3aee11ac09c3ebfd5bacddf0f6ffe6275b0d6ea6b43bc7efc",
+      "actualizado": "2026-11-03T18:15:56.846Z",
       "estado": "ok"
     }
   ]
