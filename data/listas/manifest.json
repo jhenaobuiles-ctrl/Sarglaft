@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-06T17:50:38.094Z",
+  "generado": "2026-11-07T16:47:00.344Z",
   "normalizacion": {
     "version": 1,
     "casos": [
@@ -71,11 +71,11 @@
       "vinculante": true,
       "toleranciaDias": 30,
       "archivo": "onu.json",
-      "fechaPublicacion": "2026-11-06",
+      "fechaPublicacion": "2026-11-07",
       "registros": 1007,
       "bytes": 480207,
-      "sha256": "713b7eef4ee47c2957578dc5ab2c0ab317c8c5b6aaed1f98ad94d6380e86c061",
-      "actualizado": "2026-11-06T17:50:01.612Z",
+      "sha256": "dda17ebe4f24152f9ef36986572417df57594190b9946eb22d64064a6e64dd7c",
+      "actualizado": "2026-11-07T16:46:11.836Z",
       "estado": "ok"
     },
     {
@@ -86,11 +86,11 @@
       "vinculante": false,
       "toleranciaDias": 30,
       "archivo": "ofac_sdn.json",
-      "fechaPublicacion": "2026-11-05",
-      "registros": 19555,
-      "bytes": 6816576,
-      "sha256": "2af81bf1246345647b5412c3b85ef3e6d745005d5f5072e25521119e946c3f41",
-      "actualizado": "2026-11-06T17:50:03.553Z",
+      "fechaPublicacion": "2026-11-06",
+      "registros": 19563,
+      "bytes": 6821121,
+      "sha256": "f546f7da6082daf4610dd8be508f69161db7d261de0462cc4c8b4462c4ca4c85",
+      "actualizado": "2026-11-07T16:46:14.914Z",
       "estado": "ok"
     },
     {
@@ -104,8 +104,8 @@
       "fechaPublicacion": "2026-11-04",
       "registros": 486,
       "bytes": 349528,
-      "sha256": "471346cae3586f4a8993be2c70bb7f2da11d80fe33621a7e39ad4bd9dfc790ac",
-      "actualizado": "2026-11-06T17:50:03.831Z",
+      "sha256": "6545718da7dde22aafd8a6a43e714b87dc9698d8c067380893dbf1d2b63e0ca3",
+      "actualizado": "2026-11-07T16:46:15.164Z",
       "estado": "ok"
     },
     {
@@ -121,7 +121,9 @@
       "bytes": 1966907,
       "sha256": "1647bb491724fee385a3a6015b3d454ab5b73272d46cff49f0e49de21c04ee84",
       "actualizado": "2026-11-06T17:50:13.985Z",
-      "estado": "ok"
+      "estado": "obsoleto",
+      "error": "no se pudo descargar https://webgate.ec.europa.eu/fsd/fsf/public/files/xmlFullSanctionsList_1_1/content?token=dG9rZW4tMjAxNw: HTTP 500 Internal Server Error",
+      "ultimoIntento": "2026-11-07T16:46:30.659Z"
     },
     {
       "id": "uk",
@@ -134,8 +136,8 @@
       "fechaPublicacion": "2026-11-03",
       "registros": 6420,
       "bytes": 4250902,
-      "sha256": "e92616aba49614a7b59677479024a812e04bfe76962b8a2fa46cdae0537bb646",
-      "actualizado": "2026-11-06T17:50:38.094Z",
+      "sha256": "b33ea05cc0ebc09831ff2e00fb9c0f391438a979f8ea64a7bde63e7146250e00",
+      "actualizado": "2026-11-07T16:47:00.344Z",
       "estado": "ok"
     }
   ]
