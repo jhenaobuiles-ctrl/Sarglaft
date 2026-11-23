@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-22T18:18:39.074Z",
+  "generado": "2026-11-23T22:29:09.892Z",
   "normalizacion": {
     "version": 1,
     "casos": [
@@ -74,8 +74,8 @@
       "fechaPublicacion": "2026-11-22",
       "registros": 1007,
       "bytes": 480343,
-      "sha256": "53901996e054f34839103c86b0dd73794760b7f2e158c47aaa07d2481db909ca",
-      "actualizado": "2026-11-22T18:18:10.596Z",
+      "sha256": "832499d8403699b19601eda5de1aa361b69bd23015e9932cc9676e50d50710dd",
+      "actualizado": "2026-11-23T22:28:26.062Z",
       "estado": "ok"
     },
     {
@@ -86,11 +86,11 @@
       "vinculante": false,
       "toleranciaDias": 30,
       "archivo": "ofac_sdn.json",
-      "fechaPublicacion": "2026-11-20",
-      "registros": 19599,
-      "bytes": 6834050,
-      "sha256": "7a098de6d77ff85fe4c07049047c736cb33b49ea9f6182cbaa556fb11674a992",
-      "actualizado": "2026-11-22T18:18:12.425Z",
+      "fechaPublicacion": "2026-11-23",
+      "registros": 19629,
+      "bytes": 6845740,
+      "sha256": "7e349f654f7ef9879da9b9bed91d5ea5f747a010e79d6554530d6adcf5fe72ad",
+      "actualizado": "2026-11-23T22:28:28.548Z",
       "estado": "ok"
     },
     {
@@ -104,8 +104,8 @@
       "fechaPublicacion": "2026-11-04",
       "registros": 486,
       "bytes": 349528,
-      "sha256": "fbce4c89818beaadadc8771760277f5c8debaab9482990e9e2914835f2d22ada",
-      "actualizado": "2026-11-22T18:18:13.238Z",
+      "sha256": "32360f64e2736eb83d8bbb0ee9d0171a64e7cf8a0331a3528e5e7999caabe95d",
+      "actualizado": "2026-11-23T22:28:31.461Z",
       "estado": "ok"
     },
     {
@@ -121,7 +121,9 @@
       "bytes": 1980969,
       "sha256": "669b7c655fd4b81b63624000a01e2ebb98cb90231ef8980bc1d475a80c4e4b93",
       "actualizado": "2026-11-22T18:18:18.985Z",
-      "estado": "ok"
+      "estado": "obsoleto",
+      "error": "no se pudo descargar https://webgate.ec.europa.eu/fsd/fsf/public/files/xmlFullSanctionsList_1_1/content?token=dG9rZW4tMjAxNw: HTTP 500 Internal Server Error",
+      "ultimoIntento": "2026-11-23T22:28:47.828Z"
     },
     {
       "id": "uk",
@@ -131,11 +133,11 @@
       "vinculante": false,
       "toleranciaDias": 45,
       "archivo": "uk.json",
-      "fechaPublicacion": "2026-11-20",
-      "registros": 6448,
-      "bytes": 4270612,
-      "sha256": "24630b1fe43f073689775761dd9ecca4a0ff5432269d02666fe3a05842c4f60b",
-      "actualizado": "2026-11-22T18:18:39.074Z",
+      "fechaPublicacion": "2026-11-23",
+      "registros": 6453,
+      "bytes": 4273808,
+      "sha256": "7a76e387706095db4b16d1ba4bed13c1523afa303e1084a231bb45cfb68cd429",
+      "actualizado": "2026-11-23T22:29:09.891Z",
       "estado": "ok"
     }
   ]
